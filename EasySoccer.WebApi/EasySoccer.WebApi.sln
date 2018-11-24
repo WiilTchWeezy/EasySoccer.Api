@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySoccer.WebApi", "EasySoccer.WebApi\EasySoccer.WebApi.csproj", "{176037AB-73F8-42B3-9521-E693ED66AD1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasySoccer.WebApi", "EasySoccer.WebApi\EasySoccer.WebApi.csproj", "{176037AB-73F8-42B3-9521-E693ED66AD1A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{3EF3F4C8-64F3-46CA-9517-502B91D7EC81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySoccer.Entities", "EasySoccer.Entities\EasySoccer.Entities.csproj", "{7F070D2C-7AE2-4805-A26C-CE871BC8F87F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,16 @@ Global
 		{176037AB-73F8-42B3-9521-E693ED66AD1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{176037AB-73F8-42B3-9521-E693ED66AD1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{176037AB-73F8-42B3-9521-E693ED66AD1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F070D2C-7AE2-4805-A26C-CE871BC8F87F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F070D2C-7AE2-4805-A26C-CE871BC8F87F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F070D2C-7AE2-4805-A26C-CE871BC8F87F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F070D2C-7AE2-4805-A26C-CE871BC8F87F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7F070D2C-7AE2-4805-A26C-CE871BC8F87F} = {3EF3F4C8-64F3-46CA-9517-502B91D7EC81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4CD804F-446C-4F85-84BD-42C1B79ABA49}

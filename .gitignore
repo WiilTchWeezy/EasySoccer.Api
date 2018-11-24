@@ -9,3 +9,5 @@
 /.vs/slnx.sqlite
 /.vs/VSWorkspaceState.json
 /.vs
+/EasySoccer.WebApi/EasySoccer.Entities/obj
+/EasySoccer.WebApi/EasySoccer.Entities/bin/Debug/netcoreapp2.0
