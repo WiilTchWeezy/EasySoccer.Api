@@ -11,3 +11,5 @@
 /.vs
 /EasySoccer.WebApi/EasySoccer.Entities/obj
 /EasySoccer.WebApi/EasySoccer.Entities/bin/Debug/netcoreapp2.0
+/EasySoccer.WebApi/EasySoccer.DAL/bin/Debug/netcoreapp2.0
+/EasySoccer.WebApi/EasySoccer.DAL/obj
