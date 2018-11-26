@@ -16,4 +16,12 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EasySoccer.BLL.Infra\EasySoccer.BLL.Infra.csproj" />
+    <ProjectReference Include="..\EasySoccer.BLL\EasySoccer.BLL.csproj" />
+    <ProjectReference Include="..\EasySoccer.DAL.Infra\EasySoccer.DAL.Infra.csproj" />
+    <ProjectReference Include="..\EasySoccer.DAL\EasySoccer.DAL.csproj" />
+    <ProjectReference Include="..\EasySoccer.Entities\EasySoccer.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

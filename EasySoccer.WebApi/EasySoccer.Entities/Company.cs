@@ -26,5 +26,10 @@ namespace EasySoccer.Entities
 
         [Required]
         public bool WorkOnHoliDays { get; set; }
+
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
+        
     }
 }

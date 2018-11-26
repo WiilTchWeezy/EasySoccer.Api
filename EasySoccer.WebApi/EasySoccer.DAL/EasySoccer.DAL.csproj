@@ -9,10 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EasySoccer.DAL.Infra\EasySoccer.DAL.Infra.csproj" />
   </ItemGroup>
 

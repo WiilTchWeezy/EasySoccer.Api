@@ -14,3 +14,5 @@
 /EasySoccer.WebApi/EasySoccer.DAL/bin/Debug/netcoreapp2.0
 /EasySoccer.WebApi/EasySoccer.DAL/obj
 /EasySoccer.WebApi/EasySoccer.DAL.Infra/obj
+/EasySoccer.WebApi/EasySoccer.BLL/obj
+/EasySoccer.WebApi/EasySoccer.BLL.Infra/obj
