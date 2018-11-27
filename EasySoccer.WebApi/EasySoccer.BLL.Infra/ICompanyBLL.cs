@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EasySoccer.DAL.Infra.Repositories
+namespace EasySoccer.BLL.Infra
 {
-    public interface ICompanyRepository
+    public interface ICompanyBLL
     {
         Task<List<Company>> GetAsync(double? longitude, double? latitude, string description);
     }

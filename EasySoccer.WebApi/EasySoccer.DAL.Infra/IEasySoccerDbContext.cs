@@ -1,10 +1,11 @@
 ﻿using EasySoccer.Entities;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Infra
 {
-    public interface IEasySoccerDbContext
+    public interface IEasySoccerDbContext : IDisposable
     {
         #region Infra
         Task<int> SaveChangesAsync();
