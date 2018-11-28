@@ -6,6 +6,6 @@ namespace EasySoccer.DAL.Infra.Repositories
 {
     public interface ICompanyRepository
     {
-        Task<List<Company>> GetAsync(double? longitude, double? latitude, string description);
+        Task<List<Company>> GetAsync(string description, int page, int pageSize);
     }
 }

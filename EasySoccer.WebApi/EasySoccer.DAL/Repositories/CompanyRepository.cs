@@ -16,9 +16,9 @@ namespace EasySoccer.DAL.Repositories
         {
         }
 
-        public Task<List<Company>> GetAsync(double? longitude, double? latitude, string description)
+        public Task<List<Company>> GetAsync(string description, int page, int pageSize)
         {
-            return _dbContext.CompanyQuery.Where(x => x.Description.Contains(description)).ToListAsync();
+            return _dbContext.CompanyQuery.Where(x => description == null || x.Description.Contains(description)).Skip((page - 1) * pageSize).Take(page).ToListAsync();
         }
     }
 }

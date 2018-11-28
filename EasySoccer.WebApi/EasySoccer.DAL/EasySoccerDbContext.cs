@@ -30,6 +30,12 @@ namespace EasySoccer.DAL
         public IQueryable<SoccerPitchReservation> SoccerPitchReservationQuery { get { return SoccerPitchReservation; } }
 
         #region Infra
+
+        public EasySoccerDbContext(DbContextOptions op) : base(op)
+        {
+
+        }
+
         public Task Delete<TEntity>(TEntity entity) where TEntity : class
         {
             return Task.Run(() =>

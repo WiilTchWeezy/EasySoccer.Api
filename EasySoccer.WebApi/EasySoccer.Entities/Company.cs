@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasySoccer.Entities
 {
@@ -27,9 +28,12 @@ namespace EasySoccer.Entities
         [Required]
         public bool WorkOnHoliDays { get; set; }
 
-        public double Latitude { get; set; }
+        public decimal Latitude { get; set; }
 
-        public double Longitude { get; set; }
-        
+        public decimal Longitude { get; set; }
+
+        [NotMapped]
+        public double Distance { get; set; }
+
     }
 }
