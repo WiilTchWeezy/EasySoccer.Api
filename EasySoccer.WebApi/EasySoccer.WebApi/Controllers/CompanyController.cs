@@ -16,7 +16,6 @@ namespace EasySoccer.WebApi.Controllers
             _uow = uow;
         }
 
-        [Authorize]
         [Route("api/company/get"), HttpGet]
         public async Task<IActionResult> GetCompaniesAsync([FromQuery]GetCompanyRequest request)
         {

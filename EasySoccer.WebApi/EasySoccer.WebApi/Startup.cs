@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EasySoccer.BLL;
@@ -20,6 +21,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.PlatformAbstractions;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace EasySoccer.WebApi
 {
@@ -91,6 +94,34 @@ namespace EasySoccer.WebApi
             #endregion
 
             services.AddMvc();
+
+            #region Swagger
+            services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1",
+                        new Info
+                        {
+                            Title = "Easy Soccer WebApi Documentation",
+                            Version = PlatformServices.Default.Application.ApplicationVersion,
+                            Description = "Documentation",
+                            Contact = new Contact
+                            {
+                                Name = "Tarcisio Vitor"
+                            }
+                        });
+                    c.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Add Jwt Token", Name = "Authorization", Type = "apiKey" });
+                    c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> { { "Bearer", Enumerable.Empty<string>() }, });
+
+                    string caminhoAplicacao =
+                        PlatformServices.Default.Application.ApplicationBasePath;
+                    string nomeAplicacao =
+                        PlatformServices.Default.Application.ApplicationName;
+                    string caminhoXmlDoc =
+                        Path.Combine(caminhoAplicacao, $"{nomeAplicacao}.xml");
+
+                    c.IncludeXmlComments(caminhoXmlDoc);
+                }); 
+            #endregion
         }
         
 
@@ -102,6 +133,13 @@ namespace EasySoccer.WebApi
             }
 
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json",
+                    "Easy Soccer WebApi Documentation");
+            });
         }
     }
 }
