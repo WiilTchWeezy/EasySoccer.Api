@@ -45,16 +45,20 @@ namespace EasySoccer.WebApi
             #region UoW's
             services.AddScoped<CompanyUoW, CompanyUoW>();
             services.AddScoped<LoginUoW, LoginUoW>();
+            services.AddScoped<SoccerPitchReservationUoW, SoccerPitchReservationUoW>();
             #endregion
 
             #region BLL's
             services.AddScoped<ICompanyBLL, CompanyBLL>();
             services.AddScoped<IUserBLL, UserBLL>();
+            services.AddScoped<ISoccerPitchReservationBLL, SoccerPitchReservationBLL>();
             #endregion
 
             #region Repositories
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISoccerPitchReservationRepository, SoccerPitchReservationRepository>();
+            services.AddScoped<ISoccerPitchRepository, SoccerPitchRepository>();
             #endregion
 
             #region TokenConfiguration
@@ -95,6 +99,15 @@ namespace EasySoccer.WebApi
 
             services.AddMvc();
 
+            services.AddCors(op => op.AddDefaultPolicy(builder =>
+            {
+                builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+            }));
+
             #region Swagger
             services.AddSwaggerGen(c =>
                 {
@@ -120,10 +133,10 @@ namespace EasySoccer.WebApi
                         Path.Combine(caminhoAplicacao, $"{nomeAplicacao}.xml");
 
                     c.IncludeXmlComments(caminhoXmlDoc);
-                }); 
+                });
             #endregion
         }
-        
+
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {

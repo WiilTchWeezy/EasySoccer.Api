@@ -1,13 +1,12 @@
 ﻿using EasySoccer.Entities;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Infra.Repositories
 {
-    public interface ISoccerPitchRepository
+    public interface ISoccerPitchReservationRepository
     {
-        Task<long[]> GetAsync(int companyId);
+        Task<List<SoccerPitchReservation>> GetAsync(DateTime date, long[] soccerPitchs, int page, int pageSize);
     }
 }
