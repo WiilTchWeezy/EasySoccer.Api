@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace EasySoccer.WebApi.Controllers.Base
 {
     [Authorize("Bearer")]
-    [EnableCors]
     public class ApiBaseController : Controller
     {
         private UoWBase _uow;

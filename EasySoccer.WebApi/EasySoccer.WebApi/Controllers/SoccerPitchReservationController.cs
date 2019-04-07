@@ -23,20 +23,25 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("api/soccerpitchreservation/get"), HttpGet]
-        [EnableCors]
         public async Task<IActionResult> GetAsync([FromQuery]GetBaseRequest request)
         {
-            return Ok((await _uow.SoccerPitchReservationBLL.GetAsync(DateTime.Now, 1, request.Page, request.PageSize)).Select(x => new
+            try
             {
-                x.Id,
-                x.SelectedDate,
-                x.SelectedHourEnd,
-                x.SelectedHourStart,
-                SoccerPitchName = x.SoccerPitch.Name,
-                UserName = x.User.Name,
-                x.UserId,
-                x.SoccerPitchId
-            }).ToList());
+                return Ok((await _uow.SoccerPitchReservationBLL.GetAsync(DateTime.Now, 1, request.Page, request.PageSize)).Select(x => new
+                {
+                    x.Id,
+                    x.SelectedDate,
+                    x.SelectedHourEnd,
+                    x.SelectedHourStart,
+                    SoccerPitchName = x.SoccerPitch.Name,
+                    UserName = x.User.Name,
+                    x.UserId,
+                    x.SoccerPitchId
+                }).ToList());
+            }catch(Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
         }
 
     }

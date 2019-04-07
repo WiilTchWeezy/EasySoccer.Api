@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using EasySoccer.BLL;
 using EasySoccer.BLL.Infra;
 using EasySoccer.DAL;
@@ -16,10 +15,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
@@ -38,7 +37,13 @@ namespace EasySoccer.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddCors(op => op.AddPolicy("AllowAll", b => b
+                                                                .AllowAnyHeader()
+                                                                .AllowAnyMethod()
+                                                                .AllowAnyOrigin()
+                                                                .AllowCredentials()
+            ));
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<IEasySoccerDbContext, EasySoccerDbContext>(
                                     x => x.UseSqlServer(Configuration.GetConnectionString("EasySoccerDbContext")));
 
@@ -96,17 +101,8 @@ namespace EasySoccer.WebApi
             });
 
             #endregion
+            
 
-            services.AddMvc();
-
-            services.AddCors(op => op.AddDefaultPolicy(builder =>
-            {
-                builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials();
-            }));
 
             #region Swagger
             services.AddSwaggerGen(c =>
@@ -144,7 +140,7 @@ namespace EasySoccer.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors("AllowAll");
             app.UseMvc();
 
             app.UseSwagger();

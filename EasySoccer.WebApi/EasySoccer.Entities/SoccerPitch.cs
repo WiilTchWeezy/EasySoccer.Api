@@ -35,9 +35,9 @@ namespace EasySoccer.Entities
         [Required]
         public bool Active { get; set; }
 
-        public DateTime ActiveDate { get; set; }
+        public DateTime? ActiveDate { get; set; }
 
-        public DateTime InactiveDate { get; set; }
+        public DateTime? InactiveDate { get; set; }
 
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
