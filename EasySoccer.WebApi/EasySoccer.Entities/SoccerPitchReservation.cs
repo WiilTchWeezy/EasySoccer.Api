@@ -24,10 +24,10 @@ namespace EasySoccer.Entities
         public DateTime SelectedDate { get; set; }
 
         [Required]
-        public long SelectedHourStart { get; set; }
+        public TimeSpan SelectedHourStart { get; set; }
 
         [Required]
-        public long SelectedHourEnd { get; set; }
+        public TimeSpan SelectedHourEnd { get; set; }
 
         [ForeignKey("SoccerPitchId")]
         public virtual SoccerPitch SoccerPitch { get; set; }
