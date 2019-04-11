@@ -51,12 +51,14 @@ namespace EasySoccer.WebApi
             services.AddScoped<CompanyUoW, CompanyUoW>();
             services.AddScoped<LoginUoW, LoginUoW>();
             services.AddScoped<SoccerPitchReservationUoW, SoccerPitchReservationUoW>();
+            services.AddScoped<SoccerPitchUoW, SoccerPitchUoW>();
             #endregion
 
             #region BLL's
             services.AddScoped<ICompanyBLL, CompanyBLL>();
             services.AddScoped<IUserBLL, UserBLL>();
             services.AddScoped<ISoccerPitchReservationBLL, SoccerPitchReservationBLL>();
+            services.AddScoped<ISoccerPitchBLL, SoccerPitchBLL>();
             #endregion
 
             #region Repositories

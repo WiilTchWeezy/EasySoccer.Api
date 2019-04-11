@@ -29,6 +29,12 @@ namespace EasySoccer.Entities
         [Required]
         public TimeSpan SelectedHourEnd { get; set; }
 
+        public string Status { get; set; }
+
+        public long StatusChangedUserId { get; set; }
+
+        public string Note { get; set; }
+
         [ForeignKey("SoccerPitchId")]
         public virtual SoccerPitch SoccerPitch { get; set; }
 

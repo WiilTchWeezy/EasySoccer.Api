@@ -29,6 +29,9 @@ namespace EasySoccer.DAL
         public DbSet<SoccerPitchReservation> SoccerPitchReservation { get; set; }
         public IQueryable<SoccerPitchReservation> SoccerPitchReservationQuery { get { return SoccerPitchReservation; } }
 
+        public DbSet<CompanyUser> CompanyUser { get; set; }
+        public IQueryable<CompanyUser> CompanyUserQuery { get { return CompanyUser; } }
+
         #region Infra
 
         public EasySoccerDbContext(DbContextOptions op) : base(op)

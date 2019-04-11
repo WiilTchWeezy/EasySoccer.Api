@@ -21,5 +21,6 @@ namespace EasySoccer.DAL.Infra
         IQueryable<SoccerPitchPictures> SoccerPitchPicturesQuery { get; }
         IQueryable<SoccerPitchPlan> SoccerPitchPlanQuery { get; }
         IQueryable<SoccerPitchReservation> SoccerPitchReservationQuery { get; }
+        IQueryable<CompanyUser> CompanyUserQuery { get; }
     }
 }

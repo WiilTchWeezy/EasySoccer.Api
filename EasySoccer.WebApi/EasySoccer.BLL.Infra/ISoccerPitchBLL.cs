@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasySoccer.DAL.Infra.Repositories
+namespace EasySoccer.BLL.Infra
 {
-    public interface ISoccerPitchRepository
+    public interface ISoccerPitchBLL
     {
-        Task<long[]> GetAsync(int companyId);
         Task<List<SoccerPitch>> GetAsync(int page, int pageSize);
     }
 }
