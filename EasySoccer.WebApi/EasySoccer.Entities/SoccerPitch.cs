@@ -9,6 +9,7 @@ namespace EasySoccer.Entities
     public class SoccerPitch
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         [Required]

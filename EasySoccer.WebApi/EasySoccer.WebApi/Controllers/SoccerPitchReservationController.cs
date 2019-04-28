@@ -36,7 +36,8 @@ namespace EasySoccer.WebApi.Controllers
                     SoccerPitchName = x.SoccerPitch.Name,
                     UserName = x.User.Name,
                     x.UserId,
-                    x.SoccerPitchId
+                    x.SoccerPitchId,
+                    x.Status
                 }).ToList());
             }catch(Exception e)
             {

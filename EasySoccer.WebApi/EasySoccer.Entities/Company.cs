@@ -7,6 +7,7 @@ namespace EasySoccer.Entities
     public class Company
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         [StringLength(200)]
@@ -28,9 +29,9 @@ namespace EasySoccer.Entities
         [Required]
         public bool WorkOnHoliDays { get; set; }
 
-        public decimal Latitude { get; set; }
+        public decimal? Latitude { get; set; }
 
-        public decimal Longitude { get; set; }
+        public decimal? Longitude { get; set; }
 
         [NotMapped]
         public double Distance { get; set; }

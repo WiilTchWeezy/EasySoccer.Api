@@ -14,14 +14,13 @@ namespace EasySoccer.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SoccerPitchController : ApiBaseController
+    public class SoccerPitchPlanController : ApiBaseController
     {
-        private SoccerPitchUoW _uow;
-        public SoccerPitchController(SoccerPitchUoW uow) : base(uow)
+        private SoccerPitchPlanUoW _uow;
+        public SoccerPitchPlanController(SoccerPitchPlanUoW uow) : base(uow)
         {
             _uow = uow;
         }
-
 
         [AllowAnonymous]
         [Route("get"), HttpGet]
@@ -29,14 +28,11 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok((await _uow.SoccerPitchBLL.GetAsync(request.Page, request.PageSize)).Select(x => new
+                return Ok((await _uow.SoccerPitchPlanBLL.GetAsync(1, request.Page, request.PageSize)).Select(x => new
                 {
                     x.Id,
-                    x.Active,
-                    x.Description,
-                    x.HasRoof,
                     x.Name,
-                    x.NumberOfPlayers
+                    x.Value
                 }).ToList());
             }
             catch (Exception e)
@@ -47,11 +43,12 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("post"), HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]SoccerPitchRequest request)
+        public async Task<IActionResult> PostAsync([FromBody]SoccerPitchPlanRequest request)
         {
             try
             {
-                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, request.CompanyId, request.Active, request.SoccerPitchPlanId));
+                await _uow.SoccerPitchPlanBLL.CreateAsync(request.Name, request.Value);
+                return Ok();
             }
             catch (Exception e)
             {
@@ -61,11 +58,12 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("patch"), HttpPatch]
-        public async Task<IActionResult> PatchAsync([FromBody]SoccerPitchRequest request)
+        public async Task<IActionResult> PatchAsync([FromBody]SoccerPitchPlanRequest request)
         {
             try
             {
-                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, request.CompanyId, request.Active, request.SoccerPitchPlanId));
+                await _uow.SoccerPitchPlanBLL.UpdateAsync(request.id, request.Name, request.Value);
+                return Ok();
             }
             catch (Exception e)
             {

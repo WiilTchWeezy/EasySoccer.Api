@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Infra.Repositories
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepositoryBase
     {
         Task<User> LoginAsync(string email, string password);
         Task<User> LoginAsync(string socialMediaId);

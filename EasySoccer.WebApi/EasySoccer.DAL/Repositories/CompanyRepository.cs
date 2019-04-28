@@ -2,10 +2,8 @@
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Repositories
@@ -19,6 +17,11 @@ namespace EasySoccer.DAL.Repositories
         public Task<List<Company>> GetAsync(string description, int page, int pageSize)
         {
             return _dbContext.CompanyQuery.Where(x => description == null || x.Description.Contains(description)).Skip((page - 1) * pageSize).Take(page).ToListAsync();
+        }
+
+        public Task<Company> GetAsync(long id)
+        {
+            return _dbContext.CompanyQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
     }
 }
