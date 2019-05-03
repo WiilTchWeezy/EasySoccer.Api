@@ -8,5 +8,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     public interface ISoccerPitchReservationRepository : IRepositoryBase
     {
         Task<List<SoccerPitchReservation>> GetAsync(DateTime date, long[] soccerPitchs, int page, int pageSize);
+        Task<SoccerPitchReservation> GetAsync(Guid id);
     }
 }

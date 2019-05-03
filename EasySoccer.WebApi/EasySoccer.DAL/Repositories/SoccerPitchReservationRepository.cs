@@ -26,5 +26,10 @@ namespace EasySoccer.DAL.Repositories
                 .Take(pageSize)
                 .ToListAsync();
         }
+
+        public Task<SoccerPitchReservation> GetAsync(Guid id)
+        {
+            return _dbContext.SoccerPitchReservationQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
     }
 }
