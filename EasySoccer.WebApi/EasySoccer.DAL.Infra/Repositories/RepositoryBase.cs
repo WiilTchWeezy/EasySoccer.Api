@@ -12,18 +12,12 @@ namespace EasySoccer.DAL.Infra.Repositories
 
         public Task Create<T>(T entity) where T : class
         {
-            return Task.Run(() =>
-            {
-                _dbContext.Add(entity);
-            });
+            return _dbContext.Add(entity);
         }
 
         public Task Edit<T>(T entity) where T : class
         {
-            return Task.Run(() =>
-            {
-                _dbContext.Edit(entity);
-            });
+            return _dbContext.Edit(entity);
         }
     }
 }

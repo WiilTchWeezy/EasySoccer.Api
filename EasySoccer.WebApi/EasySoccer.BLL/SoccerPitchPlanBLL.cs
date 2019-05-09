@@ -20,12 +20,13 @@ namespace EasySoccer.BLL
             _dbContext = dbContext;
         }
 
-        public async Task<SoccerPitchPlan> CreateAsync(string name, decimal value)
+        public async Task<SoccerPitchPlan> CreateAsync(string name, decimal value, long companyId)
         {
             var soccerPitchPlan = new SoccerPitchPlan
             {
                 Name = name,
-                Value = value
+                Value = value,
+                CompanyId = companyId
             };
             await _soccerPitchPlanRepository.Create(soccerPitchPlan);
             await _dbContext.SaveChangesAsync();

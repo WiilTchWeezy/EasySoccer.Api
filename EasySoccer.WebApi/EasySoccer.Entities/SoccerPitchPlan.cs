@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasySoccer.Entities
 {
     public class SoccerPitchPlan
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -13,5 +15,8 @@ namespace EasySoccer.Entities
 
         [Required]
         public decimal Value { get; set; }
+
+        [Required]
+        public long CompanyId { get; set; }
     }
 }

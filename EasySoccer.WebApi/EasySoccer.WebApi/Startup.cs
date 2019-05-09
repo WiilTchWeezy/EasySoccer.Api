@@ -52,6 +52,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<LoginUoW, LoginUoW>();
             services.AddScoped<SoccerPitchReservationUoW, SoccerPitchReservationUoW>();
             services.AddScoped<SoccerPitchUoW, SoccerPitchUoW>();
+            services.AddScoped<SoccerPitchPlanUoW, SoccerPitchPlanUoW>();
             #endregion
 
             #region BLL's
@@ -59,6 +60,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<IUserBLL, UserBLL>();
             services.AddScoped<ISoccerPitchReservationBLL, SoccerPitchReservationBLL>();
             services.AddScoped<ISoccerPitchBLL, SoccerPitchBLL>();
+            services.AddScoped<ISoccerPitchPlanBLL, SoccerPitchPlanBLL>();
             #endregion
 
             #region Repositories
@@ -66,6 +68,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISoccerPitchReservationRepository, SoccerPitchReservationRepository>();
             services.AddScoped<ISoccerPitchRepository, SoccerPitchRepository>();
+            services.AddScoped<ISoccerPitchPlanRepository, SoccerPitchPlanRepository>();
             #endregion
 
             #region TokenConfiguration
