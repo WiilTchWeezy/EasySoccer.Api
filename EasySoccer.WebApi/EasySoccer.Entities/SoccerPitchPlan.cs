@@ -18,5 +18,8 @@ namespace EasySoccer.Entities
 
         [Required]
         public long CompanyId { get; set; }
+
+        [Required]
+        public int Type { get; set; }
     }
 }

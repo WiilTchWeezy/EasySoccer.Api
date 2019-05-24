@@ -31,12 +31,23 @@ namespace EasySoccer.Entities
 
         public string Status { get; set; }
 
-        public long StatusChangedUserId { get; set; }
+        public long? StatusChangedUserId { get; set; }
 
         public string Note { get; set; }
 
+        [Required]
+        public int SelectedSoccerPitchPlanId { get; set; }
+
+        public Guid? OringinReservationId { get; set; }
+
         [ForeignKey("SoccerPitchId")]
         public virtual SoccerPitch SoccerPitch { get; set; }
+
+        [ForeignKey("SelectedSoccerPitchPlanId")]
+        public virtual SoccerPitchPlan SelectedSoccerPitchPlan { get; set; }
+
+        [ForeignKey("OringinReservationId")]
+        public virtual SoccerPitchReservation OringinReservation { get; set; }
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; }

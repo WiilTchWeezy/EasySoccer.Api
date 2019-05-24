@@ -27,6 +27,17 @@ namespace EasySoccer.DAL.Repositories
                 .ToListAsync();
         }
 
+        public Task<List<SoccerPitchReservation>> GetAsync(long[] soccerPitchs, int page, int pageSize)
+        {
+            return _dbContext.SoccerPitchReservationQuery
+                .Where(x => soccerPitchs.Contains(x.SoccerPitchId))
+                .Include(x => x.SoccerPitch)
+                .Include(x => x.User)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
         public Task<SoccerPitchReservation> GetAsync(Guid id)
         {
             return _dbContext.SoccerPitchReservationQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
