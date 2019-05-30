@@ -36,8 +36,7 @@ namespace EasySoccer.WebApi.Controllers
                     x.Description,
                     x.HasRoof,
                     x.Name,
-                    x.NumberOfPlayers,
-                    x.SoccerPitchPlanId
+                    x.NumberOfPlayers
                 }).ToList());
             }
             catch (Exception e)

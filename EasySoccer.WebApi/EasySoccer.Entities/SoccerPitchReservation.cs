@@ -36,15 +36,15 @@ namespace EasySoccer.Entities
         public string Note { get; set; }
 
         [Required]
-        public int SelectedSoccerPitchPlanId { get; set; }
+        public long SoccerPitchSoccerPitchPlanId { get; set; }
 
         public Guid? OringinReservationId { get; set; }
 
         [ForeignKey("SoccerPitchId")]
         public virtual SoccerPitch SoccerPitch { get; set; }
 
-        [ForeignKey("SelectedSoccerPitchPlanId")]
-        public virtual SoccerPitchPlan SelectedSoccerPitchPlan { get; set; }
+        [ForeignKey("SoccerPitchSoccerPitchPlanId")]
+        public virtual SoccerPitchSoccerPitchPlan SoccerPitchSoccerPitchPlan { get; set; }
 
         [ForeignKey("OringinReservationId")]
         public virtual SoccerPitchReservation OringinReservation { get; set; }

@@ -28,10 +28,7 @@ namespace EasySoccer.Entities
         public DateTime CreatedDate { get; set; }
 
         [Required]
-        public long CompanyId { get; set; }
-
-        [Required]
-        public int SoccerPitchPlanId { get; set; }
+        public long CompanyId { get; set; }        
 
         [Required]
         public bool Active { get; set; }
@@ -42,8 +39,5 @@ namespace EasySoccer.Entities
 
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
-
-        [ForeignKey("SoccerPitchPlanId")]
-        public virtual SoccerPitchPlan SoccerPitchPlan { get; set; }
     }
 }

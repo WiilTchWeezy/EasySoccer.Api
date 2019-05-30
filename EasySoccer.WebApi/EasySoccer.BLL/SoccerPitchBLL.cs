@@ -32,8 +32,7 @@ namespace EasySoccer.BLL
                 HasRoof = hasRoof,
                 InactiveDate = active == false ? (DateTime?)DateTime.UtcNow : null,
                 Name = name,
-                NumberOfPlayers = numberOfPlayers,
-                SoccerPitchPlanId = soccerPitchPlanId
+                NumberOfPlayers = numberOfPlayers
             };
             await _soccerPitchRepository.Create(soccerPitch);
             await _dbContext.SaveChangesAsync();
@@ -56,7 +55,6 @@ namespace EasySoccer.BLL
             soccerPitch.HasRoof = hasRoof;
             soccerPitch.InactiveDate = active == false ? (DateTime?)DateTime.UtcNow : null;
             soccerPitch.NumberOfPlayers = numberOfPlayers;
-            soccerPitch.SoccerPitchPlanId = soccerPitchPlanId;
             soccerPitch.CompanyId = companyId;
             soccerPitch.Active = active;
             soccerPitch.ActiveDate = active ? (DateTime?)DateTime.UtcNow : null;
