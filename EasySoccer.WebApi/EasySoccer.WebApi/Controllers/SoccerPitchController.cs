@@ -36,7 +36,8 @@ namespace EasySoccer.WebApi.Controllers
                     x.Description,
                     x.HasRoof,
                     x.Name,
-                    x.NumberOfPlayers
+                    x.NumberOfPlayers,
+                    x.SoccerPitchSoccerPitchPlans
                 }).ToList());
             }
             catch (Exception e)
@@ -51,7 +52,8 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, 1, request.Active, request.SoccerPitchPlanId));
+                var plansId = request.SoccerPitchSoccerPitchPlans?.Select(x => x.SoccerPitchPlanId).ToArray();
+                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, 1, request.Active, plansId));
             }
             catch (Exception e)
             {
@@ -65,7 +67,8 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, 1, request.Active, request.SoccerPitchPlanId));
+                var plansId = request.SoccerPitchSoccerPitchPlans?.Select(x => x.SoccerPitchPlanId).ToArray();
+                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, 1, request.Active, plansId));
             }
             catch (Exception e)
             {

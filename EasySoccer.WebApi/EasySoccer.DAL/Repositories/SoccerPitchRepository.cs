@@ -23,7 +23,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<SoccerPitch>> GetAsync(int page, int pageSize)
         {
-            return _dbContext.SoccerPitchQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return _dbContext.SoccerPitchQuery.Include(x => x.SoccerPitchSoccerPitchPlans).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
         public Task<List<SoccerPitch>> GetByCompanyAsync(int company)

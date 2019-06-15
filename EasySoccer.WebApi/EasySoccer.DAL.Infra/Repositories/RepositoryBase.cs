@@ -15,9 +15,15 @@ namespace EasySoccer.DAL.Infra.Repositories
             return _dbContext.Add(entity);
         }
 
+        public Task Delete<T>(T entity) where T : class
+        {
+            return _dbContext.Delete(entity);
+        }
+
         public Task Edit<T>(T entity) where T : class
         {
             return _dbContext.Edit(entity);
         }
+
     }
 }

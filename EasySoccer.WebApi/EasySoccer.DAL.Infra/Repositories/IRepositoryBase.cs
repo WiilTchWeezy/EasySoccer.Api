@@ -9,5 +9,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     {
         Task Edit<T>(T entity) where T : class;
         Task Create<T>(T entity) where T : class;
+        Task Delete<T>(T entity) where T : class;
     }
 }

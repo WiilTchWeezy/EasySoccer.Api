@@ -12,9 +12,14 @@ namespace EasySoccer.WebApi.ApiRequests
         public string Description { get; set; }
         public bool HasRoof { get; set; }
         public int NumberOfPlayers { get; set; }
-        public int SoccerPitchPlanId { get; set; }
+        public SoccerPitchSoccerPitchPlanRequest[] SoccerPitchSoccerPitchPlans { get; set; }
         public bool Active { get; set; }
         public DateTime? ActiveDate { get; set; }
         public DateTime? InactiveDate { get; set; }
+    }
+
+    public class SoccerPitchSoccerPitchPlanRequest
+    {
+        public int SoccerPitchPlanId { get; set; }
     }
 }
