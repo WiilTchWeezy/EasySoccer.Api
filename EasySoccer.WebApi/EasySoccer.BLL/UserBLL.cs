@@ -15,6 +15,12 @@ namespace EasySoccer.BLL
         {
             _userRepository = userRepository;
         }
+
+        public Task<List<User>> GetAsync(string filter)
+        {
+            return _userRepository.GetAsync(filter);
+        }
+
         public async Task<User> LoginAsync(string email, string password)
         {
             User user;

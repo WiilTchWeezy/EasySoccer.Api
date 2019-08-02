@@ -7,5 +7,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     public interface ISoccerPitchSoccerPitchPlanRepository : IRepositoryBase
     {
         Task<List<SoccerPitchSoccerPitchPlan>> GetAsync(long soccerPitch);
+        Task<List<SoccerPitchPlan>> GetPlansAsync(long soccerPitch);
     }
 }

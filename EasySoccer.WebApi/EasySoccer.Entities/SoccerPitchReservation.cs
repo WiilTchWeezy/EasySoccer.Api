@@ -29,7 +29,7 @@ namespace EasySoccer.Entities
         [Required]
         public TimeSpan SelectedHourEnd { get; set; }
 
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         public long? StatusChangedUserId { get; set; }
 

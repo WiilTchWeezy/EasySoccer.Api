@@ -33,15 +33,17 @@ namespace EasySoccer.WebApi.Controllers
                 {
                     x.Id,
                     x.SelectedDate,
-                    SelectedHourStart = x.SelectedHourStart.ToString("hh':'mm"),
-                    SelectedHourEnd = x.SelectedHourEnd.ToString("hh':'mm"),
+                    SelectedHourStart = new { Hour = x.SelectedHourStart.Hours, Minute = x.SelectedHourStart.Minutes },
+                    SelectedHourEnd = new { Hour = x.SelectedHourEnd.Hours, Minute = x.SelectedHourEnd.Minutes },
                     SoccerPitchName = x.SoccerPitch.Name,
                     UserName = x.User.Name,
                     x.UserId,
                     x.SoccerPitchId,
-                    x.Status
+                    x.Status,
+                    x.SoccerPitchSoccerPitchPlanId
                 }).ToList());
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.ToString());
             }

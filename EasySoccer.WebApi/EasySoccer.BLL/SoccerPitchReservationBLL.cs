@@ -34,7 +34,7 @@ namespace EasySoccer.BLL
                 SelectedHourEnd = hourFinish,
                 SelectedHourStart = hourStart,
                 SoccerPitchId = soccerPitchId,
-                Status = StatusEnum.AguardandoAprovacao,
+                Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = companyUserId,
                 UserId = userId
             };

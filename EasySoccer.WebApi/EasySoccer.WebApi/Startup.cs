@@ -53,6 +53,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<SoccerPitchReservationUoW, SoccerPitchReservationUoW>();
             services.AddScoped<SoccerPitchUoW, SoccerPitchUoW>();
             services.AddScoped<SoccerPitchPlanUoW, SoccerPitchPlanUoW>();
+            services.AddScoped<UserUoW, UserUoW>();
             #endregion
 
             #region BLL's

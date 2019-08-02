@@ -42,6 +42,25 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [AllowAnonymous]
+        [Route("getbysoccerpitch"), HttpGet]
+        public async Task<IActionResult> GetAsync([FromQuery]long soccerPitchId)
+        {
+            try
+            {
+                return Ok((await _uow.SoccerPitchPlanBLL.GetAsync(soccerPitchId)).Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.Value
+                }).ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
+        [AllowAnonymous]
         [Route("post"), HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]SoccerPitchPlanRequest request)
         {

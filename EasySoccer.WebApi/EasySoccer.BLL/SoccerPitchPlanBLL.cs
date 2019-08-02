@@ -13,10 +13,12 @@ namespace EasySoccer.BLL
     public class SoccerPitchPlanBLL : ISoccerPitchPlanBLL
     {
         private ISoccerPitchPlanRepository _soccerPitchPlanRepository;
+        private ISoccerPitchSoccerPitchPlanRepository _soccerPitchSoccerPitchPlanRepository;
         private IEasySoccerDbContext _dbContext;
-        public SoccerPitchPlanBLL(IEasySoccerDbContext dbContext,ISoccerPitchPlanRepository soccerPitchPlanRepository)
+        public SoccerPitchPlanBLL(IEasySoccerDbContext dbContext,ISoccerPitchPlanRepository soccerPitchPlanRepository, ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository)
         {
             _soccerPitchPlanRepository = soccerPitchPlanRepository;
+            _soccerPitchSoccerPitchPlanRepository = soccerPitchSoccerPitchPlanRepository;
             _dbContext = dbContext;
         }
 
@@ -36,6 +38,11 @@ namespace EasySoccer.BLL
         public Task<List<SoccerPitchPlan>> GetAsync(int companyId, int page, int pageSize)
         {
             return _soccerPitchPlanRepository.GetAsync(companyId, page, pageSize);
+        }
+
+        public Task<List<SoccerPitchPlan>> GetAsync(long soccerPitchId)
+        {
+            return _soccerPitchSoccerPitchPlanRepository.GetPlansAsync(soccerPitchId);
         }
 
         public async Task<SoccerPitchPlan> UpdateAsync(int id, string name, decimal value)

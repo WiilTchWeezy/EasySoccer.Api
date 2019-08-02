@@ -73,7 +73,7 @@ namespace EasySoccer.BLL
                 await _dbContext.SaveChangesAsync();
             }
             var currentPlansIds = currentPlans.Select(x => x.SoccerPitchPlanId).ToList();
-            var plansToAdd = soccerPitchPlansId.Where(x => currentPlansIds.Contains(x)).ToList();
+            var plansToAdd = soccerPitchPlansId.Where(x => currentPlansIds.Contains(x) == false).ToList();
             foreach (var item in plansToAdd)
             {
                 await _soccerPitchSoccerPitchPlanRepository.Create(new SoccerPitchSoccerPitchPlan { SoccerPitchPlanId = item, SoccerPitchId = id, CreatedDate = DateTime.Now });
