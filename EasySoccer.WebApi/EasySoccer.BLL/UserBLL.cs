@@ -1,4 +1,6 @@
-﻿using EasySoccer.BLL.Infra;
+﻿using EasySoccer.BLL.Exceptions;
+using EasySoccer.BLL.Infra;
+using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
 using System;
@@ -11,9 +13,25 @@ namespace EasySoccer.BLL
     public class UserBLL : IUserBLL
     {
         private IUserRepository _userRepository;
-        public UserBLL(IUserRepository userRepository)
+        private IEasySoccerDbContext _dbContext;
+        public UserBLL(IUserRepository userRepository, IEasySoccerDbContext dbContext)
         {
             _userRepository = userRepository;
+            _dbContext = dbContext;
+        }
+
+        public async Task<User> CreateAsync(User user)
+        {
+            if (string.IsNullOrEmpty(user.Phone) == false)
+            {
+                var currentUser = await _userRepository.GetByPhoneAsync(user.Phone);
+                if (currentUser != null)
+                    throw new BussinessException("Usuário já cadastrado com este telefone.");
+            }
+            user.CreatedDate = DateTime.Now;
+            await _userRepository.Create(user);
+            await _dbContext.SaveChangesAsync();
+            return user;
         }
 
         public Task<List<User>> GetAsync(string filter)

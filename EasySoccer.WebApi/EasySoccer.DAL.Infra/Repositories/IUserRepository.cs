@@ -1,7 +1,5 @@
 ﻿using EasySoccer.Entities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Infra.Repositories
@@ -11,5 +9,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<User> LoginAsync(string email, string password);
         Task<User> LoginAsync(string socialMediaId);
         Task<List<User>> GetAsync(string filter);
+        Task<User> GetByPhoneAsync(string phone);
     }
 }

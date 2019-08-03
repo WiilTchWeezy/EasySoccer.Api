@@ -21,6 +21,11 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.UserQuery.Where(x => x.Name.Contains(filter) || x.Phone.Contains(filter)).ToListAsync();
         }
 
+        public Task<User> GetByPhoneAsync(string phone)
+        {
+            return _dbContext.UserQuery.Where(x => x.Phone == phone).FirstOrDefaultAsync();
+        }
+
         public Task<User> LoginAsync(string email, string password)
         {
             return _dbContext.UserQuery.Where(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
