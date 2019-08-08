@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using EasySoccer.Entities;
+using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.UoWs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,11 +32,18 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]User user)
+        public async Task<IActionResult> PostAsync([FromBody]UserRequest userRequest)
         {
             try
             {
-                var userCreated = await _uoW.UserBLL.CreateAsync(user);
+                var userCreated = await _uoW.UserBLL.CreateAsync(new Entities.User
+                {
+                    Email = userRequest.Email,
+                    Name = userRequest.Name,
+                    Phone = userRequest.Phone,
+                    SocialMediaId = userRequest.SocialMediaId,
+                    Password = userRequest.Password
+                });
                 return Ok(new
                 {
                     userCreated.Id,
