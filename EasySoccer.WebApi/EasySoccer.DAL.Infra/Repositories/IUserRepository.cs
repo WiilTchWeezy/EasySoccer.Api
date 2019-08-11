@@ -10,5 +10,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<User> LoginAsync(string socialMediaId);
         Task<List<User>> GetAsync(string filter);
         Task<User> GetByPhoneAsync(string phone);
+        Task<User> GetByEmailAsync(string email);
     }
 }

@@ -40,7 +40,7 @@ namespace EasySoccer.WebApi.Controllers
                 {
                     Email = userRequest.Email,
                     Name = userRequest.Name,
-                    Phone = userRequest.Phone,
+                    Phone = userRequest.PhoneNumber,
                     SocialMediaId = userRequest.SocialMediaId,
                     Password = userRequest.Password
                 });

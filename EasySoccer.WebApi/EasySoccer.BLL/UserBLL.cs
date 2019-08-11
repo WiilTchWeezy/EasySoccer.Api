@@ -28,6 +28,12 @@ namespace EasySoccer.BLL
                 if (currentUser != null)
                     throw new BussinessException("Usuário já cadastrado com este telefone.");
             }
+            if (string.IsNullOrEmpty(user.Email) == false)
+            {
+                var currentUser = await _userRepository.GetByEmailAsync(user.Email);
+                if (currentUser != null)
+                    throw new BussinessException("Usuário já cadastrado com este email.");
+            }
             user.CreatedDate = DateTime.Now;
             await _userRepository.Create(user);
             await _dbContext.SaveChangesAsync();
