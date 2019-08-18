@@ -9,7 +9,8 @@ namespace EasySoccer.WebApi.ApiRequests
         public Guid UserId { get; set; }
         public DateTime SelectedDate { get; set; }
         public TimeSpan HourStart { get; set; }
-        public TimeSpan HourFinish { get; set; }
+        public TimeSpan HourEnd { get; set; }
+        public int SoccerPitchSoccerPitchPlanId { get; set; }
         public string Note { get; set; }
         public long CompanyUserId { get; set; }
     }
