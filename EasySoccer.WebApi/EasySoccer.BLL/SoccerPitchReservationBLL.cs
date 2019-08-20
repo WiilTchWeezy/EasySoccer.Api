@@ -23,7 +23,7 @@ namespace EasySoccer.BLL
             _dbContext = dbContext;
         }
 
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId)
+        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long selectedSoccerPitchId)
         {
             var soccerPitchReservation = new SoccerPitchReservation
             {
@@ -36,7 +36,8 @@ namespace EasySoccer.BLL
                 SoccerPitchId = soccerPitchId,
                 Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = companyUserId,
-                UserId = userId
+                UserId = userId,
+                SoccerPitchSoccerPitchPlanId = selectedSoccerPitchId
             };
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
