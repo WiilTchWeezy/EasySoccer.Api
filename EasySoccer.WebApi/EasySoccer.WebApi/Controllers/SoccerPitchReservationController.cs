@@ -37,6 +37,7 @@ namespace EasySoccer.WebApi.Controllers
                     SelectedHourEnd = new { Hour = x.SelectedHourEnd.Hours, Minute = x.SelectedHourEnd.Minutes },
                     SoccerPitchName = x.SoccerPitch.Name,
                     UserName = x.User.Name,
+                    UserPhone =x.User.Phone,
                     x.UserId,
                     x.SoccerPitchId,
                     x.Status,
