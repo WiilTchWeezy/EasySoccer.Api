@@ -56,6 +56,11 @@ namespace EasySoccer.BLL
             return _soccerPitchRepository.GetAsync(page, pageSize);
         }
 
+        public Task<int> GetTotalAsync()
+        {
+            return _soccerPitchRepository.GetTotalAsync();
+        }
+
         public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(id);

@@ -29,20 +29,24 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok((await _uow.SoccerPitchReservationBLL.GetAsync(1, request.Page, request.PageSize)).Select(x => new
+                return Ok(new
                 {
-                    x.Id,
-                    x.SelectedDate,
-                    SelectedHourStart = new { Hour = x.SelectedHourStart.Hours, Minute = x.SelectedHourStart.Minutes },
-                    SelectedHourEnd = new { Hour = x.SelectedHourEnd.Hours, Minute = x.SelectedHourEnd.Minutes },
-                    SoccerPitchName = x.SoccerPitch.Name,
-                    UserName = x.User.Name,
-                    UserPhone =x.User.Phone,
-                    x.UserId,
-                    x.SoccerPitchId,
-                    x.Status,
-                    x.SoccerPitchSoccerPitchPlanId
-                }).ToList());
+                    Data = (await _uow.SoccerPitchReservationBLL.GetAsync(1, request.Page, request.PageSize)).Select(x => new
+                    {
+                        x.Id,
+                        x.SelectedDate,
+                        SelectedHourStart = new { Hour = x.SelectedHourStart.Hours, Minute = x.SelectedHourStart.Minutes },
+                        SelectedHourEnd = new { Hour = x.SelectedHourEnd.Hours, Minute = x.SelectedHourEnd.Minutes },
+                        SoccerPitchName = x.SoccerPitch.Name,
+                        UserName = x.User.Name,
+                        UserPhone = x.User.Phone,
+                        x.UserId,
+                        x.SoccerPitchId,
+                        x.Status,
+                        x.SoccerPitchSoccerPitchPlanId
+                    }).ToList(),
+                    Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync()
+                });
             }
             catch (Exception e)
             {
@@ -70,7 +74,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note));
+                return Ok(await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchSoccerPitchPlanId));
             }
             catch (Exception e)
             {
