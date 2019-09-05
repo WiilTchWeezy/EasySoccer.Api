@@ -28,50 +28,87 @@ namespace EasySoccer.WebApi.Controllers
         [AllowAnonymous]
         [Route("api/login/token"), HttpGet]
         public async Task<IActionResult> LoginAsync
-            ([FromQuery]string email, [FromQuery]string password, 
-            [FromServices]TokenConfigurations tokenConfigurations, 
+            ([FromQuery]string email, [FromQuery]string password,
+            [FromServices]TokenConfigurations tokenConfigurations,
             [FromServices]SigningConfigurations signingConfigurations)
         {
             var user = await _uow.UserBLL.LoginAsync(email, password);
             if (user != null)
             {
-                ClaimsIdentity identity = new ClaimsIdentity(
-                    new GenericIdentity(user.Email, "Email"),
-                    new[] {
+                var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, new[] {
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
                         new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString())
-                    }
-                );
+                    });
 
-                DateTime dataCriacao = DateTime.Now;
-                DateTime dataExpiracao = dataCriacao +
-                    TimeSpan.FromSeconds(tokenConfigurations.Seconds);
-
-                var handler = new JwtSecurityTokenHandler();
-                var securityToken = handler.CreateToken(new SecurityTokenDescriptor
-                {
-                    Issuer = tokenConfigurations.Issuer,
-                    Audience = tokenConfigurations.Audience,
-                    SigningCredentials = signingConfigurations.SigningCredentials,
-                    Subject = identity,
-                    NotBefore = dataCriacao,
-                    Expires = dataExpiracao
-                });
-                var token = handler.WriteToken(securityToken);
-
-                return Ok( new
-                {
-                    accessToken = token
-                });
+                return Ok(token);
             }
             else
             {
-                return BadRequest (new
+                return BadRequest(new
                 {
                     authenticated = false,
                     message = "Falha ao autenticar"
                 });
             }
+        }
+
+        [AllowAnonymous]
+        [Route("api/login/tokencompany"), HttpGet]
+        public async Task<IActionResult> LoginCompanyAsync
+    ([FromQuery]string email, [FromQuery]string password,
+    [FromServices]TokenConfigurations tokenConfigurations,
+    [FromServices]SigningConfigurations signingConfigurations)
+        {
+            var user = await _uow.CompanyUserBLL.LoginAsync(email, password);
+            if (user != null)
+            {
+                var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, new[] {
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
+                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
+                        new Claim(JwtRegisteredClaimNames.FamilyName, user.CompanyId.ToString())
+                    });
+
+                return Ok(token);
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    authenticated = false,
+                    message = "Falha ao autenticar"
+                });
+            }
+        }
+
+
+        private TokenResponse GenerateToken(IIdentity identityClaim, TokenConfigurations tokenConfigurations, SigningConfigurations signingConfigurations, params Claim[] clains)
+        {
+            ClaimsIdentity identity = new ClaimsIdentity(
+                    identityClaim,
+                    clains
+                );
+
+            DateTime dataCriacao = DateTime.Now;
+            DateTime dataExpiracao = dataCriacao +
+                TimeSpan.FromMinutes(tokenConfigurations.Seconds);
+
+            var handler = new JwtSecurityTokenHandler();
+            var securityToken = handler.CreateToken(new SecurityTokenDescriptor
+            {
+                Issuer = tokenConfigurations.Issuer,
+                Audience = tokenConfigurations.Audience,
+                SigningCredentials = signingConfigurations.SigningCredentials,
+                Subject = identity,
+                NotBefore = dataCriacao,
+                Expires = dataExpiracao
+            });
+            var token = handler.WriteToken(securityToken);
+
+            return new TokenResponse
+            {
+                Token = token,
+                ExpireDate = dataExpiracao
+            };
         }
 
     }

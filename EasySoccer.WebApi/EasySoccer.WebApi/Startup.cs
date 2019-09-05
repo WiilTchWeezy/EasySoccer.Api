@@ -63,6 +63,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<ISoccerPitchReservationBLL, SoccerPitchReservationBLL>();
             services.AddScoped<ISoccerPitchBLL, SoccerPitchBLL>();
             services.AddScoped<ISoccerPitchPlanBLL, SoccerPitchPlanBLL>();
+            services.AddScoped<ICompanyUserBLL, CompanyUserBLL>();
             #endregion
 
             #region Repositories
@@ -72,6 +73,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<ISoccerPitchRepository, SoccerPitchRepository>();
             services.AddScoped<ISoccerPitchPlanRepository, SoccerPitchPlanRepository>();
             services.AddScoped<ISoccerPitchSoccerPitchPlanRepository, SoccerPitchSoccerPitchPlanRepository>();
+            services.AddScoped<ICompanyUserRepository, CompanyUserRepository>();
             #endregion
 
             #region TokenConfiguration
@@ -109,8 +111,6 @@ namespace EasySoccer.WebApi
             });
 
             #endregion
-            
-
 
             #region Swagger
             services.AddSwaggerGen(c =>
