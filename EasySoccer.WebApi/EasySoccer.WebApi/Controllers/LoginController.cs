@@ -64,8 +64,7 @@ namespace EasySoccer.WebApi.Controllers
             {
                 var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, new[] {
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
-                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
-                        new Claim(JwtRegisteredClaimNames.FamilyName, user.CompanyId.ToString())
+                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString())
                     });
 
                 return Ok(token);

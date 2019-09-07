@@ -19,8 +19,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             _uow = uow;
         }
-
-        [AllowAnonymous]
+        
         [Route("reservations")]
         public async Task<IActionResult> GetReservations()
         {

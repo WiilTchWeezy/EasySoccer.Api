@@ -21,8 +21,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             _uow = uow;
         }
-
-        [AllowAnonymous]
+        
         [Route("get"), HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery]GetBaseRequest request)
         {
@@ -40,8 +39,7 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
-
-        [AllowAnonymous]
+        
         [Route("getbysoccerpitch"), HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery]long soccerPitchId)
         {
@@ -59,8 +57,7 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
-
-        [AllowAnonymous]
+        
         [Route("post"), HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]SoccerPitchPlanRequest request)
         {
@@ -73,8 +70,7 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
-
-        [AllowAnonymous]
+        
         [Route("patch"), HttpPatch]
         public async Task<IActionResult> PatchAsync([FromBody]SoccerPitchPlanRequest request)
         {
