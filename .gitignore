@@ -26,3 +26,9 @@
 /EasySoccer.WebApi/EasySoccer.DAL/bin/Debug/netcoreapp2.1
 /EasySoccer.WebApi/EasySoccer.DAL.Infra/bin/Debug/netcoreapp2.1
 /EasySoccer.WebApi/EasySoccer.Entities/bin/Debug/netcoreapp2.1
+/EasySoccer.WebApi/EasySoccer.Entities/bin/Release/netcoreapp2.1
+/EasySoccer.WebApi/EasySoccer.DAL.Infra/bin/Release/netcoreapp2.1
+/EasySoccer.WebApi/EasySoccer.DAL/bin/Release/netcoreapp2.1
+/EasySoccer.WebApi/EasySoccer.BLL.Infra/bin/Release/netcoreapp2.1
+/EasySoccer.WebApi/EasySoccer.BLL/bin/Release/netcoreapp2.1
+/EasySoccer.WebApi/EasySoccer.WebApi/bin/Release/netcoreapp2.2

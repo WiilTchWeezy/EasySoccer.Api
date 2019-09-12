@@ -20,7 +20,7 @@ namespace EasySoccer.WebApi.Controllers
             _uow = uow;
         }
         
-        [Route("reservations")]
+        [Route("reservations"), HttpGet]
         public async Task<IActionResult> GetReservations()
         {
             try
