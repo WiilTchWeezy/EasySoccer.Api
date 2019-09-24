@@ -1,6 +1,7 @@
 ﻿using EasySoccer.BLL.Enums;
 using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Infra;
+using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
@@ -64,6 +65,22 @@ namespace EasySoccer.BLL
         {
             var companyPitchs = await _soccerPitchRepository.GetAsync(companyId);
             return await _soccerPitchReservationRepository.GetAsync(companyPitchs, page, pageSize);
+        }
+
+        public async Task<List<ReservationChart>> GetReservationChartDataAsync(DateTime startDate)
+        {
+            var reservationChart = new List<ReservationChart>();
+            for (int i = 0; i > -6; i--)
+            {
+                var selectedDate = startDate.AddMonths(i);
+                var reservation = await _soccerPitchReservationRepository.GetTotalByMonthAsync(selectedDate.Month);
+                reservationChart.Add(new ReservationChart
+                {
+                    DataCount = reservation,
+                    DataLabel = selectedDate.ToString("MMM")
+                });
+            }
+            return reservationChart;
         }
 
         public Task<List<SoccerPitchReservation>> GetResumeAsync()

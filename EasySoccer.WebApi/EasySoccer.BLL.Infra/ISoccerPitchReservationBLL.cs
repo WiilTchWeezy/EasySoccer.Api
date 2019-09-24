@@ -1,4 +1,5 @@
-﻿using EasySoccer.Entities;
+﻿using EasySoccer.BLL.Infra.DTO;
+using EasySoccer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,5 +15,6 @@ namespace EasySoccer.BLL.Infra
         Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId);
         Task<List<SoccerPitchReservation>> GetResumeAsync();
         Task<int> GetTotalAsync();
+        Task<List<ReservationChart>> GetReservationChartDataAsync(DateTime startDate);
     }
 }

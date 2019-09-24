@@ -52,5 +52,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.SoccerPitchReservationQuery.CountAsync();
         }
+
+        public Task<int> GetTotalByMonthAsync(int month)
+        {
+            return _dbContext.SoccerPitchReservationQuery.Where(x => x.SelectedDate.Month == month).CountAsync();
+        }
     }
 }

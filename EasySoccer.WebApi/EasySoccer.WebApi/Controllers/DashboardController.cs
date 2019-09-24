@@ -39,5 +39,18 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
+        
+        [Route("reservationschart"), HttpGet]
+        public async Task<IActionResult> GetReservationsChart()
+        {
+            try
+            {
+                return Ok(await _uow.SoccerPitchReservationBLL.GetReservationChartDataAsync(DateTime.Now));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
     }
 }
