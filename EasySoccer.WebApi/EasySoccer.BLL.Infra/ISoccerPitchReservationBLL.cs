@@ -16,5 +16,6 @@ namespace EasySoccer.BLL.Infra
         Task<List<SoccerPitchReservation>> GetResumeAsync();
         Task<int> GetTotalAsync();
         Task<List<ReservationChart>> GetReservationChartDataAsync(DateTime startDate);
+        Task<List<SoccerPitchReservation>> GetReservationsByMonthOrDay(int month, int? day);
     }
 }

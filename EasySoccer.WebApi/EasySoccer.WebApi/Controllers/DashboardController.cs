@@ -52,5 +52,28 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
+
+        [Route("reservationscalendar"), HttpGet]
+        public async Task<IActionResult> GetReservationsCalendar([FromQuery]int month, [FromQuery]int? day = null)
+        {
+            try
+            {
+                var retorno = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day);
+                return Ok
+                    (
+                    retorno
+                        .Select(x => new
+                        {
+                            startDate = new DateTime(x.SelectedDate.Year, x.SelectedDate.Month, x.SelectedDate.Day, x.SelectedHourStart.Hours, x.SelectedHourStart.Minutes, x.SelectedHourStart.Seconds),
+                            endDate = new DateTime(x.SelectedDate.Year, x.SelectedDate.Month, x.SelectedDate.Day, x.SelectedHourEnd.Hours, x.SelectedHourEnd.Minutes, x.SelectedHourEnd.Seconds),
+                            title = $"{x.SoccerPitch.Name} - {x.User.Name}"
+                        }).ToList()
+                    );
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
     }
 }
