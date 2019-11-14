@@ -53,5 +53,28 @@ namespace EasySoccer.BLL
                 user = await _userRepository.LoginAsync(password);
             return user;
         }
+
+        public async Task<User> LoginFromFacebookAsync(string email, string id, string name, string birthday)
+        {
+            var user = await _userRepository.LoginAsync(id);
+            if (user != null)
+            {
+                return user;
+            }
+            else
+            {
+                var createdUser = new User
+                {
+                    CreatedDate = DateTime.Now,
+                    Email = email,
+                    Id = Guid.NewGuid(),
+                    Name = name,
+                    Password = id,
+                    SocialMediaId = id
+                };
+                await _userRepository.Create(createdUser);
+                return createdUser;
+            }
+        }
     }
 }

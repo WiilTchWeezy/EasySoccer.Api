@@ -1,4 +1,5 @@
-﻿using EasySoccer.WebApi.Controllers.Base;
+﻿using EasySoccer.WebApi.ApiRequests;
+using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security;
 using EasySoccer.WebApi.Security.Entity;
 using EasySoccer.WebApi.UoWs;
@@ -33,6 +34,33 @@ namespace EasySoccer.WebApi.Controllers
             [FromServices]SigningConfigurations signingConfigurations)
         {
             var user = await _uow.UserBLL.LoginAsync(email, password);
+            if (user != null)
+            {
+                var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, new[] {
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
+                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString())
+                    });
+
+                return Ok(token);
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    authenticated = false,
+                    message = "Falha ao autenticar"
+                });
+            }
+        }
+
+        [AllowAnonymous]
+        [Route("api/login/tokenfromfacebook"), HttpGet]
+        public async Task<IActionResult> LoginFromFacebookAsync
+        ([FromQuery]FacebookLoginRequest request,
+        [FromServices]TokenConfigurations tokenConfigurations,
+        [FromServices]SigningConfigurations signingConfigurations)
+        {
+            var user = await _uow.UserBLL.LoginFromFacebookAsync(request.Email, request.Id, $"{request.First_name} {request.Last_name}", request.Birthday);
             if (user != null)
             {
                 var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, new[] {
