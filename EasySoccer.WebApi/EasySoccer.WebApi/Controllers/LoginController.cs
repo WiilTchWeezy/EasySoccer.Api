@@ -60,23 +60,30 @@ namespace EasySoccer.WebApi.Controllers
         [FromServices]TokenConfigurations tokenConfigurations,
         [FromServices]SigningConfigurations signingConfigurations)
         {
-            var user = await _uow.UserBLL.LoginFromFacebookAsync(request.Email, request.Id, $"{request.First_name} {request.Last_name}", request.Birthday);
-            if (user != null)
+            try
             {
-                var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, new[] {
+                var user = await _uow.UserBLL.LoginFromFacebookAsync(request.Email, request.Id, $"{request.First_name} {request.Last_name}", request.Birthday);
+                if (user != null)
+                {
+                    var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, new[] {
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
                         new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString())
                     });
 
-                return Ok(token);
-            }
-            else
-            {
-                return BadRequest(new
+                    return Ok(token);
+                }
+                else
                 {
-                    authenticated = false,
-                    message = "Falha ao autenticar"
-                });
+                    return BadRequest(new
+                    {
+                        authenticated = false,
+                        message = "Falha ao autenticar"
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
             }
         }
 
