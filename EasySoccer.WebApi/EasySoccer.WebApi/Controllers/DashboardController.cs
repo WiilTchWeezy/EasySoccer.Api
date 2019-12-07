@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EasySoccer.WebApi.Controllers.Base;
+using EasySoccer.WebApi.Security.AuthIdentity;
 using EasySoccer.WebApi.UoWs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
+                var currentUser = new CurrentUser(HttpContext);
                 return Ok((await _uow.SoccerPitchReservationBLL.GetResumeAsync()).Select(x => new
                 {
                     x.UserId,

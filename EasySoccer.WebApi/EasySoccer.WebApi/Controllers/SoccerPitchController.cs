@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.ApiRequests.Base;
 using EasySoccer.WebApi.Controllers.Base;
+using EasySoccer.WebApi.Security.AuthIdentity;
 using EasySoccer.WebApi.UoWs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -50,8 +51,9 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
+
                 var plansId = request.SoccerPitchSoccerPitchPlans?.Select(x => x.SoccerPitchPlanId).ToArray();
-                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, 1, request.Active, plansId));
+                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId));
             }
             catch (Exception e)
             {
@@ -65,7 +67,7 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var plansId = request.SoccerPitchSoccerPitchPlans?.Select(x => x.SoccerPitchPlanId).ToArray();
-                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, 1, request.Active, plansId));
+                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId));
             }
             catch (Exception e)
             {

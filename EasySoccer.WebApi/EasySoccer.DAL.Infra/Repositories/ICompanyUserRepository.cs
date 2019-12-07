@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Infra.Repositories
 {
-    public interface ICompanyUserRepository
+    public interface ICompanyUserRepository : IRepositoryBase
     {
         Task<CompanyUser> LoginAsync(string email, string password);
     }

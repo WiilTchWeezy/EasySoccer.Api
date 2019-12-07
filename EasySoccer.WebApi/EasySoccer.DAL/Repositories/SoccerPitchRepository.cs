@@ -16,7 +16,7 @@ namespace EasySoccer.DAL.Repositories
         {
         }
 
-        public Task<long[]> GetAsync(int companyId)
+        public Task<long[]> GetByCompanyIdAsync(long companyId)
         {
             return _dbContext.SoccerPitchQuery.Where(x => x.CompanyId == companyId).Select(x => x.Id).ToArrayAsync();
         }

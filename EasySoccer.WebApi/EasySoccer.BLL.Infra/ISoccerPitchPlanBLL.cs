@@ -6,7 +6,7 @@ namespace EasySoccer.BLL.Infra
 {
     public interface ISoccerPitchPlanBLL
     {
-        Task<List<SoccerPitchPlan>> GetAsync(int companyId, int page, int pageSize);
+        Task<List<SoccerPitchPlan>> GetAsync(long companyId, int page, int pageSize);
         Task<List<SoccerPitchPlan>> GetAsync(long soccerPitchId);
         Task<SoccerPitchPlan> CreateAsync(string name, decimal value, long companyId);
         Task<SoccerPitchPlan> UpdateAsync(int id, string name, decimal value);

@@ -9,5 +9,6 @@ namespace EasySoccer.BLL.Infra
     public interface ICompanyUserBLL
     {
         Task<CompanyUser> LoginAsync(string email, string password);
+        Task<CompanyUser> CreateAsync(string name, string email, string phone, string password, long companyId);
     }
 }

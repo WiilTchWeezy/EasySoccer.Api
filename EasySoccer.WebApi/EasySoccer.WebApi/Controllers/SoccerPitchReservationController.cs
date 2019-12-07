@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.ApiRequests.Base;
 using EasySoccer.WebApi.Controllers.Base;
+using EasySoccer.WebApi.Security.AuthIdentity;
 using EasySoccer.WebApi.UoWs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -30,7 +31,7 @@ namespace EasySoccer.WebApi.Controllers
             {
                 return Ok(new
                 {
-                    Data = (await _uow.SoccerPitchReservationBLL.GetAsync(1, request.Page, request.PageSize)).Select(x => new
+                    Data = (await _uow.SoccerPitchReservationBLL.GetAsync(new CurrentUser(HttpContext).CompanyId, request.Page, request.PageSize)).Select(x => new
                     {
                         x.Id,
                         x.SelectedDate,
@@ -58,7 +59,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, 1, request.SoccerPitchSoccerPitchPlanId));
+                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).CompanyId, request.SoccerPitchSoccerPitchPlanId));
             }
             catch (Exception e)
             {

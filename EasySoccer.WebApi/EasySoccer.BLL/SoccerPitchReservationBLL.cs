@@ -55,15 +55,15 @@ namespace EasySoccer.BLL
             return soccerPitchReservation;
         }
 
-        public async Task<List<SoccerPitchReservation>> GetAsync(DateTime date, int companyId, int page, int pageSize)
+        public async Task<List<SoccerPitchReservation>> GetAsync(DateTime date, long companyId, int page, int pageSize)
         {
-            var companyPitchs = await _soccerPitchRepository.GetAsync(companyId);
+            var companyPitchs = await _soccerPitchRepository.GetByCompanyIdAsync(companyId);
             return await _soccerPitchReservationRepository.GetAsync(date, companyPitchs, page, pageSize);
         }
 
-        public async Task<List<SoccerPitchReservation>> GetAsync(int companyId, int page, int pageSize)
+        public async Task<List<SoccerPitchReservation>> GetAsync(long companyId, int page, int pageSize)
         {
-            var companyPitchs = await _soccerPitchRepository.GetAsync(companyId);
+            var companyPitchs = await _soccerPitchRepository.GetByCompanyIdAsync(companyId);
             return await _soccerPitchReservationRepository.GetAsync(companyPitchs, page, pageSize);
         }
 

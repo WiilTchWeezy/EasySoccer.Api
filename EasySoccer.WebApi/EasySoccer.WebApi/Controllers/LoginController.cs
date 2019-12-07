@@ -2,6 +2,7 @@
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security;
 using EasySoccer.WebApi.Security.Entity;
+using EasySoccer.WebApi.Security.Enums;
 using EasySoccer.WebApi.UoWs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -100,8 +101,10 @@ namespace EasySoccer.WebApi.Controllers
                 if (user != null)
                 {
                     var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, new[] {
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
-                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString())
+                        new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
+                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
+                        new Claim (JwtRegisteredClaimNames.Gender, ProfilesEnum.CompanyUser.ToString()),
+                        new Claim ("CompanyId", user.CompanyId.ToString())
                     });
 
                     return Ok(token);

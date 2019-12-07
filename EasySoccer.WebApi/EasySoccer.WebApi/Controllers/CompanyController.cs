@@ -24,6 +24,7 @@ namespace EasySoccer.WebApi.Controllers
             return Ok(await _uow.CompanyBLL.GetAsync(request.Longitude, request.Latitude, request.Description, request.Page, request.PageSize));
         }
         
+        [AllowAnonymous]
         [Route("post"), HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]CompanyRequest request)
         {
