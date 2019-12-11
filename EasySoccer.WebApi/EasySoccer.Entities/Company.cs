@@ -33,6 +33,14 @@ namespace EasySoccer.Entities
 
         public decimal? Longitude { get; set; }
 
+        [StringLength(50)]
+        public string City { get; set; }
+
+        [StringLength(200)]
+        public string CompleteAddress { get; set; }
+
+        [Required]
+        public bool Active { get; set; }
         [NotMapped]
         public double Distance { get; set; }
 
