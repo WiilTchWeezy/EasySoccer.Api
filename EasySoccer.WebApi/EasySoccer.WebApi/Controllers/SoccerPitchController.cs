@@ -25,11 +25,11 @@ namespace EasySoccer.WebApi.Controllers
 
         
         [Route("get"), HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]GetBaseRequest request)
+        public async Task<IActionResult> GetAsync([FromQuery]GetSoccerPitchRequest request)
         {
             try
             {
-                return Ok((await _uow.SoccerPitchBLL.GetAsync(request.Page, request.PageSize)).Select(x => new
+                return Ok((await _uow.SoccerPitchBLL.GetAsync(request.Page, request.PageSize, new CurrentUser(HttpContext).CompanyId)).Select(x => new
                 {
                     x.Id,
                     x.Active,
@@ -37,7 +37,9 @@ namespace EasySoccer.WebApi.Controllers
                     x.HasRoof,
                     x.Name,
                     x.NumberOfPlayers,
-                    x.SoccerPitchSoccerPitchPlans
+                    x.SoccerPitchSoccerPitchPlans,
+                    x.SportTypeId,
+                    SportTypeName = x.SportType.Name
                 }).ToList());
             }
             catch (Exception e)

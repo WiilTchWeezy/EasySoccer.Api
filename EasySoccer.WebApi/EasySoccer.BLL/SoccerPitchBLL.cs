@@ -51,9 +51,9 @@ namespace EasySoccer.BLL
             return soccerPitch;
         }
 
-        public Task<List<SoccerPitch>> GetAsync(int page, int pageSize)
+        public Task<List<SoccerPitch>> GetAsync(int page, int pageSize, long companyId)
         {
-            return _soccerPitchRepository.GetAsync(page, pageSize);
+            return _soccerPitchRepository.GetAsync(page, pageSize, companyId);
         }
 
         public Task<int> GetTotalAsync()
