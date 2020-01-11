@@ -35,6 +35,9 @@ namespace EasySoccer.DAL
         public DbSet<SoccerPitchSoccerPitchPlan> SoccerPitchSoccerPitchPlan { get; set; }
         public IQueryable<SoccerPitchSoccerPitchPlan> SoccerPitchSoccerPitchPlanQuery { get { return SoccerPitchSoccerPitchPlan; } }
 
+        public DbSet<SportType> SportType { get; set; }
+        public IQueryable<SportType> SportTypeQuery { get { return SportType; } }
+
         #region Infra
 
         public EasySoccerDbContext(DbContextOptions op) : base(op)

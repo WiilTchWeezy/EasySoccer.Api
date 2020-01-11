@@ -37,6 +37,12 @@ namespace EasySoccer.Entities
 
         public DateTime? InactiveDate { get; set; }
 
+        [Required]
+        public int SportTypeId { get; set; }
+
+        [ForeignKey("SportTypeId")]
+        public virtual SportType SportType { get; set; }
+
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
 
