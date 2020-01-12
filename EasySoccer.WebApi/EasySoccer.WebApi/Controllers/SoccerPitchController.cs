@@ -76,5 +76,22 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
+
+        [Route("getsporttypes"), HttpGet]
+        public async Task<IActionResult> GetSportTypeAsync()
+        {
+            try
+            {
+                return Ok((await _uow.SoccerPitchBLL.GetSportTypeAsync()).Select(x => new
+                {
+                    x.Id,
+                    x.Name
+                }).ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
     }
 }

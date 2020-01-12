@@ -16,11 +16,13 @@ namespace EasySoccer.BLL
         private ISoccerPitchRepository _soccerPitchRepository;
         private IEasySoccerDbContext _dbContext;
         private ISoccerPitchSoccerPitchPlanRepository _soccerPitchSoccerPitchPlanRepository;
-        public SoccerPitchBLL(ISoccerPitchRepository soccerPitchRepository, ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository, IEasySoccerDbContext dbContext)
+        private ISportTypeRepository _sportTypeRepository;
+        public SoccerPitchBLL(ISoccerPitchRepository soccerPitchRepository, ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository, IEasySoccerDbContext dbContext, ISportTypeRepository sportTypeRepository)
         {
             _soccerPitchRepository = soccerPitchRepository;
             _soccerPitchSoccerPitchPlanRepository = soccerPitchSoccerPitchPlanRepository;
             _dbContext = dbContext;
+            _sportTypeRepository = sportTypeRepository;
         }
 
         public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId)
@@ -54,6 +56,11 @@ namespace EasySoccer.BLL
         public Task<List<SoccerPitch>> GetAsync(int page, int pageSize, long companyId)
         {
             return _soccerPitchRepository.GetAsync(page, pageSize, companyId);
+        }
+
+        public Task<List<SportType>> GetSportTypeAsync()
+        {
+            return _sportTypeRepository.GetAsync();
         }
 
         public Task<int> GetTotalAsync()
