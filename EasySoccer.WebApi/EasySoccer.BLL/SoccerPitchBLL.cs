@@ -25,7 +25,7 @@ namespace EasySoccer.BLL
             _sportTypeRepository = sportTypeRepository;
         }
 
-        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId)
+        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId)
         {
             var soccerPitch = new SoccerPitch
             {
@@ -37,7 +37,8 @@ namespace EasySoccer.BLL
                 HasRoof = hasRoof,
                 InactiveDate = active == false ? (DateTime?)DateTime.UtcNow : null,
                 Name = name,
-                NumberOfPlayers = numberOfPlayers
+                NumberOfPlayers = numberOfPlayers,
+                SportTypeId = sportTypeId
             };
             await _soccerPitchRepository.Create(soccerPitch);
             foreach (var item in soccerPitchPlansId)
@@ -68,7 +69,7 @@ namespace EasySoccer.BLL
             return _soccerPitchRepository.GetTotalAsync();
         }
 
-        public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId)
+        public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(id);
             if (soccerPitch == null)
@@ -98,6 +99,7 @@ namespace EasySoccer.BLL
             soccerPitch.InactiveDate = active == false ? (DateTime?)DateTime.UtcNow : null;
             soccerPitch.NumberOfPlayers = numberOfPlayers;
             soccerPitch.CompanyId = companyId;
+            soccerPitch.SportTypeId = sportTypeId;
             soccerPitch.Active = active;
             soccerPitch.ActiveDate = active ? (DateTime?)DateTime.UtcNow : null;
             await _soccerPitchRepository.Edit(soccerPitch);
