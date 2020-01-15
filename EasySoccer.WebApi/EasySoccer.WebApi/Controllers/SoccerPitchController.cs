@@ -23,7 +23,7 @@ namespace EasySoccer.WebApi.Controllers
             _uow = uow;
         }
 
-        
+        //TODO - Create method to be consume by mobile application
         [Route("get"), HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery]GetSoccerPitchRequest request)
         {
@@ -47,7 +47,31 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
-        
+
+        [Route("getbycompanyid"), HttpGet]
+        public async Task<IActionResult> GetByCompanyIdAsync([FromQuery]GetSoccerPitchRequest request)
+        {
+            try
+            {
+                return Ok((await _uow.SoccerPitchBLL.GetAsync(request.Page, request.PageSize, request.CompanyId)).Select(x => new
+                {
+                    x.Id,
+                    x.Active,
+                    x.Description,
+                    x.HasRoof,
+                    x.Name,
+                    x.NumberOfPlayers,
+                    x.SoccerPitchSoccerPitchPlans,
+                    x.SportTypeId,
+                    SportTypeName = x.SportType.Name
+                }).ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
         [Route("post"), HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]SoccerPitchRequest request)
         {
