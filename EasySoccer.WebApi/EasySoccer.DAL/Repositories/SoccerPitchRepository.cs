@@ -40,5 +40,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.SoccerPitchQuery.CountAsync();
         }
+
+        public Task<List<SoccerPitch>> GetAsync(long companyId, int sportType)
+        {
+            return _dbContext.SoccerPitchQuery.Where(x => x.CompanyId == companyId && x.SportTypeId == sportType).ToListAsync();
+        }
     }
 }

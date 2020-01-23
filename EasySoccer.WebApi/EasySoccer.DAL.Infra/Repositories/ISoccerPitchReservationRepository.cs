@@ -15,5 +15,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<int> GetTotalByMonthAsync(int month);
         Task<List<SoccerPitchReservation>> GetAsync(int month, int day);
         Task<List<SoccerPitchReservation>> GetAsync(int month);
+        Task<SoccerPitchReservation> GetAsync(DateTime selectedDate, long companyId, long soccerPitchId);
     }
 }

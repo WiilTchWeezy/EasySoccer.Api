@@ -7,6 +7,7 @@ using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -65,6 +66,35 @@ namespace EasySoccer.BLL
         {
             var companyPitchs = await _soccerPitchRepository.GetByCompanyIdAsync(companyId);
             return await _soccerPitchReservationRepository.GetAsync(companyPitchs, page, pageSize);
+        }
+
+        public async Task<List<AvaliableSchedulesDTO>> GetAvaliableSchedules(long companyId, DateTime seledtedDate, int sportType)
+        {
+            List<AvaliableSchedulesDTO> avaliableSchedules = new List<AvaliableSchedulesDTO>();
+            var soccerPitchsBySportType = await _soccerPitchRepository.GetAsync(companyId, sportType);
+            foreach (var item in soccerPitchsBySportType)
+            {
+                AvaliableSchedulesDTO userSelectedSchedule = null;
+                var selectedSchedule = await _soccerPitchReservationRepository.GetAsync(seledtedDate, companyId, item.Id);
+                if (selectedSchedule == null)
+                {
+                    if (userSelectedSchedule == null)
+                    {
+                        userSelectedSchedule = new AvaliableSchedulesDTO
+                        {
+                            IsCurrentSchedule = true,
+                            SelectedDate = seledtedDate,
+                            SelectedHourStart = seledtedDate.TimeOfDay,
+                            SelectedHourEnd = seledtedDate.AddHours(1).TimeOfDay,
+                            PossibleSoccerPitchs = new List<SoccerPitch>()
+                        };
+                    }
+                    userSelectedSchedule.PossibleSoccerPitchs.Add(item);
+                    avaliableSchedules.Add(userSelectedSchedule);
+                }
+            }
+            
+            return avaliableSchedules;
         }
 
         public async Task<List<ReservationChart>> GetReservationChartDataAsync(DateTime startDate)

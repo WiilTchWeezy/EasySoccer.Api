@@ -43,6 +43,12 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.SoccerPitchReservationQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
+        public Task<SoccerPitchReservation> GetAsync(DateTime selectedDate, long companyId, long soccerPitchId)
+        {
+            return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch)
+                             .Where(x => x.SelectedDate.Date == selectedDate.Date && selectedDate.TimeOfDay == x.SelectedHourStart && x.SoccerPitch.CompanyId == companyId && x.SoccerPitchId == soccerPitchId).FirstOrDefaultAsync();
+        }
+
         public Task<List<SoccerPitchReservation>> GetAsync(int month, int day)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.User)
