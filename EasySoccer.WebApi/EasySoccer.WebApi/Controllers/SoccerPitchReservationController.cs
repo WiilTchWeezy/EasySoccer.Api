@@ -81,11 +81,11 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("getavaliableschedules"), HttpGet]
-        public async Task<IActionResult> GetSportTypeAsync(long companyId, DateTime seledtedDate, int sportType)
+        public async Task<IActionResult> GetSportTypeAsync(long companyId, DateTime selectedDate, int sportType)
         {
             try
             {
-                return Ok(await _uow.SoccerPitchReservationBLL.GetAvaliableSchedules(companyId, seledtedDate, sportType));
+                return Ok(await _uow.SoccerPitchReservationBLL.GetAvaliableSchedules(companyId, selectedDate, sportType));
             }
             catch (Exception e)
             {
