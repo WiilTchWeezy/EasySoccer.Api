@@ -72,9 +72,9 @@ namespace EasySoccer.BLL
         {
             List<AvaliableSchedulesDTO> avaliableSchedules = new List<AvaliableSchedulesDTO>();
             var soccerPitchsBySportType = await _soccerPitchRepository.GetAsync(companyId, sportType);
+            AvaliableSchedulesDTO userSelectedSchedule = null;
             foreach (var item in soccerPitchsBySportType)
             {
-                AvaliableSchedulesDTO userSelectedSchedule = null;
                 var selectedSchedule = await _soccerPitchReservationRepository.GetAsync(seledtedDate, companyId, item.Id);
                 if (selectedSchedule == null)
                 {
@@ -90,10 +90,10 @@ namespace EasySoccer.BLL
                         };
                     }
                     userSelectedSchedule.PossibleSoccerPitchs.Add(item);
-                    avaliableSchedules.Add(userSelectedSchedule);
                 }
             }
-            
+            if (userSelectedSchedule != null)
+                avaliableSchedules.Add(userSelectedSchedule);
             return avaliableSchedules;
         }
 
