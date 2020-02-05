@@ -93,5 +93,18 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("makeschedule"), HttpPost]
+        public async Task<IActionResult> MakeScheduleAsync([FromBody]SoccerPitchReservationRequest request)
+        {
+            try
+            {
+                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SelectedCompany, request.SoccerPitchSoccerPitchPlanId));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
     }
 }

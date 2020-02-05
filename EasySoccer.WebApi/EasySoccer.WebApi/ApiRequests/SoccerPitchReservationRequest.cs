@@ -13,5 +13,7 @@ namespace EasySoccer.WebApi.ApiRequests
         public int SoccerPitchSoccerPitchPlanId { get; set; }
         public string Note { get; set; }
         public long CompanyUserId { get; set; }
+
+        public long SelectedCompany { get; set; }
     }
 }

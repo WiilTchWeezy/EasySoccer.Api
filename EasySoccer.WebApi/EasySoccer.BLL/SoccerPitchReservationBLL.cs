@@ -31,11 +31,11 @@ namespace EasySoccer.BLL
             _soccerPitchSoccerPitchPlanRepository = soccerPitchSoccerPitchPlanRepository;
         }
 
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long selectedSoccerPitchId)
+        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long soccerPitchPlanId)
         {
-            var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, selectedSoccerPitchId);
+            var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
-                throw new NotFoundException(soccerPicthPlanRelation, selectedSoccerPitchId);
+                throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
 
             var soccerPitchReservation = new SoccerPitchReservation
             {

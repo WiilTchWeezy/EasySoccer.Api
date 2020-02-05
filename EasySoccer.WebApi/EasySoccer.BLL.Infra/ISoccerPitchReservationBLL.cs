@@ -11,7 +11,7 @@ namespace EasySoccer.BLL.Infra
     {
         Task<List<SoccerPitchReservation>> GetAsync(DateTime date, long companyId, int page, int pageSize);
         Task<List<SoccerPitchReservation>> GetAsync(long companyId, int page, int pageSize);
-        Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long selectedSoccerPitchPlaId);
+        Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long soccerPitchPlanId);
         Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId);
         Task<List<SoccerPitchReservation>> GetResumeAsync();
         Task<int> GetTotalAsync();
