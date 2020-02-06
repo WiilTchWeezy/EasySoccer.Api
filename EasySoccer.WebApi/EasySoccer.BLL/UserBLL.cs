@@ -73,6 +73,7 @@ namespace EasySoccer.BLL
                     SocialMediaId = id
                 };
                 await _userRepository.Create(createdUser);
+                await _dbContext.SaveChangesAsync();
                 return createdUser;
             }
         }
