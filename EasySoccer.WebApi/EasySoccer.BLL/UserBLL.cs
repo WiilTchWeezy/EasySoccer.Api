@@ -50,13 +50,13 @@ namespace EasySoccer.BLL
             User user;
             user = await _userRepository.LoginAsync(email, password);
             if (user == null)
-                user = await _userRepository.LoginAsync(password);
+                user = await _userRepository.LoginBySocialMediaAsync(password, email);
             return user;
         }
 
         public async Task<User> LoginFromFacebookAsync(string email, string id, string name, string birthday)
         {
-            var user = await _userRepository.LoginAsync(id);
+            var user = await _userRepository.LoginBySocialMediaAsync(id, email);
             if (user != null)
             {
                 return user;

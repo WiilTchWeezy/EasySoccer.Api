@@ -36,9 +36,9 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.UserQuery.Where(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
         }
 
-        public Task<User> LoginAsync(string socialMediaId)
+        public Task<User> LoginBySocialMediaAsync(string socialMediaId, string email)
         {
-            return _dbContext.UserQuery.Where(x => x.SocialMediaId == socialMediaId).FirstOrDefaultAsync();
+            return _dbContext.UserQuery.Where(x => x.SocialMediaId == socialMediaId || x.Email == email).FirstOrDefaultAsync();
         }
 
 
