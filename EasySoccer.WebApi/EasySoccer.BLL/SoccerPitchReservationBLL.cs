@@ -56,6 +56,31 @@ namespace EasySoccer.BLL
             return soccerPitchReservation;
         }
 
+        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchPlanId)
+        {
+            var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
+            if (soccerPicthPlanRelation == null)
+                throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
+
+            var soccerPitchReservation = new SoccerPitchReservation
+            {
+                Id = Guid.NewGuid(),
+                CreatedDate = DateTime.UtcNow,
+                Note = note,
+                SelectedDate = selectedDate,
+                SelectedHourEnd = hourFinish,
+                SelectedHourStart = hourStart,
+                SoccerPitchId = soccerPitchId,
+                Status = (int)StatusEnum.AguardandoAprovacao,
+                StatusChangedUserId = null,
+                UserId = userId,
+                SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id
+            };
+            await _soccerPitchReservationRepository.Create(soccerPitchReservation);
+            await _dbContext.SaveChangesAsync();
+            return soccerPitchReservation;
+        }
+
         public async Task<List<SoccerPitchReservation>> GetAsync(DateTime date, long companyId, int page, int pageSize)
         {
             var companyPitchs = await _soccerPitchRepository.GetByCompanyIdAsync(companyId);
