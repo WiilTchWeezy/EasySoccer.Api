@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EasySoccer.BLL.Infra\EasySoccer.BLL.Infra.csproj" />
     <ProjectReference Include="..\EasySoccer.DAL.Infra\EasySoccer.DAL.Infra.csproj" />
     <ProjectReference Include="..\EasySoccer.Entities\EasySoccer.Entities.csproj" />
