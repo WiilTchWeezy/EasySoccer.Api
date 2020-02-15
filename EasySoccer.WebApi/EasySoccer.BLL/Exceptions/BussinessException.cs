@@ -3,7 +3,7 @@ using System;
 
 namespace EasySoccer.BLL.Exceptions
 {
-    public class BussinessException
+    public class BussinessException : Exception
     {
         [JsonIgnore]
         public Exception Exception { get; set; }
@@ -12,7 +12,8 @@ namespace EasySoccer.BLL.Exceptions
             Exception = new Exception(message);
         }
 
-        public string Message
+
+        public override string Message
         {
             get
             {
