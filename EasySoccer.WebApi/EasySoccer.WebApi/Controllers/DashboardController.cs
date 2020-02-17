@@ -60,7 +60,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var retorno = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day);
+                var retorno = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day, new CurrentUser(this.HttpContext).CompanyId);
                 return Ok
                     (
                     retorno

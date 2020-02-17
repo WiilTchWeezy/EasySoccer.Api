@@ -49,16 +49,16 @@ namespace EasySoccer.DAL.Repositories
                              .Where(x => x.SelectedDate.Date == selectedDate.Date && selectedDate.TimeOfDay == x.SelectedHourStart && x.SoccerPitch.CompanyId == companyId && x.SoccerPitchId == soccerPitchId).FirstOrDefaultAsync();
         }
 
-        public Task<List<SoccerPitchReservation>> GetAsync(int month, int day)
+        public Task<List<SoccerPitchReservation>> GetAsync(int month, int day, long companyId)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.User)
-                .Where(x => x.SelectedDate.Day == day && x.SelectedDate.Month == month && x.SelectedDate.Year == DateTime.Now.Year).ToListAsync();
+                .Where(x => x.SelectedDate.Day == day && x.SelectedDate.Month == month && x.SelectedDate.Year == DateTime.Now.Year && x.SoccerPitch.CompanyId == companyId).ToListAsync();
         }
 
-        public Task<List<SoccerPitchReservation>> GetAsync(int month)
+        public Task<List<SoccerPitchReservation>> GetAsync(int month, long companyId)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.User)
-                .Where(x => x.SelectedDate.Month == month && x.SelectedDate.Year == DateTime.Now.Year).ToListAsync();
+                .Where(x => x.SelectedDate.Month == month && x.SelectedDate.Year == DateTime.Now.Year && x.SoccerPitch.CompanyId == companyId).ToListAsync();
         }
 
         public Task<List<SoccerPitchReservation>> GetResumeAsync()
