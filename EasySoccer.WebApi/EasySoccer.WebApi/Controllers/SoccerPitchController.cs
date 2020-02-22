@@ -37,6 +37,7 @@ namespace EasySoccer.WebApi.Controllers
                     x.HasRoof,
                     x.Name,
                     x.NumberOfPlayers,
+                    Plans = x.SoccerPitchSoccerPitchPlans.Select(y => y.SoccerPitchPlan).ToList(),
                     x.SoccerPitchSoccerPitchPlans,
                     x.SportTypeId,
                     x.SportType,
