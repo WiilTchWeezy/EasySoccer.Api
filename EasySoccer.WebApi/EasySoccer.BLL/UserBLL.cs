@@ -34,6 +34,10 @@ namespace EasySoccer.BLL
                 if (currentUser != null)
                     throw new BussinessException("Usuário já cadastrado com este email.");
             }
+            else
+                throw new BussinessException("É necessário cadastrar um e-mail.");
+            if(string.IsNullOrEmpty(user.Password) && string.IsNullOrEmpty(user.SocialMediaId))
+                throw new BussinessException("É necessário informar uma senha.");
             user.CreatedDate = DateTime.Now;
             await _userRepository.Create(user);
             await _dbContext.SaveChangesAsync();
