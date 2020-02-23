@@ -20,6 +20,21 @@ namespace EasySoccer.BLL
             _dbContext = dbContext;
         }
 
+        public async Task<bool> ChangeUserPassword(string oldPassword, Guid userId, string newPassword)
+        {
+            var currentUser = await _userRepository.GetAsync(userId);
+            if (currentUser == null)
+                throw new BussinessException("Usuário não encontrado");
+
+            if (!oldPassword.Equals(currentUser.Password))
+                throw new BussinessException("A senha antiga não está correta");
+
+            currentUser.Password = newPassword;
+            await _userRepository.Edit(currentUser);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<User> CreateAsync(User user)
         {
             if (string.IsNullOrEmpty(user.Phone) == false)

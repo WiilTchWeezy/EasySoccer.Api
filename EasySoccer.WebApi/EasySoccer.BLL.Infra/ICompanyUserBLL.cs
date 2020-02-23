@@ -10,5 +10,7 @@ namespace EasySoccer.BLL.Infra
     {
         Task<CompanyUser> LoginAsync(string email, string password);
         Task<CompanyUser> CreateAsync(string name, string email, string phone, string password, long companyId);
+
+        Task<bool> ChangePasswordAsync(long userId, string oldPassword, string newPassword);
     }
 }

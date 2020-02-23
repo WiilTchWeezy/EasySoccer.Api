@@ -1,4 +1,5 @@
 ﻿using EasySoccer.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,5 +11,6 @@ namespace EasySoccer.BLL.Infra
         Task<List<User>> GetAsync(string filter);
         Task<User> CreateAsync(User user);
         Task<User> LoginFromFacebookAsync(string email, string id, string name, string birthday);
+        Task<bool> ChangeUserPassword(string oldPassword, Guid userId, string newPassword);
     }
 }

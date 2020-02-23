@@ -1,4 +1,5 @@
 ﻿using EasySoccer.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,5 +12,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<List<User>> GetAsync(string filter);
         Task<User> GetByPhoneAsync(string phone);
         Task<User> GetByEmailAsync(string email);
+        Task<User> GetAsync(Guid userId);
     }
 }

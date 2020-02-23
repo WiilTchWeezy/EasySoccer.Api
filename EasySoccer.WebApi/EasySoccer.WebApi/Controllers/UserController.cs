@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EasySoccer.Entities;
 using EasySoccer.WebApi.ApiRequests;
+using EasySoccer.WebApi.Security.AuthIdentity;
 using EasySoccer.WebApi.UoWs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,6 +53,22 @@ namespace EasySoccer.WebApi.Controllers
                     userCreated.Name,
                     userCreated.Phone
                 });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
+        [Route("changepassword"), HttpGet]
+        public async Task<IActionResult> ChangePasswordAsync([FromBody]UserChangePasswordRequest request)
+        {
+            try
+            {
+                if (await _uoW.UserBLL.ChangeUserPassword(request.OldPassword, new MobileUser(HttpContext).UserId, request.NewPassword))
+                    return Ok();
+                else
+                    return BadRequest();
             }
             catch (Exception e)
             {
