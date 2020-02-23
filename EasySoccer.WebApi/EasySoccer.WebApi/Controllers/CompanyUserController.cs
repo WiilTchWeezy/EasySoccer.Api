@@ -36,7 +36,6 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
-        [AllowAnonymous]
         [Route("changepassword"), HttpPost]
         public async Task<IActionResult> ChangePasswordAsync([FromBody]UserChangePasswordRequest request)
         {
