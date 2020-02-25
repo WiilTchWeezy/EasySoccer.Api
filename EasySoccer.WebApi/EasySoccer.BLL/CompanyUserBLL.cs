@@ -34,10 +34,11 @@ namespace EasySoccer.BLL
 
         public async Task<CompanyUser> CreateAsync(string name, string email, string phone, string password, long companyId)
         {
-            var companyUser = new CompanyUser {
+            var companyUser = new CompanyUser
+            {
                 CompanyId = companyId,
                 CreatedDate = DateTime.UtcNow,
-                Email = email, 
+                Email = email,
                 Name = name,
                 Password = password,
                 Phone = phone
@@ -45,6 +46,11 @@ namespace EasySoccer.BLL
             await _companyUserRepository.Create<CompanyUser>(companyUser);
             await _dbContext.SaveChangesAsync();
             return companyUser;
+        }
+
+        public async Task<CompanyUser> GetAsync(long userId)
+        {
+            return await _companyUserRepository.GetAsync(userId);
         }
 
         public Task<CompanyUser> LoginAsync(string email, string password)

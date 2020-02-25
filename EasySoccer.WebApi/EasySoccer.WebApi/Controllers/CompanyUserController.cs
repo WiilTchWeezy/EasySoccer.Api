@@ -49,5 +49,25 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("getInfo"), HttpGet]
+        public async Task<IActionResult> GetCompanyUserInformationAsync()
+        {
+            try
+            {
+                var companyUser = await _companyUserUow.CompanyUserBLL.GetAsync(new CurrentUser(HttpContext).UserId);
+                return Ok(new
+                {
+                    companyUser.Email,
+                    companyUser.Name,
+                    companyUser.Phone,
+                    companyUser.CompanyId
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
     }
 }
