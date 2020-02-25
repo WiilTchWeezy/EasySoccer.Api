@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace EasySoccer.WebApi.ApiRequests
 {
     public class CompanyUserRequest
-    { 
+    {
         public long Id { get; set; }
 
         public string Name { get; set; }

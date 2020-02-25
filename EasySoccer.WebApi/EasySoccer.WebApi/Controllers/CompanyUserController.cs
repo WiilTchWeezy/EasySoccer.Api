@@ -69,5 +69,25 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("patch"), HttpPatch]
+        public async Task<IActionResult> PatchAsync([FromBody] CompanyUserRequest request )
+        {
+            try
+            {
+                var companyUser = await _companyUserUow.CompanyUserBLL.UpdateAsync(new CurrentUser(HttpContext).UserId, request.Name, request.Email, request.Phone);
+                return Ok(new
+                {
+                    companyUser.Email,
+                    companyUser.Name,
+                    companyUser.Phone,
+                    companyUser.CompanyId
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
     }
 }
