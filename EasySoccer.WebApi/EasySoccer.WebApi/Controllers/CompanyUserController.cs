@@ -57,10 +57,10 @@ namespace EasySoccer.WebApi.Controllers
                 var companyUser = await _companyUserUow.CompanyUserBLL.GetAsync(new CurrentUser(HttpContext).UserId);
                 return Ok(new
                 {
-                    companyUser.Email,
-                    companyUser.Name,
-                    companyUser.Phone,
-                    companyUser.CompanyId
+                    companyUser?.Email,
+                    companyUser?.Name,
+                    companyUser?.Phone,
+                    companyUser?.CompanyId
                 });
             }
             catch (Exception e)
@@ -77,10 +77,10 @@ namespace EasySoccer.WebApi.Controllers
                 var companyUser = await _companyUserUow.CompanyUserBLL.UpdateAsync(new CurrentUser(HttpContext).UserId, request.Name, request.Email, request.Phone);
                 return Ok(new
                 {
-                    companyUser.Email,
-                    companyUser.Name,
-                    companyUser.Phone,
-                    companyUser.CompanyId
+                    companyUser?.Email,
+                    companyUser?.Name,
+                    companyUser?.Phone,
+                    companyUser?.CompanyId
                 });
             }
             catch (Exception e)

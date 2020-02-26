@@ -55,6 +55,11 @@ namespace EasySoccer.BLL
             return companies;
         }
 
+        public Task<Company> GetAsync(long companyId)
+        {
+            return _companyRepository.GetAsync(companyId);
+        }
+
         public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude)
         {
             var currentCompany = await _companyRepository.GetAsync(id);
