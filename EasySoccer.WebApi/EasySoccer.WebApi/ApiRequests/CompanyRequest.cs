@@ -9,5 +9,6 @@
         public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
         public bool WorkOnHolidays { get; set; }
+        public string CompleteAddress { get; set; }
     }
 }

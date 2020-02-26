@@ -28,7 +28,7 @@ namespace EasySoccer.BLL
             {
                 CNPJ = cnpj,
                 CreatedDate = DateTime.UtcNow,
-                Description = description, 
+                Description = description,
                 Latitude = latitude,
                 Longitude = longitude,
                 Name = name,
@@ -60,7 +60,7 @@ namespace EasySoccer.BLL
             return _companyRepository.GetAsync(companyId);
         }
 
-        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude)
+        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress)
         {
             var currentCompany = await _companyRepository.GetAsync(id);
             if (currentCompany == null)
@@ -68,9 +68,12 @@ namespace EasySoccer.BLL
             currentCompany.Name = name;
             currentCompany.Description = description;
             currentCompany.CNPJ = cnpj;
+            currentCompany.CompleteAddress = completeAddress;
             currentCompany.WorkOnHoliDays = workOnHolidays;
-            currentCompany.Longitude = longitude;
-            currentCompany.Latitude = latitude;
+            if (longitude.HasValue)
+                currentCompany.Longitude = longitude;
+            if (latitude.HasValue)
+                currentCompany.Latitude = latitude;
             await _companyRepository.Edit(currentCompany);
             await _dbContext.SaveChangesAsync();
             return currentCompany;
