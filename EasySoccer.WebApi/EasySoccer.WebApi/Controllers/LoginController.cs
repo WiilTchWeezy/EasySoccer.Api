@@ -147,8 +147,7 @@ namespace EasySoccer.WebApi.Controllers
                 Audience = tokenConfigurations.Audience,
                 SigningCredentials = signingConfigurations.SigningCredentials,
                 Subject = identity,
-                NotBefore = dataCriacao,
-                Expires = dataExpiracao
+                NotBefore = dataCriacao
             });
             var token = handler.WriteToken(securityToken);
 
