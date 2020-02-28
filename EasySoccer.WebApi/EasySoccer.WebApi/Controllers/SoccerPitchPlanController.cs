@@ -32,7 +32,8 @@ namespace EasySoccer.WebApi.Controllers
                 {
                     x.Id,
                     x.Name,
-                    x.Value
+                    x.Value,
+                    x.Description
                 }).ToList());
             }
             catch (Exception e)
