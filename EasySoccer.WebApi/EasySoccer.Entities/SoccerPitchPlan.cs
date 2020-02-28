@@ -21,5 +21,8 @@ namespace EasySoccer.Entities
 
         [Required]
         public int Type { get; set; }
+
+        [StringLength(400)]
+        public string Description { get; set; }
     }
 }

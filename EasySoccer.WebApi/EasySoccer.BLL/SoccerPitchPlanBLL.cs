@@ -22,13 +22,14 @@ namespace EasySoccer.BLL
             _dbContext = dbContext;
         }
 
-        public async Task<SoccerPitchPlan> CreateAsync(string name, decimal value, long companyId)
+        public async Task<SoccerPitchPlan> CreateAsync(string name, decimal value, long companyId, string description)
         {
             var soccerPitchPlan = new SoccerPitchPlan
             {
                 Name = name,
                 Value = value,
-                CompanyId = companyId
+                CompanyId = companyId,
+                Description = description
             };
             await _soccerPitchPlanRepository.Create(soccerPitchPlan);
             await _dbContext.SaveChangesAsync();
@@ -45,13 +46,15 @@ namespace EasySoccer.BLL
             return _soccerPitchSoccerPitchPlanRepository.GetPlansAsync(soccerPitchId);
         }
 
-        public async Task<SoccerPitchPlan> UpdateAsync(int id, string name, decimal value)
+        public async Task<SoccerPitchPlan> UpdateAsync(int id, string name, decimal value, string description)
         {
             var soccerPitchPlan = await _soccerPitchPlanRepository.GetAsync(id);
             if (soccerPitchPlan == null)
                 throw new NotFoundException(soccerPitchPlan, id);
             soccerPitchPlan.Name = name;
             soccerPitchPlan.Value = value;
+            if (string.IsNullOrEmpty(description))
+                soccerPitchPlan.Description = description;
             await _soccerPitchPlanRepository.Edit(soccerPitchPlan);
             await _dbContext.SaveChangesAsync();
             return soccerPitchPlan;

@@ -64,7 +64,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {                
-                return Ok(await _uow.SoccerPitchPlanBLL.CreateAsync(request.Name, request.Value, new CurrentUser(HttpContext).CompanyId));
+                return Ok(await _uow.SoccerPitchPlanBLL.CreateAsync(request.Name, request.Value, new CurrentUser(HttpContext).CompanyId, request.Description));
             }
             catch (Exception e)
             {
@@ -77,7 +77,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                await _uow.SoccerPitchPlanBLL.UpdateAsync(request.id, request.Name, request.Value);
+                await _uow.SoccerPitchPlanBLL.UpdateAsync(request.id, request.Name, request.Value, request.Description);
                 return Ok();
             }
             catch (Exception e)
