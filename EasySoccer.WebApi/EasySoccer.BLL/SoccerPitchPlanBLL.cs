@@ -53,7 +53,7 @@ namespace EasySoccer.BLL
                 throw new NotFoundException(soccerPitchPlan, id);
             soccerPitchPlan.Name = name;
             soccerPitchPlan.Value = value;
-            if (string.IsNullOrEmpty(description))
+            if (!string.IsNullOrEmpty(description))
                 soccerPitchPlan.Description = description;
             await _soccerPitchPlanRepository.Edit(soccerPitchPlan);
             await _dbContext.SaveChangesAsync();
