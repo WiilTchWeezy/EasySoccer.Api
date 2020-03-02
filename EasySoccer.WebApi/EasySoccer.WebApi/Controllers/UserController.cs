@@ -75,5 +75,19 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e);
             }
         }
+
+        [Route("getInfo"), HttpGet]
+        public async Task<IActionResult> GetUserInfoAsync()
+        {
+            try
+            {
+                var user = await _uoW.UserBLL.GetAsync(new MobileUser(HttpContext).UserId);
+                return Ok(new { user.Id, user.Name, user.Phone, user.Email });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
     }
 }

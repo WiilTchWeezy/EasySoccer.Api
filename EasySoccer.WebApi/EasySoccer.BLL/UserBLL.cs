@@ -92,5 +92,10 @@ namespace EasySoccer.BLL
                 return createdUser;
             }
         }
+
+        public Task<User> GetAsync(Guid userId)
+        {
+            return _userRepository.GetAsync(userId);
+        }
     }
 }
