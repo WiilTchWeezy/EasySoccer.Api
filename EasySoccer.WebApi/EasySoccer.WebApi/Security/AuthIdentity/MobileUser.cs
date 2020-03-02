@@ -21,7 +21,7 @@ namespace EasySoccer.WebApi.Security.AuthIdentity
             if (identity != null)
             {
                 IEnumerable<Claim> claims = identity.Claims;
-                string userId = claims.Where(x => x.Type == "jti").FirstOrDefault()?.Value;
+                string userId = claims.Where(x => x.Type == "UserId").FirstOrDefault()?.Value;
                 string profile = claims.Where(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender").FirstOrDefault()?.Value;
                 if (!string.IsNullOrEmpty(profile))
                 {
