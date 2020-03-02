@@ -3,18 +3,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using EasySoccer.Entities;
 using EasySoccer.WebApi.ApiRequests;
+using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
 using EasySoccer.WebApi.UoWs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasySoccer.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : ApiBaseController
     {
         private UserUoW _uoW;
-        public UserController(UserUoW uoW)
+        public UserController(UserUoW uoW) : base (uoW)
         {
             _uoW = uoW;
         }
@@ -32,6 +34,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("create"), HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]UserRequest userRequest)
         {
