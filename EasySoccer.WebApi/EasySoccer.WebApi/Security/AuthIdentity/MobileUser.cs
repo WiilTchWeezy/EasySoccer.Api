@@ -27,7 +27,7 @@ namespace EasySoccer.WebApi.Security.AuthIdentity
                 {
                     if (profile.Equals("User"))
                     {
-                        Profile = ProfilesEnum.CompanyUser;
+                        Profile = ProfilesEnum.User;
                         if (string.IsNullOrEmpty(userId) == false)
                             UserId = Guid.Parse(userId);
                     }
