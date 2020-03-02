@@ -92,5 +92,19 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e);
             }
         }
+
+        [Route("patch"), HttpPatch]
+        public async Task<IActionResult> UpdateUserAsync([FromBody]UserRequest request)
+        {
+            try
+            {
+                var user = await _uoW.UserBLL.UpdateAsync(new MobileUser(HttpContext).UserId, request.Name, request.Email, request.PhoneNumber);
+                return Ok(new { user.Id, user.Name, user.Phone, user.Email });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
     }
 }

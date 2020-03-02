@@ -100,5 +100,21 @@ namespace EasySoccer.BLL
                 throw new BussinessException("Usuário não encontrado.");
             return user;
         }
+
+        public async Task<User> UpdateAsync(Guid userId, string name, string email, string phoneNumber)
+        {
+            var user = await _userRepository.GetAsync(userId);
+            if (user == null)
+                throw new BussinessException("Usuário não encontrado");
+            if (!string.IsNullOrEmpty(name))
+                user.Name = name;
+            if (!string.IsNullOrEmpty(email))
+                user.Email = email;
+            if (!string.IsNullOrEmpty(phoneNumber))
+                user.Phone = phoneNumber;
+            await _userRepository.Edit(user);
+            await _dbContext.SaveChangesAsync();
+            return user;
+        }
     }
 }
