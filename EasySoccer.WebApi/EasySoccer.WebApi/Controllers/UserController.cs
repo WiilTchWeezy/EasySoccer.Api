@@ -93,7 +93,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
-        [Route("patch"), HttpPatch]
+        [Route("patch"), HttpPost]
         public async Task<IActionResult> UpdateUserAsync([FromBody]UserRequest request)
         {
             try
