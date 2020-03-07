@@ -101,7 +101,7 @@ namespace EasySoccer.WebApi
                 paramsValidation.ValidAudience = tokenConfigurations.Audience;
                 paramsValidation.ValidIssuer = tokenConfigurations.Issuer;
                 paramsValidation.ValidateIssuerSigningKey = true;
-                paramsValidation.ValidateLifetime = true;
+                paramsValidation.ValidateLifetime = false;
                 paramsValidation.ClockSkew = TimeSpan.FromHours(12);
             });
 
