@@ -19,6 +19,7 @@ namespace EasySoccer.WebApi.Controllers
             _uow = uow;
         }
 
+        [AllowAnonymous]
         [Route("get"), HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery]GetCompanyRequest request)
         {
