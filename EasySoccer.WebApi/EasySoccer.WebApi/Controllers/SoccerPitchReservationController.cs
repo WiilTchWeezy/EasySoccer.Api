@@ -123,7 +123,8 @@ namespace EasySoccer.WebApi.Controllers
                     x.UserId,
                     x.SoccerPitchId,
                     x.Status,
-                    x.SoccerPitchSoccerPitchPlanId
+                    x.SoccerPitchSoccerPitchPlanId,
+                    CompanyName = x.SoccerPitch.Company.Name
                 }).ToList());
             }
             catch (Exception e)
