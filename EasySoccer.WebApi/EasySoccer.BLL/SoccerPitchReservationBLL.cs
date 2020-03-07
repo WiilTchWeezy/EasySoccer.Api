@@ -160,6 +160,11 @@ namespace EasySoccer.BLL
             return _soccerPitchReservationRepository.GetTotalAsync();
         }
 
+        public Task<List<SoccerPitchReservation>> GetUserSchedulesAsync(Guid userId)
+        {
+            return _soccerPitchReservationRepository.GetByUserAsync(userId);
+        }
+
         public async Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId)
         {
             var soccerPitchReservation = await _soccerPitchReservationRepository.GetAsync(id);

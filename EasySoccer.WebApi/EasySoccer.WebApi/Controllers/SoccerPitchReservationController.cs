@@ -106,5 +106,31 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("getuserschedules"), HttpGet]
+        public async Task<IActionResult> GetUserSchedulesAsync()
+        {
+            try
+            {
+                return Ok((await _uow.SoccerPitchReservationBLL.GetUserSchedulesAsync(new MobileUser(HttpContext).UserId)).Select(x => new 
+                {
+                    x.Id,
+                    x.SelectedDate,
+                    x.SelectedHourStart,
+                    x.SelectedHourEnd,
+                    SoccerPitchName = x.SoccerPitch.Name,
+                    UserName = x.User.Name,
+                    UserPhone = x.User.Phone,
+                    x.UserId,
+                    x.SoccerPitchId,
+                    x.Status,
+                    x.SoccerPitchSoccerPitchPlanId
+                }).ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
     }
 }
