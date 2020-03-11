@@ -50,6 +50,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("getbycompanyid"), HttpGet]
         public async Task<IActionResult> GetByCompanyIdAsync([FromQuery]GetSoccerPitchRequest request)
         {
@@ -103,6 +104,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("getsporttypes"), HttpGet]
         public async Task<IActionResult> GetSportTypeAsync()
         {

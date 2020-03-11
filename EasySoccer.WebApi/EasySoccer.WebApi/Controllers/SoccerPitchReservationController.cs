@@ -80,6 +80,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("getavaliableschedules"), HttpGet]
         public async Task<IActionResult> GetSportTypeAsync(long companyId, DateTime selectedDate, int sportType)
         {
