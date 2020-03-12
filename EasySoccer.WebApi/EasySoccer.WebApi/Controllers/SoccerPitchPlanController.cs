@@ -42,6 +42,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
         
+        [AllowAnonymous]
         [Route("getbysoccerpitch"), HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery]long soccerPitchId)
         {
