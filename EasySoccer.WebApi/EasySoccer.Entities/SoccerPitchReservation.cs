@@ -40,7 +40,7 @@ namespace EasySoccer.Entities
 
         public Guid? OringinReservationId { get; set; }
 
-        public int Interval { get; set; }
+        public int? Interval { get; set; }
 
         [ForeignKey("SoccerPitchId")]
         public virtual SoccerPitch SoccerPitch { get; set; }
