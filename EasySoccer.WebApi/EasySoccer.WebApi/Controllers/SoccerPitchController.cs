@@ -82,7 +82,7 @@ namespace EasySoccer.WebApi.Controllers
             {
 
                 var plansId = request.Plans?.Select(x => x.Id).ToArray();
-                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId));
+                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval));
             }
             catch (Exception e)
             {
@@ -96,7 +96,7 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var plansId = request.Plans?.Select(x => x.Id).ToArray();
-                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId));
+                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval));
             }
             catch (Exception e)
             {

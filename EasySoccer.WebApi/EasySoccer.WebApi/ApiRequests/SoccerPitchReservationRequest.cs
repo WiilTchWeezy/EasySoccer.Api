@@ -15,5 +15,7 @@ namespace EasySoccer.WebApi.ApiRequests
         public long CompanyUserId { get; set; }
 
         public long SelectedCompany { get; set; }
+
+        public int Interval { get; set; }
     }
 }

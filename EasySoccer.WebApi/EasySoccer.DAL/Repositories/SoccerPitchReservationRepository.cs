@@ -63,7 +63,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<SoccerPitchReservation>> GetByUserAsync(Guid userId)
         {
-            return _dbContext.SoccerPitchReservationQuery.Include(x => x.User).Include(x => x.SoccerPitch).Include(x => x.SoccerPitch.Company).Where(x => x.UserId == userId).ToListAsync();
+            return _dbContext.SoccerPitchReservationQuery.Include(x => x.User).Include(x => x.SoccerPitch).Include(x => x.SoccerPitch.Company).Where(x => x.UserId == userId).OrderByDescending(x => x.SelectedDate).ToListAsync();
         }
 
         public Task<List<SoccerPitchReservation>> GetResumeAsync()

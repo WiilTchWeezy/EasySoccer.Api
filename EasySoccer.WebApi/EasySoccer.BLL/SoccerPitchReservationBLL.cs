@@ -62,6 +62,8 @@ namespace EasySoccer.BLL
             if (soccerPicthPlanRelation == null)
                 throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
 
+            var selectedSoccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
+
             var soccerPitchReservation = new SoccerPitchReservation
             {
                 Id = Guid.NewGuid(),
@@ -74,7 +76,8 @@ namespace EasySoccer.BLL
                 Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = null,
                 UserId = userId,
-                SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id
+                SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id,
+                Interval = selectedSoccerPitch.Interval
             };
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
@@ -120,6 +123,11 @@ namespace EasySoccer.BLL
             if (userSelectedSchedule != null)
                 avaliableSchedules.Add(userSelectedSchedule);
             return avaliableSchedules;
+        }
+
+        private bool CheckScheduleIsAvaliable(DateTime selectedDate, long companyId, long soccerPitchId)
+        {
+            return true;
         }
 
         public async Task<List<ReservationChart>> GetReservationChartDataAsync(DateTime startDate)

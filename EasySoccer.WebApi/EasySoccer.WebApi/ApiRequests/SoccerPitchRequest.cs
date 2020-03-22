@@ -17,6 +17,8 @@ namespace EasySoccer.WebApi.ApiRequests
         public DateTime? ActiveDate { get; set; }
         public DateTime? InactiveDate { get; set; }
         public int SportTypeId { get; set; }
+
+        public int Interval { get; set; }
     }
 
     public class SoccerPitchSoccerPitchPlanRequest

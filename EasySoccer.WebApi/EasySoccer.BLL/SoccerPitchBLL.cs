@@ -25,7 +25,7 @@ namespace EasySoccer.BLL
             _sportTypeRepository = sportTypeRepository;
         }
 
-        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId)
+        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval)
         {
             var soccerPitch = new SoccerPitch
             {
@@ -38,7 +38,8 @@ namespace EasySoccer.BLL
                 InactiveDate = active == false ? (DateTime?)DateTime.UtcNow : null,
                 Name = name,
                 NumberOfPlayers = numberOfPlayers,
-                SportTypeId = sportTypeId
+                SportTypeId = sportTypeId,
+                Interval = interval
             };
             await _soccerPitchRepository.Create(soccerPitch);
             foreach (var item in soccerPitchPlansId)
@@ -69,7 +70,7 @@ namespace EasySoccer.BLL
             return _soccerPitchRepository.GetTotalAsync();
         }
 
-        public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId)
+        public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(id);
             if (soccerPitch == null)
@@ -101,6 +102,7 @@ namespace EasySoccer.BLL
             soccerPitch.CompanyId = companyId;
             soccerPitch.SportTypeId = sportTypeId;
             soccerPitch.Active = active;
+            soccerPitch.Interval = interval;
             soccerPitch.ActiveDate = active ? (DateTime?)DateTime.UtcNow : null;
             await _soccerPitchRepository.Edit(soccerPitch);
             await _dbContext.SaveChangesAsync();
