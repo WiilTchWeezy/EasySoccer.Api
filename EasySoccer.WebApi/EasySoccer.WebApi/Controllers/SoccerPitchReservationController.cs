@@ -43,7 +43,8 @@ namespace EasySoccer.WebApi.Controllers
                         x.UserId,
                         x.SoccerPitchId,
                         x.Status,
-                        x.SoccerPitchSoccerPitchPlanId
+                        x.SoccerPitchSoccerPitchPlanId,
+                        x.Interval
                     }).ToList(),
                     Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync()
                 });
