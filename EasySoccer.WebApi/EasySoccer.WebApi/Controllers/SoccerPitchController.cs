@@ -41,7 +41,8 @@ namespace EasySoccer.WebApi.Controllers
                     x.SoccerPitchSoccerPitchPlans,
                     x.SportTypeId,
                     x.SportType,
-                    SportTypeName = x.SportType.Name
+                    SportTypeName = x.SportType.Name,
+                    x.Interval
                 }).ToList());
             }
             catch (Exception e)
