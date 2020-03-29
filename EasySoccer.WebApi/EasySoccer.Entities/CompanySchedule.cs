@@ -7,6 +7,7 @@ namespace EasySoccer.Entities
     public class CompanySchedule
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         [Required]
