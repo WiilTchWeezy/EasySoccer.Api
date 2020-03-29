@@ -21,7 +21,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<Company> GetAsync(long id)
         {
-            return _dbContext.CompanyQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return _dbContext.CompanyQuery.Include("CompanySchedules").Where(x => x.Id == id).FirstOrDefaultAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -43,6 +44,8 @@ namespace EasySoccer.Entities
         public bool Active { get; set; }
         [NotMapped]
         public double Distance { get; set; }
+
+        public virtual ICollection<CompanySchedule> CompanySchedules { get; set; }
 
     }
 }

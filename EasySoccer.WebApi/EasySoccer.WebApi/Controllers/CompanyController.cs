@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.Controllers.Base;
@@ -64,7 +65,14 @@ namespace EasySoccer.WebApi.Controllers
                     currentCompany?.Name,
                     currentCompany?.Description,
                     currentCompany?.CompleteAddress,
-                    currentCompany?.CNPJ
+                    currentCompany?.CNPJ,
+                    CompanySchedules = currentCompany?.CompanySchedules?.Select(x => new {
+                        x.CompanyId,
+                        x.Day,
+                        x.FinalHour,
+                        x.StartHour,
+                        x.WorkOnThisDay
+                    }).ToList()
                 });
             }
             catch (Exception e)
