@@ -26,7 +26,7 @@ namespace EasySoccer.Entities
         public DateTime CreatedDate { get; set; }
 
         [Required]
-        public int WorkOnThisDay { get; set; }
+        public bool WorkOnThisDay { get; set; }
 
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
