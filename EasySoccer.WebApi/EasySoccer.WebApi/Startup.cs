@@ -76,6 +76,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<ISoccerPitchSoccerPitchPlanRepository, SoccerPitchSoccerPitchPlanRepository>();
             services.AddScoped<ICompanyUserRepository, CompanyUserRepository>();
             services.AddScoped<ISportTypeRepository, SportTypeRepository>();
+            services.AddScoped<ICompanyScheduleRepository, CompanyScheduleRepository>();
             #endregion
 
             #region TokenConfiguration
