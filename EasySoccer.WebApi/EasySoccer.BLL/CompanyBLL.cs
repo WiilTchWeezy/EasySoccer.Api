@@ -1,6 +1,7 @@
 ﻿using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Helper;
 using EasySoccer.BLL.Infra;
+using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
@@ -16,10 +17,12 @@ namespace EasySoccer.BLL
     {
         private ICompanyRepository _companyRepository;
         private IEasySoccerDbContext _dbContext;
-        public CompanyBLL(ICompanyRepository companyRepository, IEasySoccerDbContext dbContext)
+        private ICompanyScheduleRepository _companyScheduleRepository;
+        public CompanyBLL(ICompanyRepository companyRepository, IEasySoccerDbContext dbContext, ICompanyScheduleRepository companyScheduleRepository)
         {
             _companyRepository = companyRepository;
             _dbContext = dbContext;
+            _companyScheduleRepository = companyScheduleRepository;
         }
 
         public async Task<Company> CreateAsync(string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude)
@@ -60,7 +63,7 @@ namespace EasySoccer.BLL
             return _companyRepository.GetAsync(companyId);
         }
 
-        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress)
+        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules)
         {
             var currentCompany = await _companyRepository.GetAsync(id);
             if (currentCompany == null)
@@ -76,8 +79,20 @@ namespace EasySoccer.BLL
                 currentCompany.Latitude = latitude;
             await _companyRepository.Edit(currentCompany);
             await _dbContext.SaveChangesAsync();
-            return currentCompany;
 
+            foreach (var item in companySchedules)
+            {
+                var currentSchedule = await _companyScheduleRepository.GetAsync(item.CompanyId, item.Day);
+                if (currentSchedule == null)
+                    throw new NotFoundException(item.CompanyId, item.Day);
+                currentSchedule.StartHour = item.StartHour;
+                currentSchedule.FinalHour = item.FinalHour;
+                currentSchedule.WorkOnThisDay = item.WorkOnThisDay;
+                await _companyScheduleRepository.Edit(currentSchedule);
+            }
+            await _dbContext.SaveChangesAsync();
+
+            return currentCompany;
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace EasySoccer.WebApi.ApiRequests
+﻿using EasySoccer.BLL.Infra.DTO;
+using System.Collections.Generic;
+
+namespace EasySoccer.WebApi.ApiRequests
 {
     public class CompanyRequest
     {
@@ -10,5 +13,6 @@
         public decimal? Latitude { get; set; }
         public bool WorkOnHolidays { get; set; }
         public string CompleteAddress { get; set; }
+        public List<CompanySchedulesRequest> CompanySchedules { get; set; }
     }
 }

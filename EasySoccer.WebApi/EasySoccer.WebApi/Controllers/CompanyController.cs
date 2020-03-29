@@ -41,19 +41,6 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
-        [Route("patch"), HttpPatch]
-        public async Task<IActionResult> PatchAsync([FromBody]CompanyRequest request)
-        {
-            try
-            {
-                return Ok(await _uow.CompanyBLL.UpdateAsync(request.Id, request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude, request.CompleteAddress));
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.ToString());
-            }
-        }
-
         [Route("getcompanyinfo"), HttpGet]
         public async Task<IActionResult> GetCompanyInfo()
         {
@@ -86,7 +73,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.CompanyBLL.UpdateAsync(new CurrentUser(HttpContext).CompanyId, request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude, request.CompleteAddress));
+                return Ok(await _uow.CompanyBLL.UpdateAsync(new CurrentUser(HttpContext).CompanyId, request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude, request.CompleteAddress, request.CompanySchedules));
             }
             catch (Exception e)
             {
