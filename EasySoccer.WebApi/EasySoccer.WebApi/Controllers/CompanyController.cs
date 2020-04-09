@@ -73,7 +73,8 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.CompanyBLL.UpdateAsync(new CurrentUser(HttpContext).CompanyId, request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude, request.CompleteAddress, request.CompanySchedules));
+                await _uow.CompanyBLL.UpdateAsync(new CurrentUser(HttpContext).CompanyId, request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude, request.CompleteAddress, request.CompanySchedules);
+                return Ok();
             }
             catch (Exception e)
             {
