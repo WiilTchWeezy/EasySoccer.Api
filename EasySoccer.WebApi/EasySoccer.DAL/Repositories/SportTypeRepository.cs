@@ -4,6 +4,7 @@ using EasySoccer.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,9 +16,12 @@ namespace EasySoccer.DAL.Repositories
         {
         }
 
-        public Task<List<SportType>> GetAsync()
+        public Task<List<SportType>> GetAsync(long companyId)
         {
-            return _dbContext.SportTypeQuery.ToListAsync();
+            return _dbContext.SoccerPitchQuery
+                .Include(x => x.SportType)
+                .Where(x => x.CompanyId == companyId)
+                .Select(x => x.SportType).ToListAsync();
         }
     }
 }

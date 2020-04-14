@@ -60,9 +60,9 @@ namespace EasySoccer.BLL
             return _soccerPitchRepository.GetAsync(page, pageSize, companyId);
         }
 
-        public Task<List<SportType>> GetSportTypeAsync()
+        public Task<List<SportType>> GetSportTypeAsync(long companyId)
         {
-            return _sportTypeRepository.GetAsync();
+            return _sportTypeRepository.GetAsync(companyId);
         }
 
         public Task<int> GetTotalAsync()
