@@ -19,16 +19,19 @@ namespace EasySoccer.BLL
         private ISoccerPitchRepository _soccerPitchRepository;
         private IEasySoccerDbContext _dbContext;
         private ISoccerPitchSoccerPitchPlanRepository _soccerPitchSoccerPitchPlanRepository;
+        private ICompanyScheduleRepository _companyScheduleRepository;
         public SoccerPitchReservationBLL
             (ISoccerPitchReservationRepository soccerPitchReservationRepository,
             ISoccerPitchRepository soccerPitchRepository,
             IEasySoccerDbContext dbContext,
-            ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository)
+            ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository,
+            ICompanyScheduleRepository companyScheduleRepository)
         {
             _soccerPitchReservationRepository = soccerPitchReservationRepository;
             _soccerPitchRepository = soccerPitchRepository;
             _dbContext = dbContext;
             _soccerPitchSoccerPitchPlanRepository = soccerPitchSoccerPitchPlanRepository;
+            _companyScheduleRepository = companyScheduleRepository;
         }
 
         public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long soccerPitchPlanId)
@@ -96,24 +99,32 @@ namespace EasySoccer.BLL
             return await _soccerPitchReservationRepository.GetAsync(companyPitchs, page, pageSize);
         }
 
-        public async Task<List<AvaliableSchedulesDTO>> GetAvaliableSchedules(long companyId, DateTime seledtedDate, int sportType)
+        public async Task<List<AvaliableSchedulesDTO>> GetAvaliableSchedules(long companyId, DateTime selectedDate, int sportType)
         {
             List<AvaliableSchedulesDTO> avaliableSchedules = new List<AvaliableSchedulesDTO>();
+
+            var companySchedule = await _companyScheduleRepository.GetAsync(companyId, (int)selectedDate.DayOfWeek);
+            if (companySchedule == null)
+                throw new BussinessException("Agenda da empresa não encontrada.");
+
+            if (companySchedule.StartHour > selectedDate.TimeOfDay.Hours && companySchedule.FinalHour < selectedDate.TimeOfDay.Hours)
+                throw new BussinessException("Agenda da empresa não permite a hora selecionada.");
+
             var soccerPitchsBySportType = await _soccerPitchRepository.GetAsync(companyId, sportType);
             AvaliableSchedulesDTO userSelectedSchedule = null;
             foreach (var item in soccerPitchsBySportType)
             {
-                var selectedSchedule = await _soccerPitchReservationRepository.GetAsync(seledtedDate, companyId, item.Id);
-                if (selectedSchedule == null)
+                var reservationIsAvaliable = await this.CheckReservationIsAvaliable(selectedDate, item.Id, selectedDate.TimeOfDay);
+                if (reservationIsAvaliable.IsAvaliable)
                 {
                     if (userSelectedSchedule == null)
                     {
                         userSelectedSchedule = new AvaliableSchedulesDTO
                         {
                             IsCurrentSchedule = true,
-                            SelectedDate = seledtedDate,
-                            SelectedHourStart = seledtedDate.TimeOfDay,
-                            SelectedHourEnd = seledtedDate.AddHours(1).TimeOfDay,
+                            SelectedDate = selectedDate,
+                            SelectedHourStart = reservationIsAvaliable.StartHour,
+                            SelectedHourEnd = reservationIsAvaliable.EndHour,
                             PossibleSoccerPitchs = new List<SoccerPitch>()
                         };
                     }
@@ -122,12 +133,72 @@ namespace EasySoccer.BLL
             }
             if (userSelectedSchedule != null)
                 avaliableSchedules.Add(userSelectedSchedule);
+
+            var currentTime = selectedDate.TimeOfDay;
+            int trys = 0;
+            while (avaliableSchedules.Count < 5 && trys < 10)
+            {
+                currentTime = currentTime.Add(TimeSpan.FromHours(1));
+                AvaliableSchedulesDTO alternativeSchedule = null;
+                if (companySchedule.FinalHour <= currentTime.Hours)
+                {
+                    currentTime = TimeSpan.FromHours(companySchedule.StartHour);
+                    selectedDate = selectedDate.AddDays(1);
+                    companySchedule = await _companyScheduleRepository.GetAsync(companyId, (int)selectedDate.DayOfWeek);
+                }
+                foreach (var item in soccerPitchsBySportType)
+                {
+                    var reservationIsAvaliable = await this.CheckReservationIsAvaliable(selectedDate, item.Id, currentTime);
+                    if (reservationIsAvaliable.IsAvaliable)
+                    {
+                        if (alternativeSchedule == null)
+                        {
+                            alternativeSchedule = new AvaliableSchedulesDTO
+                            {
+                                IsCurrentSchedule = false,
+                                SelectedDate = selectedDate,
+                                SelectedHourStart = reservationIsAvaliable.StartHour,
+                                SelectedHourEnd = reservationIsAvaliable.EndHour,
+                                PossibleSoccerPitchs = new List<SoccerPitch>()
+                            };
+                        }
+                        alternativeSchedule.PossibleSoccerPitchs.Add(item);
+                    }
+                }
+                if (alternativeSchedule != null)
+                    avaliableSchedules.Add(alternativeSchedule);
+                trys++;
+            }
             return avaliableSchedules;
         }
 
-        private bool CheckScheduleIsAvaliable(DateTime selectedDate, long companyId, long soccerPitchId)
+
+
+        private async Task<CheckReservationIsAvaliableResponse> CheckReservationIsAvaliable(DateTime selectedDate, long soccerPitchId, TimeSpan selectedHourStart)
         {
-            return true;
+            var soccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
+            if (soccerPitch == null)
+                throw new BussinessException("Quadra não encontrada.");
+
+            var companySchedule = await _companyScheduleRepository.GetAsync(soccerPitch.CompanyId, (int)selectedDate.DayOfWeek);
+            if (companySchedule == null)
+                throw new BussinessException("Agenda da empresa não encontrada.");
+
+            if (companySchedule.StartHour > selectedHourStart.Hours && companySchedule.FinalHour < selectedHourStart.Hours)
+                throw new BussinessException("Agenda da empresa não permite a hora selecionada.");
+
+            var interval = soccerPitch.Interval.HasValue ? soccerPitch.Interval : 60;
+            TimeSpan selectedHourEnd = selectedHourStart;
+            if (selectedHourStart.Hours == 23)
+                selectedHourEnd = new TimeSpan(23, 59, 59);
+            else
+                selectedHourEnd = selectedHourStart.Add(TimeSpan.FromMinutes(Convert.ToDouble(interval)));
+            var reservation = await _soccerPitchReservationRepository.GetAsync(selectedDate, selectedHourStart, selectedHourEnd, soccerPitchId);
+            if (reservation == null)
+                return new CheckReservationIsAvaliableResponse { IsAvaliable = true, SoccerPitch = soccerPitch, StartHour = selectedHourStart, EndHour = selectedHourEnd };
+            else
+                return new CheckReservationIsAvaliableResponse { IsAvaliable = false, SoccerPitch = soccerPitch, StartHour = selectedHourStart, EndHour = selectedHourEnd };
+
         }
 
         public async Task<List<ReservationChart>> GetReservationChartDataAsync(DateTime startDate)
