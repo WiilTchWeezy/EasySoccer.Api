@@ -21,7 +21,7 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.SoccerPitchQuery
                 .Include(x => x.SportType)
                 .Where(x => x.CompanyId == companyId)
-                .Select(x => x.SportType).ToListAsync();
+                .Select(x => x.SportType).Distinct().ToListAsync();
         }
     }
 }
