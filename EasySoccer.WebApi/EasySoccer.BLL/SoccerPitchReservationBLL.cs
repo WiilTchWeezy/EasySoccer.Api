@@ -39,15 +39,16 @@ namespace EasySoccer.BLL
             var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
                 throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
+            var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
+            var selectedDateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourFinish.Hours, hourFinish.Minutes, hourFinish.Seconds);
 
             var soccerPitchReservation = new SoccerPitchReservation
             {
                 Id = Guid.NewGuid(),
                 CreatedDate = DateTime.UtcNow,
                 Note = note,
-                SelectedDate = selectedDate,
-                SelectedHourEnd = hourFinish,
-                SelectedHourStart = hourStart,
+                SelectedDateStart = selectedDateStart,
+                SelectedDateEnd = selectedDateEnd,
                 SoccerPitchId = soccerPitchId,
                 Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = companyUserId,
@@ -67,14 +68,20 @@ namespace EasySoccer.BLL
 
             var selectedSoccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
 
+            if (selectedSoccerPitch == null)
+                throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
+
+
+            var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
+            var selectedDateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourFinish.Hours, hourFinish.Minutes, hourFinish.Seconds);
+
             var soccerPitchReservation = new SoccerPitchReservation
             {
                 Id = Guid.NewGuid(),
                 CreatedDate = DateTime.UtcNow,
                 Note = note,
-                SelectedDate = selectedDate,
-                SelectedHourEnd = hourFinish,
-                SelectedHourStart = hourStart,
+                SelectedDateStart = selectedDateStart, 
+                SelectedDateEnd = selectedDateEnd,
                 SoccerPitchId = soccerPitchId,
                 Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = null,
@@ -123,8 +130,8 @@ namespace EasySoccer.BLL
                         {
                             IsCurrentSchedule = true,
                             SelectedDate = selectedDate,
-                            SelectedHourStart = reservationIsAvaliable.StartHour,
-                            SelectedHourEnd = reservationIsAvaliable.EndHour,
+                            SelectedHourStart = reservationIsAvaliable.SelectedDateStart.TimeOfDay,
+                            SelectedHourEnd = reservationIsAvaliable.SelectedDateEnd.TimeOfDay,
                             PossibleSoccerPitchs = new List<SoccerPitch>()
                         };
                     }
@@ -157,8 +164,8 @@ namespace EasySoccer.BLL
                             {
                                 IsCurrentSchedule = false,
                                 SelectedDate = selectedDate,
-                                SelectedHourStart = reservationIsAvaliable.StartHour,
-                                SelectedHourEnd = reservationIsAvaliable.EndHour,
+                                SelectedHourStart = reservationIsAvaliable.SelectedDateStart.TimeOfDay,
+                                SelectedHourEnd = reservationIsAvaliable.SelectedDateEnd.TimeOfDay,
                                 PossibleSoccerPitchs = new List<SoccerPitch>()
                             };
                         }
@@ -188,16 +195,14 @@ namespace EasySoccer.BLL
                 throw new BussinessException("Agenda da empresa não permite a hora selecionada.");
 
             var interval = soccerPitch.Interval.HasValue ? soccerPitch.Interval : 60;
-            TimeSpan selectedHourEnd = selectedHourStart;
-            if (selectedHourStart.Hours == 23)
-                selectedHourEnd = new TimeSpan(23, 59, 59);
-            else
-                selectedHourEnd = selectedHourStart.Add(TimeSpan.FromMinutes(Convert.ToDouble(interval)));
-            var reservation = await _soccerPitchReservationRepository.GetAsync(selectedDate, selectedHourStart, selectedHourEnd, soccerPitchId);
+
+            var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, selectedHourStart.Hours, selectedHourStart.Minutes, selectedHourStart.Seconds);
+            var selectedDateEnd = selectedDateStart.AddMinutes((double)interval);
+            var reservation = await _soccerPitchReservationRepository.GetAsync(selectedDateStart, selectedDateEnd, soccerPitchId);
             if (reservation == null)
-                return new CheckReservationIsAvaliableResponse { IsAvaliable = true, SoccerPitch = soccerPitch, StartHour = selectedHourStart, EndHour = selectedHourEnd };
+                return new CheckReservationIsAvaliableResponse { IsAvaliable = true, SoccerPitch = soccerPitch, SelectedDateStart = selectedDateStart, SelectedDateEnd = selectedDateEnd };
             else
-                return new CheckReservationIsAvaliableResponse { IsAvaliable = false, SoccerPitch = soccerPitch, StartHour = selectedHourStart, EndHour = selectedHourEnd };
+                return new CheckReservationIsAvaliableResponse { IsAvaliable = false, SoccerPitch = soccerPitch, SelectedDateStart = selectedDateStart, SelectedDateEnd = selectedDateEnd };
 
         }
 
@@ -254,10 +259,13 @@ namespace EasySoccer.BLL
             if (soccerPicthPlanRelation != null)
                 soccerPitchReservation.SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id;
 
+
+            var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
+            var selectedDateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourFinish.Hours, hourFinish.Minutes, hourFinish.Seconds);
+
             soccerPitchReservation.Note = note;
-            soccerPitchReservation.SelectedDate = selectedDate;
-            soccerPitchReservation.SelectedHourEnd = hourFinish;
-            soccerPitchReservation.SelectedHourStart = hourStart;
+            soccerPitchReservation.SelectedDateStart = selectedDateStart;
+            soccerPitchReservation.SelectedDateEnd = selectedDateEnd;
             soccerPitchReservation.SoccerPitchId = soccerPitchId;
             soccerPitchReservation.UserId = userId;
             await _soccerPitchReservationRepository.Edit(soccerPitchReservation);

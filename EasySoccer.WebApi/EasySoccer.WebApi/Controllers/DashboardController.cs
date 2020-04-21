@@ -33,7 +33,7 @@ namespace EasySoccer.WebApi.Controllers
                     UserName = x.User.Name,
                     UserPhone = x.User.Phone,
                     SoccerPitchName = x.SoccerPitch.Name,
-                    SelectedHour = new DateTime(x.SelectedHourStart.Ticks).ToString("hh:mm") + "-" + new DateTime(x.SelectedHourEnd.Ticks).ToString("hh:mm")
+                    SelectedHour = new DateTime(x.SelectedDateStart.TimeOfDay.Ticks).ToString("hh:mm") + "-" + new DateTime(x.SelectedDateEnd.TimeOfDay.Ticks).ToString("hh:mm")
                 }).ToList());
             }
             catch (Exception e)
@@ -66,8 +66,8 @@ namespace EasySoccer.WebApi.Controllers
                     retorno
                         .Select(x => new
                         {
-                            startDate = new DateTime(x.SelectedDate.Year, x.SelectedDate.Month, x.SelectedDate.Day, x.SelectedHourStart.Hours, x.SelectedHourStart.Minutes, x.SelectedHourStart.Seconds),
-                            endDate = new DateTime(x.SelectedDate.Year, x.SelectedDate.Month, x.SelectedDate.Day, x.SelectedHourEnd.Hours, x.SelectedHourEnd.Minutes, x.SelectedHourEnd.Seconds),
+                            startDate = x.SelectedDateStart,
+                            endDate = x.SelectedDateEnd,
                             title = $"{x.SoccerPitch.Name} - {x.User.Name}"
                         }).ToList()
                     );
