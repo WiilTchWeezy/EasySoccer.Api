@@ -66,9 +66,9 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.SoccerPitchReservationQuery.Where(x => 
             x.SoccerPitchId == soccerPitch &&
             (
-            (x.SelectedDateStart >= dateStart || x.SelectedDateEnd <= dateStart)
+            (x.SelectedDateStart >= dateStart && x.SelectedDateStart <= dateEnd)
             || 
-            (x.SelectedDateStart >= dateEnd || x.SelectedDateEnd <= dateEnd))
+            (x.SelectedDateEnd >= dateStart || x.SelectedDateEnd <= dateEnd))
             ).FirstOrDefaultAsync();
         }
 
