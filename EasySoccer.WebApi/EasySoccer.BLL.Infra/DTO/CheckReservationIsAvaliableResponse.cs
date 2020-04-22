@@ -9,8 +9,8 @@ namespace EasySoccer.BLL.Infra.DTO
 
         public bool IsAvaliable { get; set; }
 
-        public TimeSpan EndHour { get; set; }
+        public DateTime SelectedDateStart { get; set; }
 
-        public TimeSpan StartHour { get; set; }
+        public DateTime SelectedDateEnd { get; set; }
     }
 }

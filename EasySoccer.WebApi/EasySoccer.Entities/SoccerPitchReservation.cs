@@ -20,15 +20,6 @@ namespace EasySoccer.Entities
         [Required]
         public DateTime CreatedDate { get; set; }
 
-        [Required]
-        public DateTime SelectedDate { get; set; }
-
-        [Required]
-        public TimeSpan SelectedHourStart { get; set; }
-
-        [Required]
-        public TimeSpan SelectedHourEnd { get; set; }
-
         public int Status { get; set; }
 
         public long? StatusChangedUserId { get; set; }
@@ -41,6 +32,12 @@ namespace EasySoccer.Entities
         public Guid? OringinReservationId { get; set; }
 
         public int? Interval { get; set; }
+
+        [Required]
+        public DateTime SelectedDateStart { get; set; }
+
+        [Required]
+        public DateTime SelectedDateEnd { get; set; }
 
         [ForeignKey("SoccerPitchId")]
         public virtual SoccerPitch SoccerPitch { get; set; }

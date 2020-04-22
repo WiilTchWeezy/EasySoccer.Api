@@ -34,9 +34,9 @@ namespace EasySoccer.WebApi.Controllers
                     Data = (await _uow.SoccerPitchReservationBLL.GetAsync(new CurrentUser(HttpContext).CompanyId, request.Page, request.PageSize)).Select(x => new
                     {
                         x.Id,
-                        x.SelectedDate,
-                        SelectedHourStart = new { Hour = x.SelectedHourStart.Hours, Minute = x.SelectedHourStart.Minutes },
-                        SelectedHourEnd = new { Hour = x.SelectedHourEnd.Hours, Minute = x.SelectedHourEnd.Minutes },
+                        SelectedDate = x.SelectedDateStart,
+                        SelectedHourStart = new { Hour = x.SelectedDateStart.TimeOfDay.Hours, Minute = x.SelectedDateStart.TimeOfDay.Minutes },
+                        SelectedHourEnd = new { Hour = x.SelectedDateEnd.TimeOfDay.Hours, Minute = x.SelectedDateEnd.TimeOfDay.Minutes },
                         SoccerPitchName = x.SoccerPitch.Name,
                         UserName = x.User.Name,
                         UserPhone = x.User.Phone,
@@ -116,9 +116,9 @@ namespace EasySoccer.WebApi.Controllers
                 return Ok((await _uow.SoccerPitchReservationBLL.GetUserSchedulesAsync(new MobileUser(HttpContext).UserId)).Select(x => new 
                 {
                     x.Id,
-                    x.SelectedDate,
-                    x.SelectedHourStart,
-                    x.SelectedHourEnd,
+                    SelectedDate = x.SelectedDateStart,
+                    SelectedHourStart = x.SelectedDateStart.TimeOfDay,
+                    SelectedHourEnd = x.SelectedDateEnd.TimeOfDay,
                     SoccerPitchName = x.SoccerPitch.Name,
                     UserName = x.User.Name,
                     UserPhone = x.User.Phone,
