@@ -38,6 +38,7 @@ namespace EasySoccer.WebApi.Controllers
             catch (Exception e)
             {
                 return BadRequest(e.ToString());
+
             }
         }
 
