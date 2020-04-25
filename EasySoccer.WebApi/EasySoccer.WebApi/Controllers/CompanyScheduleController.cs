@@ -22,7 +22,7 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("get"), HttpGet]
-        public async Task<IActionResult> GetCompanyUserInformationAsync([FromQuery] int companyId, [FromQuery]int dayOfWeek)
+        public async Task<IActionResult> GetAsync([FromQuery] int companyId, [FromQuery]int dayOfWeek)
         {
             try
             {

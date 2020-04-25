@@ -62,6 +62,10 @@ namespace EasySoccer.BLL
 
         public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchPlanId)
         {
+
+            if (selectedDate.Date < DateTime.Now.Date)
+                throw new BussinessException("Não é possível agendar datas menores que a atual.");
+
             var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
                 throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
@@ -109,6 +113,9 @@ namespace EasySoccer.BLL
         public async Task<List<AvaliableSchedulesDTO>> GetAvaliableSchedules(long companyId, DateTime selectedDate, int sportType)
         {
             List<AvaliableSchedulesDTO> avaliableSchedules = new List<AvaliableSchedulesDTO>();
+
+            if(selectedDate.Date < DateTime.Now.Date)
+                throw new BussinessException("Não é possível verificar datas menores que a atual.");
 
             var companySchedule = await _companyScheduleRepository.GetAsync(companyId, (int)selectedDate.DayOfWeek);
             if (companySchedule == null)
