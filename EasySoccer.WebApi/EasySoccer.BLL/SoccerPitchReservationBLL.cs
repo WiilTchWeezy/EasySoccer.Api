@@ -84,7 +84,7 @@ namespace EasySoccer.BLL
                 Id = Guid.NewGuid(),
                 CreatedDate = DateTime.UtcNow,
                 Note = note,
-                SelectedDateStart = selectedDateStart, 
+                SelectedDateStart = selectedDateStart,
                 SelectedDateEnd = selectedDateEnd,
                 SoccerPitchId = soccerPitchId,
                 Status = (int)StatusEnum.AguardandoAprovacao,
@@ -114,7 +114,7 @@ namespace EasySoccer.BLL
         {
             List<AvaliableSchedulesDTO> avaliableSchedules = new List<AvaliableSchedulesDTO>();
 
-            if(selectedDate.Date < DateTime.Now.Date)
+            if (selectedDate.Date < DateTime.Now.Date)
                 throw new BussinessException("Não é possível verificar datas menores que a atual.");
 
             var companySchedule = await _companyScheduleRepository.GetAsync(companyId, (int)selectedDate.DayOfWeek);
@@ -147,6 +147,55 @@ namespace EasySoccer.BLL
             }
             if (userSelectedSchedule != null)
                 avaliableSchedules.Add(userSelectedSchedule);
+
+
+            if (avaliableSchedules.Any(x => x.IsCurrentSchedule) == false)
+            {
+                var tomorrow = selectedDate.AddDays(1);
+                AvaliableSchedulesDTO alternativeSchedule = null;
+                AvaliableSchedulesDTO alternativeNextWeekSchedule = null;
+
+                foreach (var item in soccerPitchsBySportType)
+                {
+                    var reservationIsAvaliable = await this.CheckReservationIsAvaliable(tomorrow, item.Id, tomorrow.TimeOfDay);
+                    if (reservationIsAvaliable.IsAvaliable)
+                    {
+                        if (alternativeSchedule == null)
+                        {
+                            alternativeSchedule = new AvaliableSchedulesDTO
+                            {
+                                IsCurrentSchedule = false,
+                                SelectedDate = tomorrow,
+                                SelectedHourStart = reservationIsAvaliable.SelectedDateStart.TimeOfDay,
+                                SelectedHourEnd = reservationIsAvaliable.SelectedDateEnd.TimeOfDay,
+                                PossibleSoccerPitchs = new List<SoccerPitch>()
+                            };
+                        }
+                        alternativeSchedule.PossibleSoccerPitchs.Add(item);
+                    }
+                    var nextWeek = selectedDate.AddDays(7);
+                    var reservationNextWeekIsAvaliable = await this.CheckReservationIsAvaliable(nextWeek, item.Id, nextWeek.TimeOfDay);
+                    if (reservationNextWeekIsAvaliable.IsAvaliable)
+                    {
+                        if (alternativeNextWeekSchedule == null)
+                        {
+                            alternativeNextWeekSchedule = new AvaliableSchedulesDTO
+                            {
+                                IsCurrentSchedule = false,
+                                SelectedDate = nextWeek,
+                                SelectedHourStart = reservationNextWeekIsAvaliable.SelectedDateStart.TimeOfDay,
+                                SelectedHourEnd = reservationNextWeekIsAvaliable.SelectedDateEnd.TimeOfDay,
+                                PossibleSoccerPitchs = new List<SoccerPitch>()
+                            };
+                        }
+                        alternativeNextWeekSchedule.PossibleSoccerPitchs.Add(item);
+                    }
+                }
+                if (alternativeSchedule != null)
+                    avaliableSchedules.Add(alternativeSchedule);
+                if (alternativeNextWeekSchedule != null)
+                    avaliableSchedules.Add(alternativeNextWeekSchedule);
+            }
 
             var currentTime = selectedDate.TimeOfDay;
             int trys = 0;
