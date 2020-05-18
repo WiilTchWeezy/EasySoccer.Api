@@ -1,8 +1,8 @@
 ﻿namespace EasySoccer.BLL.Infra.Services.Azure.Enums
 {
-    public enum BlobContainerEnum
+    public static class BlobContainerEnum
     {
-        company,
-        soccerpitch
+        public const string CompanyContainer = "company";
+        public const string SoccerPitchContainer = "soccerpitch";
     }
 }

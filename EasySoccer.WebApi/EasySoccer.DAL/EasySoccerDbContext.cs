@@ -20,9 +20,6 @@ namespace EasySoccer.DAL
         public DbSet<SoccerPitch> SoccerPitch { get; set; }
         public IQueryable<SoccerPitch> SoccerPitchQuery { get { return SoccerPitch; } }
 
-        public DbSet<SoccerPitchPictures> SoccerPitchPictures { get; set; }
-        public IQueryable<SoccerPitchPictures> SoccerPitchPicturesQuery { get { return SoccerPitchPictures; } }
-
         public DbSet<SoccerPitchPlan> SoccerPitchPlan { get; set; }
         public IQueryable<SoccerPitchPlan> SoccerPitchPlanQuery { get { return SoccerPitchPlan; } }
 

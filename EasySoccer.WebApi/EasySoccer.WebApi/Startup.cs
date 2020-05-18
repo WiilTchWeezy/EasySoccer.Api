@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using EasySoccer.BLL;
 using EasySoccer.BLL.Infra;
+using EasySoccer.BLL.Infra.Services.Azure;
+using EasySoccer.BLL.Services.Azure;
 using EasySoccer.DAL;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
@@ -80,6 +82,11 @@ namespace EasySoccer.WebApi
             services.AddScoped<ISportTypeRepository, SportTypeRepository>();
             services.AddScoped<ICompanyScheduleRepository, CompanyScheduleRepository>();
             #endregion
+
+            #region Services
+            services.AddScoped<IBlobStorageService, BlobStorageService>();
+            #endregion
+
 
             #region TokenConfiguration
 

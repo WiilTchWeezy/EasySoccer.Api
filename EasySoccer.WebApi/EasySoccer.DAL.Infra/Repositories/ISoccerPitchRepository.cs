@@ -12,5 +12,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<List<SoccerPitch>> GetByCompanyAsync(int company);
         Task<int> GetTotalAsync();
         Task<List<SoccerPitch>> GetAsync(long companyId, int sportType);
+        Task<SoccerPitch> GetAsync(long companyId, long soccerPitchId);
     }
 }

@@ -91,7 +91,7 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
-        
+
         [Route("patch"), HttpPatch]
         public async Task<IActionResult> PatchAsync([FromBody]SoccerPitchRequest request)
         {
@@ -117,6 +117,20 @@ namespace EasySoccer.WebApi.Controllers
                     x.Id,
                     x.Name
                 }).ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
+        [Route("saveImage"), HttpPost]
+        public async Task<IActionResult> SaveImageAsync([FromBody]SoccerPitchImageRequest request)
+        {
+            try
+            {
+                await _uow.SoccerPitchBLL.SaveImageAsync(new CurrentUser(HttpContext).CompanyId, request.SoccerPitchId, request.ImageBase64);
+                return Ok();
             }
             catch (Exception e)
             {

@@ -1,10 +1,13 @@
 ﻿using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Infra;
+using EasySoccer.BLL.Infra.Services.Azure;
+using EasySoccer.BLL.Infra.Services.Azure.Enums;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +20,14 @@ namespace EasySoccer.BLL
         private IEasySoccerDbContext _dbContext;
         private ISoccerPitchSoccerPitchPlanRepository _soccerPitchSoccerPitchPlanRepository;
         private ISportTypeRepository _sportTypeRepository;
-        public SoccerPitchBLL(ISoccerPitchRepository soccerPitchRepository, ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository, IEasySoccerDbContext dbContext, ISportTypeRepository sportTypeRepository)
+        private IBlobStorageService _blobStorageService;
+        public SoccerPitchBLL(ISoccerPitchRepository soccerPitchRepository, ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository, IEasySoccerDbContext dbContext, ISportTypeRepository sportTypeRepository, IBlobStorageService blobStorageService)
         {
             _soccerPitchRepository = soccerPitchRepository;
             _soccerPitchSoccerPitchPlanRepository = soccerPitchSoccerPitchPlanRepository;
             _dbContext = dbContext;
             _sportTypeRepository = sportTypeRepository;
+            _blobStorageService = blobStorageService;
         }
 
         public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval)
@@ -68,6 +73,29 @@ namespace EasySoccer.BLL
         public Task<int> GetTotalAsync()
         {
             return _soccerPitchRepository.GetTotalAsync();
+        }
+
+        public async Task SaveImageAsync(long companyId, long soccerPitchId, string imageBase64)
+        {
+            var soccerPitch = await _soccerPitchRepository.GetAsync(companyId, soccerPitchId);
+            if (soccerPitch == null)
+                throw new BussinessException("Quadra não encontrada!");
+            if (string.IsNullOrEmpty(soccerPitch.ImageName) == false)
+            {
+                try
+                {
+                    _blobStorageService.Delete(soccerPitch.ImageName, BlobContainerEnum.SoccerPitchContainer);
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+            var bytes = Convert.FromBase64String(imageBase64);
+            var fileName = await _blobStorageService.Save(bytes, BlobContainerEnum.SoccerPitchContainer);
+            soccerPitch.ImageName = fileName;
+            await _soccerPitchRepository.Edit(soccerPitch);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval)

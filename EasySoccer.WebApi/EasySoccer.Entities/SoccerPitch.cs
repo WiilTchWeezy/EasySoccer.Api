@@ -42,6 +42,8 @@ namespace EasySoccer.Entities
 
         public int? Interval { get; set; }
 
+        public string ImageName { get; set; }
+
         [ForeignKey("SportTypeId")]
         public virtual SportType SportType { get; set; }
 
