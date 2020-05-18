@@ -59,5 +59,14 @@ namespace EasySoccer.BLL.Services.Azure
             }
             return fileName;
         }
+
+        public async Task<byte[]> Get(string fileName, string container)
+        {
+            byte[] bytesToReturn = null;
+            var containerReference = blobClient.GetContainerReference(container);
+            var cloudBlockBlob = containerReference.GetBlockBlobReference(fileName);
+            var a = await cloudBlockBlob.DownloadToByteArrayAsync(bytesToReturn, 0);
+            return bytesToReturn;
+        }
     }
 }
