@@ -2,6 +2,8 @@
 using EasySoccer.BLL.Helper;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.DTO;
+using EasySoccer.BLL.Infra.Services.Azure;
+using EasySoccer.BLL.Infra.Services.Azure.Enums;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
@@ -18,11 +20,13 @@ namespace EasySoccer.BLL
         private ICompanyRepository _companyRepository;
         private IEasySoccerDbContext _dbContext;
         private ICompanyScheduleRepository _companyScheduleRepository;
-        public CompanyBLL(ICompanyRepository companyRepository, IEasySoccerDbContext dbContext, ICompanyScheduleRepository companyScheduleRepository)
+        private IBlobStorageService _blobStorageService;
+        public CompanyBLL(ICompanyRepository companyRepository, IEasySoccerDbContext dbContext, ICompanyScheduleRepository companyScheduleRepository, IBlobStorageService blobStorageService)
         {
             _companyRepository = companyRepository;
             _dbContext = dbContext;
             _companyScheduleRepository = companyScheduleRepository;
+            _blobStorageService = blobStorageService;
         }
 
         public async Task<Company> CreateAsync(string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude)
@@ -61,6 +65,21 @@ namespace EasySoccer.BLL
         public Task<Company> GetAsync(long companyId)
         {
             return _companyRepository.GetAsync(companyId);
+        }
+
+        public async Task SaveImageAsync(long companyId, string imageBase64)
+        {
+            var currentCompany = await _companyRepository.GetAsync(companyId);
+            if (currentCompany == null)
+                throw new BussinessException("Empresa não encontrada!");
+            if (string.IsNullOrEmpty(currentCompany.Logo) == false)
+                _blobStorageService.Delete(currentCompany.Logo, BlobContainerEnum.CompanyContainer);
+
+            var bytes = Convert.FromBase64String(imageBase64);
+            var fileName = await _blobStorageService.Save(bytes, BlobContainerEnum.CompanyContainer);
+            currentCompany.Logo = fileName;
+            await _companyRepository.Edit(currentCompany);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules)

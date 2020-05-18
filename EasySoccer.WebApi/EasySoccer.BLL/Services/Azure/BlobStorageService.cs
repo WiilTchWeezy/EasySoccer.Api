@@ -51,7 +51,7 @@ namespace EasySoccer.BLL.Services.Azure
             var containerReference = blobClient.GetContainerReference(blobContainer);
             await containerReference.CreateIfNotExistsAsync();
             if (string.IsNullOrEmpty(fileName))
-                fileName = string.Format("{0}", Guid.NewGuid().ToString());
+                fileName = string.Format("{0}.png", Guid.NewGuid().ToString());
             var cloudBlockBlob = containerReference.GetBlockBlobReference(fileName);
             using (var memoryStream = new MemoryStream(bytes))
             {

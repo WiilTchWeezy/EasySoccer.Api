@@ -54,7 +54,8 @@ namespace EasySoccer.WebApi.Controllers
                     currentCompany?.Description,
                     currentCompany?.CompleteAddress,
                     currentCompany?.CNPJ,
-                    CompanySchedules = currentCompany?.CompanySchedules?.Select(x => new {
+                    CompanySchedules = currentCompany?.CompanySchedules?.Select(x => new
+                    {
                         x.CompanyId,
                         x.Day,
                         x.FinalHour,
@@ -75,6 +76,20 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 await _uow.CompanyBLL.UpdateAsync(new CurrentUser(HttpContext).CompanyId, request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude, request.CompleteAddress, request.CompanySchedules);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
+        [Route("saveimage"), HttpPost]
+        public async Task<IActionResult> SaveImageAsync([FromBody]CompanyImageRequest request)
+        {
+            try
+            {
+                await _uow.CompanyBLL.SaveImageAsync(new CurrentUser(HttpContext).CompanyId, request.ImageBase64);
                 return Ok();
             }
             catch (Exception e)
