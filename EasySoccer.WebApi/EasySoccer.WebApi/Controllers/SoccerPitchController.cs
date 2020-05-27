@@ -126,6 +126,24 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("getsporttypes"), HttpGet]
+        public async Task<IActionResult> GetSportTypeAsync()
+        {
+            try
+            {
+                var companyId = new CurrentUser(HttpContext).CompanyId;
+                return Ok((await _uow.SoccerPitchBLL.GetSportTypeAsync(companyId)).Select(x => new
+                {
+                    x.Id,
+                    x.Name
+                }).ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
         [Route("saveImage"), HttpPost]
         public async Task<IActionResult> SaveImageAsync([FromBody]SoccerPitchImageRequest request)
         {
