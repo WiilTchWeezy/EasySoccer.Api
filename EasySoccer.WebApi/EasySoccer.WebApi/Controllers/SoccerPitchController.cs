@@ -126,7 +126,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
-        [Route("getsporttypes"), HttpGet]
+        [Route("getcompanysporttypes"), HttpGet]
         public async Task<IActionResult> GetSportTypeAsync()
         {
             try
