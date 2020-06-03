@@ -54,6 +54,7 @@ namespace EasySoccer.WebApi.Controllers
                     currentCompany?.Description,
                     currentCompany?.CompleteAddress,
                     currentCompany?.CNPJ,
+                    currentCompany?.Logo,
                     CompanySchedules = currentCompany?.CompanySchedules?.Select(x => new
                     {
                         x.CompanyId,
