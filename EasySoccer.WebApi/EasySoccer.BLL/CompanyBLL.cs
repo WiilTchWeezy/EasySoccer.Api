@@ -4,9 +4,11 @@ using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.BLL.Infra.Services.Azure;
 using EasySoccer.BLL.Infra.Services.Azure.Enums;
+using EasySoccer.BLL.Infra.Services.SendGrid;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +23,16 @@ namespace EasySoccer.BLL
         private IEasySoccerDbContext _dbContext;
         private ICompanyScheduleRepository _companyScheduleRepository;
         private IBlobStorageService _blobStorageService;
-        public CompanyBLL(ICompanyRepository companyRepository, IEasySoccerDbContext dbContext, ICompanyScheduleRepository companyScheduleRepository, IBlobStorageService blobStorageService)
+        private IFormInputRepository _formInputRepository;
+        private IEmailService _emailService;
+        public CompanyBLL(ICompanyRepository companyRepository, IEasySoccerDbContext dbContext, ICompanyScheduleRepository companyScheduleRepository, IBlobStorageService blobStorageService, IFormInputRepository formInputRepository, IEmailService emailService)
         {
             _companyRepository = companyRepository;
             _dbContext = dbContext;
             _companyScheduleRepository = companyScheduleRepository;
             _blobStorageService = blobStorageService;
+            _formInputRepository = formInputRepository;
+            _emailService = emailService;
         }
 
         public async Task<Company> CreateAsync(string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude)
@@ -65,6 +71,43 @@ namespace EasySoccer.BLL
         public Task<Company> GetAsync(long companyId)
         {
             return _companyRepository.GetAsync(companyId);
+        }
+
+        public async Task SaveFormInputCompanyAsync(FormInputCompanyEntryRequest request)
+        {
+            var formInput = new FormInput
+            {
+                CreatedDate = DateTime.UtcNow,
+                FormType = Entities.Enum.FormTypeEnum.CompanyLandingPageEntry,
+                InputData = JsonConvert.SerializeObject(request),
+                Status = Entities.Enum.FormStatusEnum.Inserted,
+                Message = "Registro inserido aguardando processamento."
+            };
+            await _formInputRepository.Create(formInput);
+            await _dbContext.SaveChangesAsync();
+            var errors = new List<string>();
+
+            errors.Add(ValidationHelper.Instance.ValidateEmail(request.UserEmail));
+            errors.Add(ValidationHelper.Instance.ValidateCompanyDocument(request.CompanyDocument));
+            errors.Add(ValidationHelper.Instance.ValidateCardNumberAndSecurityCode(request.CardNumber, request.SecurityCode));
+            errors.Add(ValidationHelper.Instance.ValidateUserDocument(request.FinancialDocument));
+
+            if (errors != null && errors.Count > 0 && errors.Any(x => string.IsNullOrEmpty(x) == false))
+            {
+                string errorFormatted = "";
+                foreach (var item in errors)
+                {
+                    errorFormatted += item;
+                }
+                formInput.Message = "Erro na validação dos dados. - " + errorFormatted;
+                formInput.Status = Entities.Enum.FormStatusEnum.Error;
+                await _dbContext.SaveChangesAsync();
+                if (string.IsNullOrEmpty(ValidationHelper.Instance.ValidateEmail(request.UserEmail)))
+                {
+                    await _emailService.SendValidationErrorsEmailAsync(request.UserEmail, request.UserName, errors.ToArray());
+                }
+            }
+
         }
 
         public async Task SaveImageAsync(long companyId, string imageBase64)

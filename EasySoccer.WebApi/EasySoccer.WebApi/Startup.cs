@@ -5,7 +5,9 @@ using System.Linq;
 using EasySoccer.BLL;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.Services.Azure;
+using EasySoccer.BLL.Infra.Services.SendGrid;
 using EasySoccer.BLL.Services.Azure;
+using EasySoccer.BLL.Services.SendGrid;
 using EasySoccer.DAL;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
@@ -81,10 +83,12 @@ namespace EasySoccer.WebApi
             services.AddScoped<ICompanyUserRepository, CompanyUserRepository>();
             services.AddScoped<ISportTypeRepository, SportTypeRepository>();
             services.AddScoped<ICompanyScheduleRepository, CompanyScheduleRepository>();
+            services.AddScoped<IFormInputRepository, FormInputRepository>();
             #endregion
 
             #region Services
             services.AddScoped<IBlobStorageService, BlobStorageService>();
+            services.AddScoped<IEmailService, EmailService>();
             #endregion
 
 

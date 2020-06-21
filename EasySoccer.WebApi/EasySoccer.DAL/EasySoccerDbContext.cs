@@ -35,6 +35,9 @@ namespace EasySoccer.DAL
         public DbSet<SportType> SportType { get; set; }
         public IQueryable<SportType> SportTypeQuery { get { return SportType; } }
 
+        public DbSet<FormInput> FormInput { get; set; }
+        public IQueryable<FormInput> FormInputQuery { get { return FormInput; } }
+
         #region Infra
 
         public EasySoccerDbContext(DbContextOptions op) : base(op)
