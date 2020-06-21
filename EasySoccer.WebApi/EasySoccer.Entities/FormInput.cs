@@ -14,7 +14,7 @@ namespace EasySoccer.Entities
         public long Id { get; set; }
 
         [Required]
-        [StringLength(400)]
+        [StringLength(800)]
         public string InputData { get; set; }
 
         [Required]

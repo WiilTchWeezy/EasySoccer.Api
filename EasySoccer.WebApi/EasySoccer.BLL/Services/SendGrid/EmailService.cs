@@ -30,7 +30,8 @@ namespace EasySoccer.BLL.Services.SendGrid
             var from = new EmailAddress(_emailFrom, _userFrom);
             var to = new EmailAddress(emailTo, userNameTo);
             var msg = MailHelper.CreateSingleTemplateEmail(from, to, templateId, templateData);
-            await client.SendEmailAsync(msg);
+            var response = await client.SendEmailAsync(msg);
+            var contentResponse = await response.Body.ReadAsStringAsync();
         }
 
         public async Task SendValidationErrorsEmailAsync(string emailTo, string userNameTo, string[] errors)
@@ -38,9 +39,10 @@ namespace EasySoccer.BLL.Services.SendGrid
             string formattedErrors = "";
             foreach (var item in errors)
             {
-                formattedErrors += String.Format("<p>{0}</p>", item);
+                if (string.IsNullOrEmpty(item) == false)
+                    formattedErrors += String.Format("<p>{0}</p>", item);
             }
-            await SendEmailAsync(emailTo, userNameTo, _validationErrorTemplateId, new { firstName= userNameTo,  errors = formattedErrors });
+            await SendEmailAsync(emailTo, userNameTo, _validationErrorTemplateId, new { firstName = userNameTo, errors = formattedErrors });
         }
     }
 }

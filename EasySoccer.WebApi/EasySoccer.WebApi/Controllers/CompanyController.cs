@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
@@ -91,6 +92,21 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 await _uow.CompanyBLL.SaveImageAsync(new CurrentUser(HttpContext).CompanyId, request.ImageBase64);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
+        [AllowAnonymous]
+        [Route("companyforminput"), HttpPost]
+        public async Task<IActionResult> CompanyFormInputAsync([FromBody]FormInputCompanyEntryRequest request)
+        {
+            try
+            {
+                await _uow.CompanyBLL.SaveFormInputCompanyAsync(request);
                 return Ok();
             }
             catch (Exception e)

@@ -97,7 +97,8 @@ namespace EasySoccer.BLL
                 string errorFormatted = "";
                 foreach (var item in errors)
                 {
-                    errorFormatted += item;
+                    if (string.IsNullOrEmpty(item) == false)
+                        errorFormatted += item;
                 }
                 formInput.Message = "Erro na validação dos dados. - " + errorFormatted;
                 formInput.Status = Entities.Enum.FormStatusEnum.Error;
