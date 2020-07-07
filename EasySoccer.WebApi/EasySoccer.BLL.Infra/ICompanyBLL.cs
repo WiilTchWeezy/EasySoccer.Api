@@ -14,5 +14,6 @@ namespace EasySoccer.BLL.Infra
         Task SaveImageAsync(long companyId, string imageBase64);
 
         Task SaveFormInputCompanyAsync(FormInputCompanyEntryRequest request);
+        Task SaveFormInputContactAsync(FormInputContactRequest request);
     }
 }

@@ -8,6 +8,8 @@ using EasySoccer.BLL.Infra.Services.SendGrid;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
+using EasySoccer.Entities.Enum;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,7 +27,22 @@ namespace EasySoccer.BLL
         private IBlobStorageService _blobStorageService;
         private IFormInputRepository _formInputRepository;
         private IEmailService _emailService;
-        public CompanyBLL(ICompanyRepository companyRepository, IEasySoccerDbContext dbContext, ICompanyScheduleRepository companyScheduleRepository, IBlobStorageService blobStorageService, IFormInputRepository formInputRepository, IEmailService emailService)
+        private ICompanyUserRepository _companyUserRepository;
+        private IConfiguration _configuration;
+        private ICompanyFinancialRecordRepository _companyFinancialRecordRepository;
+        private int daysFree = 0;
+        private string formContactReceiverName = string.Empty;
+        private string formContactReceiverEmail = string.Empty;
+        public CompanyBLL
+            (ICompanyRepository companyRepository,
+            IEasySoccerDbContext dbContext,
+            ICompanyScheduleRepository companyScheduleRepository,
+            IBlobStorageService blobStorageService,
+            IFormInputRepository formInputRepository,
+            IEmailService emailService,
+            ICompanyUserRepository companyUserRepository,
+            IConfiguration configuration,
+            ICompanyFinancialRecordRepository companyFinancialRecordRepository)
         {
             _companyRepository = companyRepository;
             _dbContext = dbContext;
@@ -33,6 +50,20 @@ namespace EasySoccer.BLL
             _blobStorageService = blobStorageService;
             _formInputRepository = formInputRepository;
             _emailService = emailService;
+            _companyUserRepository = companyUserRepository;
+            _configuration = configuration;
+            _companyFinancialRecordRepository = companyFinancialRecordRepository;
+            var financialConfig = configuration.GetSection("FinancialConfiguration");
+            if (financialConfig != null)
+            {
+                daysFree = financialConfig.GetValue<int>("DaysFree");
+            }
+            var sendGridConfig = configuration.GetSection("SendGridConfiguration");
+            if (sendGridConfig != null)
+            {
+                formContactReceiverName = sendGridConfig.GetValue<string>("ContactReceiverName");
+                formContactReceiverEmail = sendGridConfig.GetValue<string>("ContactReceiverEmail");
+            }
         }
 
         public async Task<Company> CreateAsync(string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude)
@@ -85,30 +116,148 @@ namespace EasySoccer.BLL
             };
             await _formInputRepository.Create(formInput);
             await _dbContext.SaveChangesAsync();
-            var errors = new List<string>();
 
-            errors.Add(ValidationHelper.Instance.ValidateEmail(request.UserEmail));
-            errors.Add(ValidationHelper.Instance.ValidateCompanyDocument(request.CompanyDocument));
-            errors.Add(ValidationHelper.Instance.ValidateCardNumberAndSecurityCode(request.CardNumber, request.SecurityCode));
-            errors.Add(ValidationHelper.Instance.ValidateUserDocument(request.FinancialDocument));
+            var validationResponse = await ValidationHelper.Instance.Validate(request, _companyUserRepository, _companyRepository);
 
-            if (errors != null && errors.Count > 0 && errors.Any(x => string.IsNullOrEmpty(x) == false))
+            if (validationResponse.IsValid == false)
             {
-                string errorFormatted = "";
-                foreach (var item in errors)
-                {
-                    if (string.IsNullOrEmpty(item) == false)
-                        errorFormatted += item;
-                }
-                formInput.Message = "Erro na validação dos dados. - " + errorFormatted;
+                formInput.Message = "Erro na validação dos dados. - " + validationResponse.ErrorHtmlFormatted;
                 formInput.Status = Entities.Enum.FormStatusEnum.Error;
                 await _dbContext.SaveChangesAsync();
-                if (string.IsNullOrEmpty(ValidationHelper.Instance.ValidateEmail(request.UserEmail)))
+                await _emailService.SendValidationErrorsEmailAsync(request.UserEmail, request.UserName, validationResponse.ErrorHtmlFormatted);
+            }
+            else
+            {
+                try
                 {
-                    await _emailService.SendValidationErrorsEmailAsync(request.UserEmail, request.UserName, errors.ToArray());
+                    var company = new Company
+                    {
+                        Active = true,
+                        CNPJ = request.CompanyDocument.Replace(".", "").Replace("-", "").Replace("/", ""),
+                        Name = request.CompanyName,
+                        Description = request.CompanyName,
+                        CreatedDate = DateTime.UtcNow
+                    };
+                    await _companyRepository.Create(company);
+                    await _dbContext.SaveChangesAsync();
+                    foreach (var item in this.GetDefaultCompanySchedules(company.Id))
+                    {
+                        await _companyScheduleRepository.Create(item);
+                    }
+                    var companyUser = new CompanyUser
+                    {
+                        CreatedDate = DateTime.UtcNow,
+                        Name = request.UserName,
+                        CompanyId = company.Id,
+                        Email = request.UserEmail,
+                        Password = PasswordHelper.Instance.GeneratePassword(6, 2)
+                    };
+                    await _companyUserRepository.Create(companyUser);
+
+                    if (daysFree > 0)
+                    {
+                        var companyFinancialRecord = new CompanyFinancialRecord
+                        {
+                            CompanyId = company.Id,
+                            CreatedDate = DateTime.UtcNow,
+                            ExpiresDate = DateTime.UtcNow.AddDays(daysFree),
+                            Paid = true,
+                            Value = 0,
+                            Transaction = null
+                        };
+                        await _companyFinancialRecordRepository.Create(companyFinancialRecord);
+                    }
+                    else
+                    {
+                        var companyFinancialRecord = new CompanyFinancialRecord
+                        {
+                            CompanyId = company.Id,
+                            CreatedDate = DateTime.UtcNow,
+                            ExpiresDate = DateTime.UtcNow.AddMonths(this.GetMonthsFromPlan(request.SelectedPlan)),
+                            Paid = true, //TODO - Quando inserir gateway de pagamento inserir false e tratar depois no callBack
+                            Value = this.GetValueFromPlan(request.SelectedPlan),
+                            Transaction = null,
+                            FinancialPlan = request.SelectedPlan
+                        };
+                        await _companyFinancialRecordRepository.Create(companyFinancialRecord);
+                        //TODO - Payment Gateway insert
+                    }
+                    await _dbContext.SaveChangesAsync();
+                    await _emailService.SendSuccessEmailAsync(request.UserEmail, request.UserName, daysFree, companyUser.Password);
+                }
+                catch (Exception e)
+                {
+                    formInput.Message = "Erro ao salvar os dados. - " + e.Message;
+                    formInput.Status = Entities.Enum.FormStatusEnum.Error;
+                    await _dbContext.SaveChangesAsync();
+                    throw e;
                 }
             }
 
+        }
+
+        private decimal GetValueFromPlan(FinancialPlanEnum financialPlan)
+        {
+            decimal value = 0;
+            switch (financialPlan)
+            {
+                case FinancialPlanEnum.Mensal:
+                    value = 240;
+                    break;
+                case FinancialPlanEnum.Semestral:
+                    value = 1080;
+                    break;
+                case FinancialPlanEnum.Anual:
+                    value = 1680;
+                    break;
+                case FinancialPlanEnum.Free:
+                    value = 0;
+                    break;
+                default:
+                    break;
+            }
+            return value;
+        }
+
+        private int GetMonthsFromPlan(FinancialPlanEnum financialPlan)
+        {
+            int value = 0;
+            switch (financialPlan)
+            {
+                case FinancialPlanEnum.Mensal:
+                    value = 1;
+                    break;
+                case FinancialPlanEnum.Semestral:
+                    value = 6;
+                    break;
+                case FinancialPlanEnum.Anual:
+                    value = 12;
+                    break;
+                case FinancialPlanEnum.Free:
+                    value = 0;
+                    break;
+                default:
+                    break;
+            }
+            return value;
+        }
+
+        private List<CompanySchedule> GetDefaultCompanySchedules(long companyId)
+        {
+            var companySchedules = new List<CompanySchedule>();
+            for (int i = 0; i < 7; i++)
+            {
+                companySchedules.Add(new CompanySchedule
+                {
+                    CompanyId = companyId,
+                    CreatedDate = DateTime.UtcNow,
+                    Day = i,
+                    StartHour = 13,
+                    FinalHour = 23,
+                    WorkOnThisDay = true
+                });
+            }
+            return companySchedules;
         }
 
         public async Task SaveImageAsync(long companyId, string imageBase64)
@@ -156,6 +305,35 @@ namespace EasySoccer.BLL
             await _dbContext.SaveChangesAsync();
 
             return currentCompany;
+        }
+
+        public async Task SaveFormInputContactAsync(FormInputContactRequest request)
+        {
+            var formInput = new FormInput
+            {
+                CreatedDate = DateTime.UtcNow,
+                FormType = Entities.Enum.FormTypeEnum.ContactLandingPageEntry,
+                InputData = JsonConvert.SerializeObject(request),
+                Status = Entities.Enum.FormStatusEnum.Inserted,
+                Message = "Registro inserido aguardando processamento."
+            };
+            try
+            {
+                await _formInputRepository.Create(formInput);
+                await _dbContext.SaveChangesAsync();
+                await _emailService.SendTextEmailAsync(formContactReceiverEmail, formContactReceiverName, string.Format(" Novo contato recebido - {0} - Nome:{1} - Email: {2}", request.Subject, request.Name, request.Email), String.Format("Nome: {0} - Email: {1} Mensagem: {2}", request.Name, request.Email, request.Message));
+                formInput.Status = FormStatusEnum.Success;  
+                formInput.Message = "Registro Processado";
+                await _formInputRepository.Edit(formInput);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                formInput.Status = FormStatusEnum.Error;
+                formInput.Message = e.Message;
+                await _formInputRepository.Edit(formInput);
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }

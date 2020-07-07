@@ -24,6 +24,7 @@ namespace EasySoccer.DAL.Infra
         IQueryable<SoccerPitchSoccerPitchPlan> SoccerPitchSoccerPitchPlanQuery { get; }
         IQueryable<SportType> SportTypeQuery { get; }
         IQueryable<FormInput> FormInputQuery { get; }
+        IQueryable<CompanyFinancialRecord> CompanyFinancialRecordQuery { get; }
 
     }
 }

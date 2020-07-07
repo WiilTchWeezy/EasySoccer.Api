@@ -11,10 +11,12 @@ namespace EasySoccer.BLL
     public class CompanyUserBLL : ICompanyUserBLL
     {
         private ICompanyUserRepository _companyUserRepository;
+        private ICompanyFinancialRecordRepository _companyFinancialRecordRepository;
         private IEasySoccerDbContext _dbContext;
-        public CompanyUserBLL(ICompanyUserRepository companyUserRepository, IEasySoccerDbContext dbContext)
+        public CompanyUserBLL(ICompanyUserRepository companyUserRepository, IEasySoccerDbContext dbContext, ICompanyFinancialRecordRepository companyFinancialRecordRepository)
         {
             _companyUserRepository = companyUserRepository;
+            _companyFinancialRecordRepository = companyFinancialRecordRepository;
             _dbContext = dbContext;
         }
 
@@ -53,9 +55,17 @@ namespace EasySoccer.BLL
             return await _companyUserRepository.GetAsync(userId);
         }
 
-        public Task<CompanyUser> LoginAsync(string email, string password)
+        public async Task<CompanyUser> LoginAsync(string email, string password)
         {
-            return _companyUserRepository.LoginAsync(email, password);
+            var companyUser = await _companyUserRepository.LoginAsync(email, password);
+            if (companyUser != null)
+            {
+                var companyFiscalRecord = await _companyFinancialRecordRepository.GetByCompanyAsync(companyUser.CompanyId);
+                if (companyFiscalRecord == null)
+                    throw new BussinessException("Erro ao realizar login, por favor verifique as informações financeiras.");
+            }
+
+            return companyUser;
         }
 
         public async Task<CompanyUser> UpdateAsync(long userId, string name, string email, string phone)

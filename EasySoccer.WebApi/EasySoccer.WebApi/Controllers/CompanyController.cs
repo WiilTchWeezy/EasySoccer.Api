@@ -114,5 +114,20 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
+
+        [AllowAnonymous]
+        [Route("contactforminput"), HttpPost]
+        public async Task<IActionResult> ContactFormInputAsync([FromBody]FormInputContactRequest request)
+        {
+            try
+            {
+                await _uow.CompanyBLL.SaveFormInputContactAsync(request);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
     }
 }

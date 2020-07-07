@@ -18,9 +18,14 @@ namespace EasySoccer.DAL.Repositories
             return await _dbContext.CompanyUserQuery.Where(x => x.Id == userId).FirstOrDefaultAsync();
         }
 
+        public Task<CompanyUser> GetAsync(string userEmail)
+        {
+            return _dbContext.CompanyUserQuery.Where(x => x.Email == userEmail).FirstOrDefaultAsync();
+        }
+
         public Task<CompanyUser> LoginAsync(string email, string password)
         {
-            return _dbContext.CompanyUserQuery.Where(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
+            return _dbContext.CompanyUserQuery.Include(x => x.Company).Where(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
         }
     }
 }

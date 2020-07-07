@@ -84,6 +84,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<ISportTypeRepository, SportTypeRepository>();
             services.AddScoped<ICompanyScheduleRepository, CompanyScheduleRepository>();
             services.AddScoped<IFormInputRepository, FormInputRepository>();
+            services.AddScoped<ICompanyFinancialRecordRepository, CompanyFinancialRecordRepository>();
             #endregion
 
             #region Services

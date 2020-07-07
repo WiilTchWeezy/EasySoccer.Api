@@ -4,10 +4,11 @@ using System.Text;
 
 namespace EasySoccer.Entities.Enum
 {
-    public enum FormTypeEnum
+    public enum FinancialPlanEnum
     {
-        CompanyLandingPageEntry = 1,
-        ContactLandingPageEntry = 2
-
+        Free = 0,
+        Mensal = 1,
+        Semestral = 2,
+        Anual = 3
     }
 }

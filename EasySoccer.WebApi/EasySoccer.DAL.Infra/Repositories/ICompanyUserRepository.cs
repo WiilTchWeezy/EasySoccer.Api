@@ -7,5 +7,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     {
         Task<CompanyUser> LoginAsync(string email, string password);
         Task<CompanyUser> GetAsync(long userId);
+        Task<CompanyUser> GetAsync(string userEmail);
     }
 }

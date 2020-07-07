@@ -23,5 +23,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.CompanyQuery.Include("CompanySchedules").Where(x => x.Id == id).FirstOrDefaultAsync();
         }
+
+        public Task<Company> GetAsync(string companyDocument)
+        {
+            return _dbContext.CompanyQuery.Where(x => x.CNPJ == companyDocument).FirstOrDefaultAsync();
+        }
     }
 }

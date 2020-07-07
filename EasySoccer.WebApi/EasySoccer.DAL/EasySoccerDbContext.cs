@@ -38,6 +38,9 @@ namespace EasySoccer.DAL
         public DbSet<FormInput> FormInput { get; set; }
         public IQueryable<FormInput> FormInputQuery { get { return FormInput; } }
 
+        public DbSet<CompanyFinancialRecord> CompanyFinancialRecord { get; set; }
+        public IQueryable<CompanyFinancialRecord> CompanyFinancialRecordQuery { get { return CompanyFinancialRecord; } }
+
         #region Infra
 
         public EasySoccerDbContext(DbContextOptions op) : base(op)

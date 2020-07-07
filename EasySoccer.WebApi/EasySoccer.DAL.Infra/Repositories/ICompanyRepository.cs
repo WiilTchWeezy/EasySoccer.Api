@@ -8,5 +8,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     {
         Task<List<Company>> GetAsync(string description, int page, int pageSize);
         Task<Company> GetAsync(long id);
+        Task<Company> GetAsync(string companyDocument);
     }
 }
