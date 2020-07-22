@@ -43,7 +43,8 @@ namespace EasySoccer.WebApi.Controllers
                     x.SportType,
                     SportTypeName = x.SportType.Name,
                     x.Interval,
-                    x.ImageName
+                    x.ImageName,
+                    x.Color
                 }).ToList());
             }
             catch (Exception e)
@@ -70,7 +71,8 @@ namespace EasySoccer.WebApi.Controllers
                     x.SportTypeId,
                     SportTypeName = x.SportType.Name,
                     x.Interval,
-                    x.ImageName
+                    x.ImageName,
+                    x.Color
                 }).ToList());
             }
             catch (Exception e)
@@ -86,7 +88,7 @@ namespace EasySoccer.WebApi.Controllers
             {
 
                 var plansId = request.Plans?.Select(x => x.Id).ToArray();
-                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval));
+                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval, request.Color));
             }
             catch (Exception e)
             {
@@ -100,7 +102,7 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var plansId = request.Plans?.Select(x => x.Id).ToArray();
-                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval));
+                return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval, request.Color));
             }
             catch (Exception e)
             {

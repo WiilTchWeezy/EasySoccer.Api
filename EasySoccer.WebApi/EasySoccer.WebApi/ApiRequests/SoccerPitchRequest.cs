@@ -16,6 +16,8 @@ namespace EasySoccer.WebApi.ApiRequests
         public int SportTypeId { get; set; }
 
         public int Interval { get; set; }
+
+        public string Color { get; set; }
     }
 
     public class SoccerPitchSoccerPitchPlanRequest

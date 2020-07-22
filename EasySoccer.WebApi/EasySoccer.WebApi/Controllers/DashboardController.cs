@@ -56,11 +56,11 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("reservationscalendar"), HttpGet]
-        public async Task<IActionResult> GetReservationsCalendar([FromQuery]int month, [FromQuery]int? day = null)
+        public async Task<IActionResult> GetReservationsCalendar([FromQuery]int month, [FromQuery]int year, [FromQuery]int? day = null)
         {
             try
             {
-                var retorno = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day, new CurrentUser(this.HttpContext).CompanyId);
+                var retorno = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day, new CurrentUser(this.HttpContext).CompanyId, year);
                 return Ok
                     (
                     retorno
@@ -68,7 +68,8 @@ namespace EasySoccer.WebApi.Controllers
                         {
                             startDate = x.SelectedDateStart,
                             endDate = x.SelectedDateEnd,
-                            title = $"{x.SoccerPitch.Name} - {x.User.Name}"
+                            title = $"{x.SoccerPitch.Name} - {x.User?.Name} - ( {x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00} - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} )",
+                            color = string.IsNullOrEmpty(x.SoccerPitch.Color) ? "#ff591f" : x.SoccerPitch?.Color
                         }).ToList()
                     );
             }

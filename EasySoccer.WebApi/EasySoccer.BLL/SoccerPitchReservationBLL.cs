@@ -278,7 +278,7 @@ namespace EasySoccer.BLL
             return reservationChart;
         }
 
-        public Task<List<SoccerPitchReservation>> GetReservationsByMonthOrDay(int month, int? day, long companyId)
+        public Task<List<SoccerPitchReservation>> GetReservationsByMonthOrDay(int month, int? day, long companyId, int year)
         {
             if (day.HasValue && day.Value > 0)
             {
@@ -286,7 +286,7 @@ namespace EasySoccer.BLL
             }
             else
             {
-                return _soccerPitchReservationRepository.GetAsync(month, companyId);
+                return _soccerPitchReservationRepository.GetAsync(month, companyId, year);
             }
         }
 

@@ -30,7 +30,7 @@ namespace EasySoccer.BLL
             _blobStorageService = blobStorageService;
         }
 
-        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval)
+        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval, string color)
         {
             var soccerPitch = new SoccerPitch
             {
@@ -44,7 +44,8 @@ namespace EasySoccer.BLL
                 Name = name,
                 NumberOfPlayers = numberOfPlayers,
                 SportTypeId = sportTypeId,
-                Interval = interval
+                Interval = interval,
+                Color = color
             };
             await _soccerPitchRepository.Create(soccerPitch);
             foreach (var item in soccerPitchPlansId)
@@ -98,7 +99,7 @@ namespace EasySoccer.BLL
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval)
+        public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval, string color)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(id);
             if (soccerPitch == null)
@@ -132,6 +133,7 @@ namespace EasySoccer.BLL
             soccerPitch.Active = active;
             soccerPitch.Interval = interval;
             soccerPitch.ActiveDate = active ? (DateTime?)DateTime.UtcNow : null;
+            soccerPitch.Color = color;
             await _soccerPitchRepository.Edit(soccerPitch);
             await _dbContext.SaveChangesAsync();
             return soccerPitch;
