@@ -7,6 +7,8 @@ namespace EasySoccer.BLL.Infra.DTO
     {
         public SoccerPitch SoccerPitch { get; set; }
 
+        public SoccerPitchReservation SoccerPitchReservation { get; set; }
+
         public bool IsAvaliable { get; set; }
 
         public DateTime SelectedDateStart { get; set; }

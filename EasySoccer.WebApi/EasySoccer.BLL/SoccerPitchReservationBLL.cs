@@ -42,6 +42,10 @@ namespace EasySoccer.BLL
             var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
             var selectedDateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourFinish.Hours, hourFinish.Minutes, hourFinish.Seconds);
 
+            var reservationAvaliable = await CheckReservationIsAvaliable(selectedDateStart, soccerPitchId, selectedDateEnd);
+            if (reservationAvaliable.IsAvaliable == false)
+                throw new BussinessException("Horário selecionado não esta disponivel");
+
             var soccerPitchReservation = new SoccerPitchReservation
             {
                 Id = Guid.NewGuid(),
@@ -79,6 +83,9 @@ namespace EasySoccer.BLL
             var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
             var selectedDateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourFinish.Hours, hourFinish.Minutes, hourFinish.Seconds);
 
+            var reservationAvaliable = await CheckReservationIsAvaliable(selectedDateStart, soccerPitchId, selectedDateEnd);
+            if (reservationAvaliable.IsAvaliable == false)
+                throw new BussinessException("Horário selecionado não esta disponivel");
             var soccerPitchReservation = new SoccerPitchReservation
             {
                 Id = Guid.NewGuid(),
@@ -262,6 +269,27 @@ namespace EasySoccer.BLL
 
         }
 
+        private async Task<CheckReservationIsAvaliableResponse> CheckReservationIsAvaliable(DateTime selectedDateStart, long soccerPitchId, DateTime selectedDateEnd)
+        {
+            var soccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
+            if (soccerPitch == null)
+                throw new BussinessException("Quadra não encontrada.");
+
+            var companySchedule = await _companyScheduleRepository.GetAsync(soccerPitch.CompanyId, (int)selectedDateStart.DayOfWeek);
+            if (companySchedule == null)
+                throw new BussinessException("Agenda da empresa não encontrada.");
+
+            if (companySchedule.StartHour > selectedDateStart.TimeOfDay.Hours && companySchedule.FinalHour < selectedDateStart.TimeOfDay.Hours)
+                throw new BussinessException("Agenda da empresa não permite a hora selecionada.");
+
+            var reservation = await _soccerPitchReservationRepository.GetAsync(selectedDateStart, selectedDateEnd, soccerPitchId);
+            if (reservation == null)
+                return new CheckReservationIsAvaliableResponse { IsAvaliable = true, SoccerPitch = soccerPitch, SelectedDateStart = selectedDateStart, SelectedDateEnd = selectedDateEnd };
+            else
+                return new CheckReservationIsAvaliableResponse { IsAvaliable = false, SoccerPitch = soccerPitch, SelectedDateStart = selectedDateStart, SelectedDateEnd = selectedDateEnd, SoccerPitchReservation = reservation };
+
+        }
+
         public async Task<List<ReservationChart>> GetReservationChartDataAsync(DateTime startDate)
         {
             var reservationChart = new List<ReservationChart>();
@@ -318,6 +346,13 @@ namespace EasySoccer.BLL
 
             var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
             var selectedDateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourFinish.Hours, hourFinish.Minutes, hourFinish.Seconds);
+
+            var reservationAvaliable = await CheckReservationIsAvaliable(selectedDateStart, soccerPitchId, selectedDateEnd);
+            if (reservationAvaliable.IsAvaliable == false)
+            {
+                if (reservationAvaliable.SoccerPitchReservation.Id != soccerPitchReservation.Id)
+                    throw new BussinessException("Horário selecionado não esta disponivel");
+            }
 
             soccerPitchReservation.Note = note;
             soccerPitchReservation.SelectedDateStart = selectedDateStart;

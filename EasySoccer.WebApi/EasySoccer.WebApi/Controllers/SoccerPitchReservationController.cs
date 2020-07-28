@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EasySoccer.BLL.Exceptions;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.ApiRequests.Base;
 using EasySoccer.WebApi.Controllers.Base;
@@ -64,7 +65,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(e.Message);
             }
         }
 
@@ -77,7 +78,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(e.Message);
             }
         }
 
