@@ -1,5 +1,6 @@
 ﻿using EasySoccer.BLL.Enums;
 using EasySoccer.BLL.Exceptions;
+using EasySoccer.BLL.Helper;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.DAL.Infra;
@@ -59,6 +60,9 @@ namespace EasySoccer.BLL
                 UserId = userId,
                 SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id
             };
+            var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
+            if (validationResponse.IsValid == false)
+                throw new BussinessException(validationResponse.ErrorFormatted);
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
             return soccerPitchReservation;
@@ -100,6 +104,9 @@ namespace EasySoccer.BLL
                 SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id,
                 Interval = selectedSoccerPitch.Interval
             };
+            var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
+            if (validationResponse.IsValid == false)
+                throw new BussinessException(validationResponse.ErrorFormatted);
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
             return soccerPitchReservation;
@@ -111,10 +118,10 @@ namespace EasySoccer.BLL
             return await _soccerPitchReservationRepository.GetAsync(date, companyPitchs, page, pageSize);
         }
 
-        public async Task<List<SoccerPitchReservation>> GetAsync(long companyId, int page, int pageSize)
+        public async Task<List<SoccerPitchReservation>> GetAsync(long companyId, int page, int pageSize, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName)
         {
             var companyPitchs = await _soccerPitchRepository.GetByCompanyIdAsync(companyId);
-            return await _soccerPitchReservationRepository.GetAsync(companyPitchs, page, pageSize);
+            return await _soccerPitchReservationRepository.GetAsync(companyPitchs, page, pageSize, initialDate, finalDate,soccerPitchId, soccerPitchPlanId, userName);
         }
 
         public async Task<List<AvaliableSchedulesDTO>> GetAvaliableSchedules(long companyId, DateTime selectedDate, int sportType)
@@ -323,9 +330,9 @@ namespace EasySoccer.BLL
             return _soccerPitchReservationRepository.GetResumeAsync();
         }
 
-        public Task<int> GetTotalAsync()
+        public Task<int> GetTotalAsync(long companyId, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName)
         {
-            return _soccerPitchReservationRepository.GetTotalAsync();
+            return _soccerPitchReservationRepository.GetTotalAsync(companyId, initialDate, finalDate, soccerPitchId, soccerPitchPlanId, userName);
         }
 
         public Task<List<SoccerPitchReservation>> GetUserSchedulesAsync(Guid userId)
@@ -359,6 +366,9 @@ namespace EasySoccer.BLL
             soccerPitchReservation.SelectedDateEnd = selectedDateEnd;
             soccerPitchReservation.SoccerPitchId = soccerPitchId;
             soccerPitchReservation.UserId = userId;
+            var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
+            if (validationResponse.IsValid == false)
+                throw new BussinessException(validationResponse.ErrorFormatted);
             await _soccerPitchReservationRepository.Edit(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
             return soccerPitchReservation;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Internal;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -20,6 +21,18 @@ namespace EasySoccer.BLL.Infra.DTO
             }
         }
 
+        public void AddValidationMessage(List<string> messages)
+        {
+            if (messages != null && messages.Any())
+            {
+                foreach (var item in messages)
+                {
+                    if (string.IsNullOrEmpty(item) == false)
+                        ErrorsMessage.Add(item);
+                }
+            }
+        }
+
         public string ErrorHtmlFormatted
         {
             get
@@ -31,6 +44,20 @@ namespace EasySoccer.BLL.Infra.DTO
                         errorHtmlFormatted += $"<p>{item}</p>";
                 }
                 return errorHtmlFormatted;
+            }
+        }
+
+        public string ErrorFormatted
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                foreach (var item in ErrorsMessage)
+                {
+                    if (!string.IsNullOrEmpty(item))
+                        sb.AppendLine(item);
+                }
+                return sb.ToString();
             }
         }
 

@@ -26,13 +26,22 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("get"), HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]GetBaseRequest request)
+        public async Task<IActionResult> GetAsync([FromQuery]GetSoccerPitchReservationRequest request)
         {
             try
             {
                 return Ok(new
                 {
-                    Data = (await _uow.SoccerPitchReservationBLL.GetAsync(new CurrentUser(HttpContext).CompanyId, request.Page, request.PageSize)).Select(x => new
+                    Data = (await _uow.SoccerPitchReservationBLL.GetAsync(
+                        new CurrentUser(HttpContext).CompanyId, 
+                        request.Page, 
+                        request.PageSize, 
+                        request.InitialDate, 
+                        request.FinalDate, 
+                        request.SoccerPitchId, 
+                        request.SoccerPitchPlanId, 
+                        request.UserName)
+                    ).Select(x => new
                     {
                         x.Id,
                         SelectedDate = x.SelectedDateStart,
@@ -45,9 +54,10 @@ namespace EasySoccer.WebApi.Controllers
                         x.SoccerPitchId,
                         x.Status,
                         x.SoccerPitchSoccerPitchPlanId,
-                        x.Interval
+                        x.Interval,
+                        SoccerPitchPlanId = x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId
                     }).ToList(),
-                    Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync()
+                    Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId, request.InitialDate, request.FinalDate, request.SoccerPitchId, request.SoccerPitchPlanId, request.UserName)
                 });
             }
             catch (Exception e)
@@ -61,7 +71,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchSoccerPitchPlanId));
+                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchPlanId));
             }
             catch (Exception e)
             {
@@ -74,7 +84,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchSoccerPitchPlanId));
+                return Ok(await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchPlanId));
             }
             catch (Exception e)
             {

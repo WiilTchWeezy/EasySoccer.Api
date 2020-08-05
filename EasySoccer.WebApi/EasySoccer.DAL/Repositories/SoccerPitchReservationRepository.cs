@@ -27,12 +27,21 @@ namespace EasySoccer.DAL.Repositories
                 .ToListAsync();
         }
 
-        public Task<List<SoccerPitchReservation>> GetAsync(long[] soccerPitchs, int page, int pageSize)
+        public Task<List<SoccerPitchReservation>> GetAsync(long[] soccerPitchs, int page, int pageSize, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName)
         {
             return _dbContext.SoccerPitchReservationQuery
-                .Where(x => soccerPitchs.Contains(x.SoccerPitchId))
+                .Where(
+                x => soccerPitchs.Contains(x.SoccerPitchId)
+                && (initialDate.HasValue == false || x.SelectedDateStart.Date >= initialDate.Value.Date)
+                && (finalDate.HasValue == false || x.SelectedDateStart.Date <= finalDate.Value.Date)
+                && (soccerPitchId.HasValue == false || x.SoccerPitchId == soccerPitchId)
+                && (soccerPitchPlanId.HasValue == false || x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId == soccerPitchPlanId)
+                && (userName == null || x.User.Name.Contains(userName))
+                )
                 .Include(x => x.SoccerPitch)
                 .Include(x => x.User)
+                .Include(x => x.SoccerPitchSoccerPitchPlan)
+                .OrderByDescending(x => x.SelectedDateStart)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -58,19 +67,19 @@ namespace EasySoccer.DAL.Repositories
         public Task<List<SoccerPitchReservation>> GetAsync(int month, long companyId, int year)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.User)
-                .Where(x => 
-                x.SelectedDateStart.Month == month 
-                && x.SelectedDateStart.Year == year 
+                .Where(x =>
+                x.SelectedDateStart.Month == month
+                && x.SelectedDateStart.Year == year
                 && x.SoccerPitch.CompanyId == companyId).ToListAsync();
         }
 
         public Task<SoccerPitchReservation> GetAsync(DateTime dateStart, DateTime dateEnd, long soccerPitch)
         {
-            return _dbContext.SoccerPitchReservationQuery.Where(x => 
+            return _dbContext.SoccerPitchReservationQuery.Where(x =>
             x.SoccerPitchId == soccerPitch &&
             (
             (x.SelectedDateStart >= dateStart && x.SelectedDateStart <= dateEnd)
-            || 
+            ||
             (x.SelectedDateEnd >= dateStart && x.SelectedDateEnd <= dateEnd))
             ).FirstOrDefaultAsync();
         }
@@ -85,9 +94,17 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.User).Take(10).ToListAsync();
         }
 
-        public Task<int> GetTotalAsync()
+        public Task<int> GetTotalAsync(long companyId, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName)
         {
-            return _dbContext.SoccerPitchReservationQuery.CountAsync();
+            return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch)
+                .Where(
+                x => x.SoccerPitch.CompanyId == companyId
+                && (initialDate.HasValue == false || x.SelectedDateStart.Date >= initialDate.Value.Date)
+                && (finalDate.HasValue == false || x.SelectedDateStart.Date <= finalDate.Value.Date)
+                && (soccerPitchId.HasValue == false || x.SoccerPitchId == soccerPitchId)
+                && (soccerPitchPlanId.HasValue == false || x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId == soccerPitchPlanId)
+                && (userName == null || x.User.Name.Contains(userName))
+                ).CountAsync();
         }
 
         public Task<int> GetTotalByMonthAsync(int month)

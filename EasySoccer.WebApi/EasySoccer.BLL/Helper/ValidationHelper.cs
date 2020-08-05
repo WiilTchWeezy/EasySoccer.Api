@@ -1,5 +1,6 @@
 ﻿using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.DAL.Infra.Repositories;
+using EasySoccer.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,6 +31,13 @@ namespace EasySoccer.BLL.Helper
             validationResponse.AddValidationMessage(this.ValidateUserDocument(entity.FinancialDocument));
             validationResponse.AddValidationMessage(await this.ValidateAlreadyExistEmail(entity.UserEmail, companyUserRepository));
             validationResponse.AddValidationMessage(await this.ValidateAlreadyExistCompanyDocument(entity.CompanyDocument, companyRepository));
+            return validationResponse;
+        }
+
+        public ValidationResponse Validate(SoccerPitchReservation soccerPitchReservation)
+        {
+            var validationResponse = new ValidationResponse();
+            validationResponse.AddValidationMessage(this.ValidateReservationSchedule(soccerPitchReservation));
             return validationResponse;
         }
 
@@ -140,5 +148,20 @@ namespace EasySoccer.BLL.Helper
                 return $"Já existe uma empresa cadastrada com o CNPJ {companyDocument}";
             return String.Empty;
         }
+
+
+        private List<string> ValidateReservationSchedule(SoccerPitchReservation soccerPitchReservation)
+        {
+            var errorMessages = new List<string>();
+            if(soccerPitchReservation != null)
+            {
+                if (soccerPitchReservation.SelectedDateEnd <= soccerPitchReservation.SelectedDateStart)
+                    errorMessages.Add("O horário final deve ser maior que o horário inicial.");
+
+            }
+            return errorMessages;
+        }
+
+        
     }
 }
