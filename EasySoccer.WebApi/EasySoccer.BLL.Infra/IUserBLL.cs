@@ -9,7 +9,7 @@ namespace EasySoccer.BLL.Infra
     {
         Task<User> LoginAsync(string email, string password);
         Task<List<User>> GetAsync(string filter);
-        Task<User> CreateAsync(User user);
+        Task<User> CreateAsync(User user, bool createdFromWeb);
         Task<User> LoginFromFacebookAsync(string email, string id, string name, string birthday);
         Task<bool> ChangeUserPassword(string oldPassword, Guid userId, string newPassword);
         Task<User> GetAsync(Guid userId);

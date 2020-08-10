@@ -35,27 +35,35 @@ namespace EasySoccer.BLL
             return true;
         }
 
-        public async Task<User> CreateAsync(User user)
+        public async Task<User> CreateAsync(User user, bool createdFromWeb)
         {
             if (string.IsNullOrEmpty(user.Phone) == false)
             {
                 var currentUser = await _userRepository.GetByPhoneAsync(user.Phone);
                 if (currentUser != null)
-                    throw new BussinessException("Usuário já cadastrado com este telefone.");
+                    if (!createdFromWeb)
+                        throw new BussinessException("Telefone já cadastrado.");
+                    else
+                        return currentUser;
             }
             else
             {
                 throw new BussinessException("É necessário cadastrar um telefone.");
             }
 
-            if(string.IsNullOrEmpty(user.Name))
+            if (string.IsNullOrEmpty(user.Name))
                 throw new BussinessException("É necessário cadastrar um nome.");
 
             if (string.IsNullOrEmpty(user.Email) == false)
             {
                 var currentUser = await _userRepository.GetByEmailAsync(user.Email);
                 if (currentUser != null)
-                    throw new BussinessException("Usuário já cadastrado com este email.");
+                {
+                    if (!createdFromWeb)
+                        throw new BussinessException("E-mail já cadastrado.");
+                    else
+                        return currentUser;
+                }
             }
             user.CreatedDate = DateTime.Now;
             await _userRepository.Create(user);

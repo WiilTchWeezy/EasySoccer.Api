@@ -47,7 +47,7 @@ namespace EasySoccer.WebApi.Controllers
                     Phone = userRequest.PhoneNumber,
                     SocialMediaId = userRequest.SocialMediaId,
                     Password = userRequest.Password
-                });
+                }, userRequest.CreatedFromWeb);
                 return Ok(new
                 {
                     userCreated.Id,
