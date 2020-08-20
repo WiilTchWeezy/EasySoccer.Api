@@ -16,29 +16,9 @@ namespace EasySoccer.DAL.Repositories
         {
         }
 
-        public Task<List<User>> GetAsync(string filter)
+        public Task<User> LoginBySocialMediaAsync(string socialMediaId)
         {
-            return _dbContext.UserQuery.Where(x => x.Name.Contains(filter) || x.Phone.Contains(filter)).ToListAsync();
-        }
-
-        public Task<User> GetByEmailAsync(string email)
-        {
-            return _dbContext.UserQuery.Where(x => x.Email.Equals(email)).FirstOrDefaultAsync();
-        }
-
-        public Task<User> GetByPhoneAsync(string phone)
-        {
-            return _dbContext.UserQuery.Where(x => x.Phone == phone).FirstOrDefaultAsync();
-        }
-
-        public Task<User> LoginAsync(string email, string password)
-        {
-            return _dbContext.UserQuery.Where(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
-        }
-
-        public Task<User> LoginBySocialMediaAsync(string socialMediaId, string email)
-        {
-            return _dbContext.UserQuery.Where(x => x.SocialMediaId == socialMediaId || x.Email == email).FirstOrDefaultAsync();
+            return _dbContext.UserQuery.Where(x => x.SocialMediaId == socialMediaId).FirstOrDefaultAsync();
         }
 
         public Task<User> GetAsync(Guid userId)

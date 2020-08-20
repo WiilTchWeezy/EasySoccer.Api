@@ -16,7 +16,7 @@ namespace EasySoccer.WebApi.Controllers
     public class UserController : ApiBaseController
     {
         private UserUoW _uoW;
-        public UserController(UserUoW uoW) : base (uoW)
+        public UserController(UserUoW uoW) : base(uoW)
         {
             _uoW = uoW;
         }
@@ -26,7 +26,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok((await _uoW.UserBLL.GetAsync(filter)).Select(x => new { name = x.Name + " - (" + x.Phone + ")", x.Id }).ToList());
+                return Ok((await _uoW.UserBLL.GetAsync(filter)).Select(x => new { name = x.Name + " - (" + x.Phone + ")", Id = x.PersonId }).ToList());
             }
             catch (Exception e)
             {
@@ -35,23 +35,15 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [AllowAnonymous]
-        [Route("create"), HttpPost]
+        [Route("createPerson"), HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]UserRequest userRequest)
         {
             try
             {
-                var userCreated = await _uoW.UserBLL.CreateAsync(new Entities.User
-                {
-                    Email = userRequest.Email,
-                    Name = userRequest.Name,
-                    Phone = userRequest.PhoneNumber,
-                    SocialMediaId = userRequest.SocialMediaId,
-                    Password = userRequest.Password
-                }, userRequest.CreatedFromWeb);
+                var userCreated = await _uoW.UserBLL.CreatePersonAsync(userRequest.Name, userRequest.PhoneNumber, userRequest.Email, Entities.Enum.CreatedFromEnum.WebApp);
                 return Ok(new
                 {
-                    userCreated.Id,
-                    userCreated.CreatedDate,
+                    userCreated.PersonId,
                     userCreated.Email,
                     userCreated.Name,
                     userCreated.Phone
@@ -85,7 +77,7 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var user = await _uoW.UserBLL.GetAsync(new MobileUser(HttpContext).UserId);
-                return Ok(new { user.Id, user.Name, user.Phone, user.Email });
+                return Ok(new { Id = user.UserId, user.Name, user.Phone, user.Email });
             }
             catch (Exception e)
             {
@@ -99,7 +91,7 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var user = await _uoW.UserBLL.UpdateAsync(new MobileUser(HttpContext).UserId, request.Name, request.Email, request.PhoneNumber);
-                return Ok(new { user.Id, user.Name, user.Phone, user.Email });
+                return Ok(new { user.UserId, user.Name, user.Phone, user.Email });
             }
             catch (Exception e)
             {

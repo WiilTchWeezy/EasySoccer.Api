@@ -1,10 +1,13 @@
 ﻿using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Infra;
+using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
+using EasySoccer.Entities.Enum;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,10 +17,12 @@ namespace EasySoccer.BLL
     {
         private IUserRepository _userRepository;
         private IEasySoccerDbContext _dbContext;
-        public UserBLL(IUserRepository userRepository, IEasySoccerDbContext dbContext)
+        private IPersonRepository _personRepository;
+        public UserBLL(IUserRepository userRepository, IPersonRepository personRepository, IEasySoccerDbContext dbContext)
         {
             _userRepository = userRepository;
             _dbContext = dbContext;
+            _personRepository = personRepository;
         }
 
         public async Task<bool> ChangeUserPassword(string oldPassword, Guid userId, string newPassword)
@@ -35,102 +40,153 @@ namespace EasySoccer.BLL
             return true;
         }
 
-        public async Task<User> CreateAsync(User user, bool createdFromWeb)
+        public async Task<List<PersonUserResponse>> GetAsync(string filter)
         {
-            if (string.IsNullOrEmpty(user.Phone) == false)
+            var persons = await _personRepository.GetAsync(filter);
+            return persons.Select(x => new PersonUserResponse
             {
-                var currentUser = await _userRepository.GetByPhoneAsync(user.Phone);
-                if (currentUser != null)
-                    if (!createdFromWeb)
-                        throw new BussinessException("Telefone já cadastrado.");
-                    else
-                        return currentUser;
-            }
-            else
-            {
-                throw new BussinessException("É necessário cadastrar um telefone.");
-            }
+                Email = x.Email,
+                Name = x.Name,
+                PersonId = x.Id,
+                Phone = x.Phone
+            }).ToList();
 
-            if (string.IsNullOrEmpty(user.Name))
-                throw new BussinessException("É necessário cadastrar um nome.");
+        }
 
-            if (string.IsNullOrEmpty(user.Email) == false)
+        public async Task<PersonUserResponse> LoginAsync(string email, string password)
+        {
+            PersonUserResponse personUserResponse = null;
+            var person = await _personRepository.GetByEmailAsync(email);
+            if (person != null && person.UserId.HasValue)
             {
-                var currentUser = await _userRepository.GetByEmailAsync(user.Email);
-                if (currentUser != null)
+                var user = await _userRepository.GetAsync(person.UserId.Value);
+                if (user != null)
                 {
-                    if (!createdFromWeb)
-                        throw new BussinessException("E-mail já cadastrado.");
-                    else
-                        return currentUser;
+                    if (password.Equals(user.Password))
+                        personUserResponse = new PersonUserResponse(person, user);
                 }
             }
-            user.CreatedDate = DateTime.Now;
-            await _userRepository.Create(user);
-            await _dbContext.SaveChangesAsync();
-            return user;
+            return personUserResponse;
+
         }
 
-        public Task<List<User>> GetAsync(string filter)
+        public async Task<PersonUserResponse> LoginFromFacebookAsync(string email, string id, string name, string birthday)
         {
-            return _userRepository.GetAsync(filter);
-        }
-
-        public async Task<User> LoginAsync(string email, string password)
-        {
-            User user;
-            user = await _userRepository.LoginAsync(email, password);
-            if (user == null)
-                user = await _userRepository.LoginBySocialMediaAsync(password, email);
-            return user;
-        }
-
-        public async Task<User> LoginFromFacebookAsync(string email, string id, string name, string birthday)
-        {
-            var user = await _userRepository.LoginBySocialMediaAsync(id, email);
+            var user = await _userRepository.LoginBySocialMediaAsync(id);
             if (user != null)
             {
-                return user;
+                var person = await _personRepository.GetAsync(user.Id);
+                if (person == null)
+                    throw new BussinessException("Ops! Ocorreu um erro, cadastro não encontrado.");
+                var personUser = new PersonUserResponse(person, user);
+                return personUser;
             }
             else
             {
-                var createdUser = new User
+                var person = await _personRepository.GetByEmailAsync(email);
+                if (person != null)
                 {
-                    CreatedDate = DateTime.Now,
-                    Email = email,
-                    Id = Guid.NewGuid(),
-                    Name = name,
-                    Password = id,
-                    SocialMediaId = id
-                };
-                await _userRepository.Create(createdUser);
-                await _dbContext.SaveChangesAsync();
-                return createdUser;
+                    if (person.UserId.HasValue)
+                        throw new BussinessException("Ops! Ocorreu um erro, email já cadastrado.");
+                    person.Name = name;
+                    person.Phone = string.Empty;
+                    var userToAdd = new User
+                    {
+                        CreatedDate = DateTime.Now,
+                        Id = Guid.NewGuid(),
+                        SocialMediaId = id,
+                        CreatedFrom = CreatedFromEnum.Mobile,
+                        Password = String.Empty
+                    };
+                    person.UserId = userToAdd.Id;
+                    await _userRepository.Create(userToAdd);
+                    await _personRepository.Edit(person);
+                    await _dbContext.SaveChangesAsync();
+                    return new PersonUserResponse(person, userToAdd);
+                }
+                else
+                {
+                    var userToAdd = new User
+                    {
+                        CreatedDate = DateTime.Now,
+                        CreatedFrom = CreatedFromEnum.Mobile,
+                        Id = Guid.NewGuid(),
+                        Password = string.Empty,
+                        SocialMediaId = id
+                    };
+                    var personToAdd = new Person
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedDate = DateTime.Now,
+                        CreatedFrom = CreatedFromEnum.Mobile,
+                        Email = email,
+                        Name = name,
+                        Phone = string.Empty,
+                        UserId = userToAdd.Id
+                    };
+                    await _userRepository.Create(userToAdd);
+                    await _personRepository.Create(personToAdd);
+                    await _dbContext.SaveChangesAsync();
+                    return new PersonUserResponse(personToAdd, userToAdd);
+                }
             }
         }
 
-        public async Task<User> GetAsync(Guid userId)
+        public async Task<PersonUserResponse> GetAsync(Guid userId)
         {
             var user = await _userRepository.GetAsync(userId);
             if (user == null)
                 throw new BussinessException("Usuário não encontrado.");
-            return user;
+            var person = await _personRepository.GetAsync(userId);
+            if (person == null)
+                throw new BussinessException("Pessoa não encontrado.");
+            var personUserResponse = new PersonUserResponse(person, user);
+            return personUserResponse;
         }
 
-        public async Task<User> UpdateAsync(Guid userId, string name, string email, string phoneNumber)
+        public async Task<PersonUserResponse> UpdateAsync(Guid userId, string name, string email, string phoneNumber)
         {
-            var user = await _userRepository.GetAsync(userId);
-            if (user == null)
+            var person = await _personRepository.GetAsync(userId);
+            if (person == null)
                 throw new BussinessException("Usuário não encontrado");
             if (!string.IsNullOrEmpty(name))
-                user.Name = name;
+                person.Name = name;
             if (!string.IsNullOrEmpty(email))
-                user.Email = email;
+                person.Email = email;
             if (!string.IsNullOrEmpty(phoneNumber))
-                user.Phone = phoneNumber;
-            await _userRepository.Edit(user);
+                person.Phone = phoneNumber;
+            await _personRepository.Edit(person);
             await _dbContext.SaveChangesAsync();
-            return user;
+            return new PersonUserResponse(person);
+        }
+
+        public async Task<PersonUserResponse> CreatePersonAsync(string name, string phone, string email, CreatedFromEnum createdFrom)
+        {
+            if (string.IsNullOrEmpty(phone))
+                throw new BussinessException("É necessário preencher um telefone.");
+
+            if (string.IsNullOrEmpty(name))
+                throw new BussinessException("É necessário preencher um nome.");
+
+            var person = new Person
+            {
+                Id = Guid.NewGuid(),
+                CreatedDate = DateTime.Now,
+                CreatedFrom = createdFrom,
+                Email = email,
+                Name = name,
+                Phone = phone
+            };
+            await _personRepository.Create(person);
+            await _dbContext.SaveChangesAsync();
+            var personResponse = new PersonUserResponse
+            {
+                Email = person.Email,
+                Name = person.Name,
+                PersonId = person.Id,
+                Phone = person.Phone
+            };
+            return personResponse;
         }
     }
 }

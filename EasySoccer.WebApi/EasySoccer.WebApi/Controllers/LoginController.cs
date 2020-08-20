@@ -37,14 +37,14 @@ namespace EasySoccer.WebApi.Controllers
             [FromServices]TokenConfigurations tokenConfigurations,
             [FromServices]SigningConfigurations signingConfigurations)
         {
-            var user = await _uow.UserBLL.LoginAsync(email, password);
-            if (user != null)
+            var personUserResponse = await _uow.UserBLL.LoginAsync(email, password);
+            if (personUserResponse != null)
             {
-                var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, false,new[] {
-                        new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
-                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
+                var token = GenerateToken(new GenericIdentity(personUserResponse.Email, "Email"), tokenConfigurations, signingConfigurations, false,new[] {
+                        new Claim(JwtRegisteredClaimNames.Jti, personUserResponse.UserId.ToString()),
+                        new Claim(JwtRegisteredClaimNames.UniqueName, personUserResponse.UserId.ToString()),
                         new Claim (JwtRegisteredClaimNames.Gender, ProfilesEnum.User.ToString()),
-                        new Claim("UserId", user.Id.ToString())
+                        new Claim("UserId", personUserResponse.UserId.ToString())
                     });
 
                 return Ok(token);
@@ -68,14 +68,14 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var user = await _uow.UserBLL.LoginFromFacebookAsync(request.Email, request.Id, $"{request.First_name} {request.Last_name}", request.Birthday);
-                if (user != null)
+                var personUserResponse = await _uow.UserBLL.LoginFromFacebookAsync(request.Email, request.Id, $"{request.First_name} {request.Last_name}", request.Birthday);
+                if (personUserResponse != null)
                 {
-                    var token = GenerateToken(new GenericIdentity(user.Email, "Email"), tokenConfigurations, signingConfigurations, false, new[] {
-                        new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
-                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
+                    var token = GenerateToken(new GenericIdentity(personUserResponse.Email, "Email"), tokenConfigurations, signingConfigurations, false, new[] {
+                        new Claim(JwtRegisteredClaimNames.Jti, personUserResponse.UserId.ToString()),
+                        new Claim(JwtRegisteredClaimNames.UniqueName, personUserResponse.UserId.ToString()),
                         new Claim (JwtRegisteredClaimNames.Gender, ProfilesEnum.User.ToString()),
-                        new Claim("UserId", user.Id.ToString())
+                        new Claim("UserId", personUserResponse.UserId.ToString())
                     });
 
                     return Ok(token);

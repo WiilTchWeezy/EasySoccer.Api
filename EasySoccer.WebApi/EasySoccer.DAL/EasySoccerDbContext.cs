@@ -41,6 +41,9 @@ namespace EasySoccer.DAL
         public DbSet<CompanyFinancialRecord> CompanyFinancialRecord { get; set; }
         public IQueryable<CompanyFinancialRecord> CompanyFinancialRecordQuery { get { return CompanyFinancialRecord; } }
 
+        public DbSet<Person> Person { get; set; }
+        public IQueryable<Person> PersonQuery { get { return Person; } }
+
         #region Infra
 
         public EasySoccerDbContext(DbContextOptions op) : base(op)

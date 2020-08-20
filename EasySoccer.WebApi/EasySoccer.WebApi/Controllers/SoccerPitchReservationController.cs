@@ -48,9 +48,9 @@ namespace EasySoccer.WebApi.Controllers
                         SelectedHourStart = new { Hour = x.SelectedDateStart.TimeOfDay.Hours.ToString("00"), Minute = x.SelectedDateStart.TimeOfDay.Minutes.ToString("00") },
                         SelectedHourEnd = new { Hour = x.SelectedDateEnd.TimeOfDay.Hours.ToString("00"), Minute = x.SelectedDateEnd.TimeOfDay.Minutes.ToString("00") },
                         SoccerPitchName = x.SoccerPitch.Name,
-                        UserName = x.User.Name,
-                        UserPhone = x.User.Phone,
-                        x.UserId,
+                        UserName = x.Person.Name,
+                        UserPhone = x.Person.Phone,
+                        UserId = x.Person.UserId,
                         x.SoccerPitchId,
                         x.Status,
                         x.SoccerPitchSoccerPitchPlanId,
@@ -71,7 +71,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchPlanId));
+                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchPlanId));
             }
             catch (Exception e)
             {
@@ -84,7 +84,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchPlanId));
+                return Ok(await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchPlanId));
             }
             catch (Exception e)
             {
@@ -111,7 +111,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchSoccerPitchPlanId));
+                return Ok(await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchSoccerPitchPlanId));
             }
             catch (Exception e)
             {
@@ -131,9 +131,9 @@ namespace EasySoccer.WebApi.Controllers
                     SelectedHourStart = x.SelectedDateStart.TimeOfDay,
                     SelectedHourEnd = x.SelectedDateEnd.TimeOfDay,
                     SoccerPitchName = x.SoccerPitch.Name,
-                    UserName = x.User.Name,
-                    UserPhone = x.User.Phone,
-                    x.UserId,
+                    UserName = x.Person.Name,
+                    UserPhone = x.Person.Phone,
+                    UserId = x.Person.UserId,
                     x.SoccerPitchId,
                     x.Status,
                     x.SoccerPitchSoccerPitchPlanId,

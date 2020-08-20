@@ -21,21 +21,24 @@ namespace EasySoccer.BLL
         private IEasySoccerDbContext _dbContext;
         private ISoccerPitchSoccerPitchPlanRepository _soccerPitchSoccerPitchPlanRepository;
         private ICompanyScheduleRepository _companyScheduleRepository;
+        private IPersonRepository _personRepository;
         public SoccerPitchReservationBLL
             (ISoccerPitchReservationRepository soccerPitchReservationRepository,
             ISoccerPitchRepository soccerPitchRepository,
             IEasySoccerDbContext dbContext,
             ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository,
-            ICompanyScheduleRepository companyScheduleRepository)
+            ICompanyScheduleRepository companyScheduleRepository,
+            IPersonRepository personRepository)
         {
             _soccerPitchReservationRepository = soccerPitchReservationRepository;
             _soccerPitchRepository = soccerPitchRepository;
             _dbContext = dbContext;
             _soccerPitchSoccerPitchPlanRepository = soccerPitchSoccerPitchPlanRepository;
             _companyScheduleRepository = companyScheduleRepository;
+            _personRepository = personRepository;
         }
 
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long soccerPitchPlanId)
+        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long soccerPitchPlanId)
         {
             var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
@@ -57,9 +60,15 @@ namespace EasySoccer.BLL
                 SoccerPitchId = soccerPitchId,
                 Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = companyUserId,
-                UserId = userId,
                 SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id
             };
+
+            if (personId.HasValue)
+            {
+                var person = await _personRepository.GetByPersonId(personId.Value);
+                if (person != null)
+                    soccerPitchReservation.PersonId = personId;
+            }
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)
                 throw new BussinessException(validationResponse.ErrorFormatted);
@@ -68,7 +77,7 @@ namespace EasySoccer.BLL
             return soccerPitchReservation;
         }
 
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchPlanId)
+        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchPlanId)
         {
 
             if (selectedDate.Date < DateTime.Now.Date)
@@ -100,10 +109,15 @@ namespace EasySoccer.BLL
                 SoccerPitchId = soccerPitchId,
                 Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = null,
-                UserId = userId,
                 SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id,
                 Interval = selectedSoccerPitch.Interval
             };
+            if (personId.HasValue)
+            {
+                var person = await _personRepository.GetByPersonId(personId.Value);
+                if (person != null)
+                    soccerPitchReservation.PersonId = personId;
+            }
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)
                 throw new BussinessException(validationResponse.ErrorFormatted);
@@ -121,7 +135,7 @@ namespace EasySoccer.BLL
         public async Task<List<SoccerPitchReservation>> GetAsync(long companyId, int page, int pageSize, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName)
         {
             var companyPitchs = await _soccerPitchRepository.GetByCompanyIdAsync(companyId);
-            return await _soccerPitchReservationRepository.GetAsync(companyPitchs, page, pageSize, initialDate, finalDate,soccerPitchId, soccerPitchPlanId, userName);
+            return await _soccerPitchReservationRepository.GetAsync(companyPitchs, page, pageSize, initialDate, finalDate, soccerPitchId, soccerPitchPlanId, userName);
         }
 
         public async Task<List<AvaliableSchedulesDTO>> GetAvaliableSchedules(long companyId, DateTime selectedDate, int sportType)
@@ -340,7 +354,7 @@ namespace EasySoccer.BLL
             return _soccerPitchReservationRepository.GetByUserAsync(userId);
         }
 
-        public async Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId)
+        public async Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId)
         {
             var soccerPitchReservation = await _soccerPitchReservationRepository.GetAsync(id);
             if (soccerPitchReservation == null)
@@ -365,7 +379,12 @@ namespace EasySoccer.BLL
             soccerPitchReservation.SelectedDateStart = selectedDateStart;
             soccerPitchReservation.SelectedDateEnd = selectedDateEnd;
             soccerPitchReservation.SoccerPitchId = soccerPitchId;
-            soccerPitchReservation.UserId = userId;
+            if (personId.HasValue)
+            {
+                var person = await _personRepository.GetByPersonId(personId.Value);
+                if (person != null)
+                    soccerPitchReservation.PersonId = personId;
+            }
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)
                 throw new BussinessException(validationResponse.ErrorFormatted);

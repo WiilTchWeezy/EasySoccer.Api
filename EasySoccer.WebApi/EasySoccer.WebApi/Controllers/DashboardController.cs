@@ -29,9 +29,9 @@ namespace EasySoccer.WebApi.Controllers
                 var currentUser = new CurrentUser(HttpContext);
                 return Ok((await _uow.SoccerPitchReservationBLL.GetResumeAsync()).Select(x => new
                 {
-                    x.UserId,
-                    UserName = x.User.Name,
-                    UserPhone = x.User.Phone,
+                    x.PersonId,
+                    UserName = x.Person.Name,
+                    UserPhone = x.Person.Phone,
                     SoccerPitchName = x.SoccerPitch.Name,
                     SelectedHour = new DateTime(x.SelectedDateStart.TimeOfDay.Ticks).ToString("hh:mm") + "-" + new DateTime(x.SelectedDateEnd.TimeOfDay.Ticks).ToString("hh:mm")
                 }).ToList());
@@ -68,7 +68,7 @@ namespace EasySoccer.WebApi.Controllers
                         {
                             startDate = x.SelectedDateStart,
                             endDate = x.SelectedDateEnd,
-                            title = $"{x.SoccerPitch.Name} - {x.User?.Name} - ( {x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00} - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} )",
+                            title = $"{x.SoccerPitch.Name} - {x.Person?.Name} - ( {x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00} - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} )",
                             color = string.IsNullOrEmpty(x.SoccerPitch.Color) ? "#ff591f" : x.SoccerPitch?.Color
                         }).ToList()
                     );

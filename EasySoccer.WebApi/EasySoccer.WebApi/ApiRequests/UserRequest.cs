@@ -12,6 +12,6 @@
         
         public string Password { get; set; }
 
-        public bool CreatedFromWeb { get; set; }
+        public bool CreatedFromWeb { get; set; } = false;
     }
 }

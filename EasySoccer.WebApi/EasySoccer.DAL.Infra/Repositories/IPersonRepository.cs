@@ -1,0 +1,15 @@
+﻿using EasySoccer.Entities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace EasySoccer.DAL.Infra.Repositories
+{
+    public interface IPersonRepository : IRepositoryBase
+    {
+        Task<List<Person>> GetAsync(string filter);
+        Task<Person> GetByEmailAsync(string email);
+        Task<Person> GetAsync(Guid userId);
+        Task<Person> GetByPersonId(Guid personId);
+    }
+}
