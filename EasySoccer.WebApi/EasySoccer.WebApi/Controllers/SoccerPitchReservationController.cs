@@ -33,13 +33,13 @@ namespace EasySoccer.WebApi.Controllers
                 return Ok(new
                 {
                     Data = (await _uow.SoccerPitchReservationBLL.GetAsync(
-                        new CurrentUser(HttpContext).CompanyId, 
-                        request.Page, 
-                        request.PageSize, 
-                        request.InitialDate, 
-                        request.FinalDate, 
-                        request.SoccerPitchId, 
-                        request.SoccerPitchPlanId, 
+                        new CurrentUser(HttpContext).CompanyId,
+                        request.Page,
+                        request.PageSize,
+                        request.InitialDate,
+                        request.FinalDate,
+                        request.SoccerPitchId,
+                        request.SoccerPitchPlanId,
                         request.UserName)
                     ).Select(x => new
                     {
@@ -48,9 +48,9 @@ namespace EasySoccer.WebApi.Controllers
                         SelectedHourStart = new { Hour = x.SelectedDateStart.TimeOfDay.Hours.ToString("00"), Minute = x.SelectedDateStart.TimeOfDay.Minutes.ToString("00") },
                         SelectedHourEnd = new { Hour = x.SelectedDateEnd.TimeOfDay.Hours.ToString("00"), Minute = x.SelectedDateEnd.TimeOfDay.Minutes.ToString("00") },
                         SoccerPitchName = x.SoccerPitch.Name,
-                        UserName = x.Person.Name,
-                        UserPhone = x.Person.Phone,
-                        UserId = x.Person.UserId,
+                        UserName = x.Person != null ? x.Person?.Name : "Responsável não selecionado",
+                        UserPhone = x.Person?.Phone,
+                        UserId = x.Person?.UserId,
                         x.SoccerPitchId,
                         x.Status,
                         x.SoccerPitchSoccerPitchPlanId,
@@ -131,9 +131,9 @@ namespace EasySoccer.WebApi.Controllers
                     SelectedHourStart = x.SelectedDateStart.TimeOfDay,
                     SelectedHourEnd = x.SelectedDateEnd.TimeOfDay,
                     SoccerPitchName = x.SoccerPitch.Name,
-                    UserName = x.Person.Name,
-                    UserPhone = x.Person.Phone,
-                    UserId = x.Person.UserId,
+                    UserName = x.Person != null ? x.Person?.Name : "Responsável não selecionado",
+                    UserPhone = x.Person?.Phone,
+                    UserId = x.Person?.UserId,
                     x.SoccerPitchId,
                     x.Status,
                     x.SoccerPitchSoccerPitchPlanId,
