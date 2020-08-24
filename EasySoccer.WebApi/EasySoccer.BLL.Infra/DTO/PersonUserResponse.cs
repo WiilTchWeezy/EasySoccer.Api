@@ -13,6 +13,9 @@ namespace EasySoccer.BLL.Infra.DTO
         public string Email { get; set; }
         public string Phone { get; set; }
 
+        public bool FoundedPersonByEmail { get; set; }
+        public bool FoundedPersonByPhone { get; set; }
+
         public PersonUserResponse(Person person, User user)
         {
             if (person != null)

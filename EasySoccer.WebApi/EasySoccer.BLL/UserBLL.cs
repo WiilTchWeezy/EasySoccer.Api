@@ -1,6 +1,7 @@
 ﻿using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.DTO;
+using EasySoccer.BLL.Infra.Services.Cryptography;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
@@ -18,11 +19,13 @@ namespace EasySoccer.BLL
         private IUserRepository _userRepository;
         private IEasySoccerDbContext _dbContext;
         private IPersonRepository _personRepository;
-        public UserBLL(IUserRepository userRepository, IPersonRepository personRepository, IEasySoccerDbContext dbContext)
+        private ICryptographyService _cryptographyService;
+        public UserBLL(IUserRepository userRepository, IPersonRepository personRepository, IEasySoccerDbContext dbContext, ICryptographyService cryptographyService)
         {
             _userRepository = userRepository;
             _dbContext = dbContext;
             _personRepository = personRepository;
+            _cryptographyService = cryptographyService;
         }
 
         public async Task<bool> ChangeUserPassword(string oldPassword, Guid userId, string newPassword)
@@ -187,6 +190,88 @@ namespace EasySoccer.BLL
                 Phone = person.Phone
             };
             return personResponse;
+        }
+
+        public async Task<PersonUserResponse> CreateUserAsync(string name, string phoneNumber, string email, string password)
+        {
+            var personByEmail = await _personRepository.GetByEmailAsync(email);
+            if (personByEmail != null)
+            {
+                if (personByEmail.UserId.HasValue)
+                    throw new BussinessException("Existe um usuário cadastrado com este email!");
+                if (!phoneNumber.Equals(personByEmail.Phone))
+                    personByEmail.Phone = phoneNumber;
+                personByEmail.Name = name;
+                var user = new User
+                {
+                    CreatedDate = DateTime.Now,
+                    CreatedFrom = CreatedFromEnum.Mobile,
+                    Id = Guid.NewGuid(),
+                    Password = _cryptographyService.Encrypt(password)
+                };
+                personByEmail.UserId = user.Id;
+                await _userRepository.Create(user);
+                await _personRepository.Edit(personByEmail);
+                await _dbContext.SaveChangesAsync();
+                var response = new PersonUserResponse(personByEmail, user);
+                response.FoundedPersonByEmail = true;
+                response.FoundedPersonByPhone = true;
+                return response;
+            }
+            else
+            {
+                var personByPhone = await _personRepository.GetByPhoneAsync(phoneNumber);
+                if(personByPhone != null)
+                {
+                    if (personByPhone.UserId.HasValue)
+                        throw new BussinessException("Existe um usuário cadastrado com este telefone!");
+                    if (!phoneNumber.Equals(personByPhone.Phone))
+                        personByPhone.Phone = phoneNumber;
+                    personByPhone.Name = name;
+                    var user = new User
+                    {
+                        CreatedDate = DateTime.Now,
+                        CreatedFrom = CreatedFromEnum.Mobile,
+                        Id = Guid.NewGuid(),
+                        Password = _cryptographyService.Encrypt(password)
+                    };
+                    personByPhone.UserId = user.Id;
+                    await _userRepository.Create(user);
+                    await _personRepository.Edit(personByPhone);
+                    await _dbContext.SaveChangesAsync();
+                    var response = new PersonUserResponse(personByPhone, user);
+                    response.FoundedPersonByEmail = true;
+                    response.FoundedPersonByPhone = true;
+                    return response;
+                }
+                else
+                {
+                    var user = new User
+                    {
+                        CreatedDate = DateTime.Now,
+                        CreatedFrom = CreatedFromEnum.Mobile,
+                        Id = Guid.NewGuid(),
+                        Password = _cryptographyService.Encrypt(password)
+                    };
+                    var person = new Person
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedFrom = CreatedFromEnum.Mobile,
+                        CreatedDate = DateTime.Now,
+                        Email = email,
+                        Name = name,
+                        Phone = phoneNumber,
+                        UserId = user.Id
+                    };
+                    await _userRepository.Create(user);
+                    await _personRepository.Create(person);
+                    await _dbContext.SaveChangesAsync();
+                    var response = new PersonUserResponse(person, user);
+                    response.FoundedPersonByEmail = true;
+                    response.FoundedPersonByPhone = true;
+                    return response;
+                }
+            }
         }
     }
 }

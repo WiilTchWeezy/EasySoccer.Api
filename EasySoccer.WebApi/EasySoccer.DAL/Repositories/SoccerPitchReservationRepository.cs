@@ -36,7 +36,7 @@ namespace EasySoccer.DAL.Repositories
                 && (finalDate.HasValue == false || x.SelectedDateStart.Date <= finalDate.Value.Date)
                 && (soccerPitchId.HasValue == false || x.SoccerPitchId == soccerPitchId)
                 && (soccerPitchPlanId.HasValue == false || x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId == soccerPitchPlanId)
-                && (userName == null )
+                && (userName == null || (x.Person.Name.Contains(userName) || x.Person.Phone.Contains(userName)))
                 )
                 .Include(x => x.SoccerPitch)
                 .Include(x => x.Person)
@@ -96,14 +96,14 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<int> GetTotalAsync(long companyId, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName)
         {
-            return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch)
+            return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.Person)
                 .Where(
                 x => x.SoccerPitch.CompanyId == companyId
                 && (initialDate.HasValue == false || x.SelectedDateStart.Date >= initialDate.Value.Date)
                 && (finalDate.HasValue == false || x.SelectedDateStart.Date <= finalDate.Value.Date)
                 && (soccerPitchId.HasValue == false || x.SoccerPitchId == soccerPitchId)
                 && (soccerPitchPlanId.HasValue == false || x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId == soccerPitchPlanId)
-                && (userName == null)
+                && (userName == null || (x.Person.Name.Contains(userName) || x.Person.Phone.Contains(userName)))
                 ).CountAsync();
         }
 

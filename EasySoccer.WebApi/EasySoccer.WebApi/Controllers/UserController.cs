@@ -98,5 +98,26 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e);
             }
         }
+
+        [AllowAnonymous]
+        [Route("createUser"), HttpPost]
+        public async Task<IActionResult> CreateUserAsync([FromBody]UserRequest userRequest)
+        {
+            try
+            {
+                var userCreated = await _uoW.UserBLL.CreateUserAsync(userRequest.Name, userRequest.PhoneNumber, userRequest.Email, userRequest.Password);
+                return Ok(new
+                {
+                    userCreated.PersonId,
+                    userCreated.Email,
+                    userCreated.Name,
+                    userCreated.Phone
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
     }
 }

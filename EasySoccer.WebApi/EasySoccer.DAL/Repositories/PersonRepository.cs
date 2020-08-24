@@ -34,5 +34,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.PersonQuery.Where(x => x.Id == personId).FirstOrDefaultAsync();
         }
+
+        public Task<Person> GetByPhoneAsync(string phone)
+        {
+            return _dbContext.PersonQuery.Where(x => x.Phone == phone).FirstOrDefaultAsync();
+        }
     }
 }
