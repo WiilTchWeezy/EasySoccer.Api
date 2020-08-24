@@ -13,7 +13,11 @@ namespace EasySoccer.BLL.Services.Cryptography
         private string _key = "";
         public CryptographyService(IConfiguration configuration)
         {
-            _key = configuration.GetConnectionString("EncryptKey");
+            var config = configuration.GetSection("GeneralConfig");
+            if (config != null)
+            {
+                _key = config.GetValue<string>("EncryptKey");
+            }
         }
         public string Decrypt(string encodedString)
         {
