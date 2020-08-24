@@ -65,7 +65,8 @@ namespace EasySoccer.BLL
                 var user = await _userRepository.GetAsync(person.UserId.Value);
                 if (user != null)
                 {
-                    if (password.Equals(user.Password))
+                    var encryptPassword = _cryptographyService.Encrypt(password);
+                    if (encryptPassword.Equals(user.Password))
                         personUserResponse = new PersonUserResponse(person, user);
                 }
             }
@@ -225,8 +226,8 @@ namespace EasySoccer.BLL
                 {
                     if (personByPhone.UserId.HasValue)
                         throw new BussinessException("Existe um usuário cadastrado com este telefone!");
-                    if (!phoneNumber.Equals(personByPhone.Phone))
-                        personByPhone.Phone = phoneNumber;
+                    if (!email.Equals(personByPhone.Email))
+                        personByPhone.Email = email;
                     personByPhone.Name = name;
                     var user = new User
                     {

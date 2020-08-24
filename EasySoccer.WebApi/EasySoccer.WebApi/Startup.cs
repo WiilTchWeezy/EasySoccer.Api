@@ -5,8 +5,10 @@ using System.Linq;
 using EasySoccer.BLL;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.Services.Azure;
+using EasySoccer.BLL.Infra.Services.Cryptography;
 using EasySoccer.BLL.Infra.Services.SendGrid;
 using EasySoccer.BLL.Services.Azure;
+using EasySoccer.BLL.Services.Cryptography;
 using EasySoccer.BLL.Services.SendGrid;
 using EasySoccer.DAL;
 using EasySoccer.DAL.Infra;
@@ -91,6 +93,7 @@ namespace EasySoccer.WebApi
             #region Services
             services.AddScoped<IBlobStorageService, BlobStorageService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ICryptographyService, CryptographyService>();
             #endregion
 
 
