@@ -119,7 +119,11 @@ namespace EasySoccer.BLL
             {
                 var person = await _personRepository.GetByUserIdAsync(userId);
                 if (person != null)
+                {
+                    if (string.IsNullOrEmpty(person.Phone))
+                        throw new BussinessException("É necessário preencher um telefone para realizar um agendamento.");
                     soccerPitchReservation.PersonId = person.Id;
+                }
             }
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)
