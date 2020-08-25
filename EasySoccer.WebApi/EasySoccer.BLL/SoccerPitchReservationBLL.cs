@@ -22,13 +22,15 @@ namespace EasySoccer.BLL
         private ISoccerPitchSoccerPitchPlanRepository _soccerPitchSoccerPitchPlanRepository;
         private ICompanyScheduleRepository _companyScheduleRepository;
         private IPersonRepository _personRepository;
+        private IUserRepository _userRepository;
         public SoccerPitchReservationBLL
             (ISoccerPitchReservationRepository soccerPitchReservationRepository,
             ISoccerPitchRepository soccerPitchRepository,
             IEasySoccerDbContext dbContext,
             ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository,
             ICompanyScheduleRepository companyScheduleRepository,
-            IPersonRepository personRepository)
+            IPersonRepository personRepository, 
+            IUserRepository userRepository)
         {
             _soccerPitchReservationRepository = soccerPitchReservationRepository;
             _soccerPitchRepository = soccerPitchRepository;
@@ -36,6 +38,7 @@ namespace EasySoccer.BLL
             _soccerPitchSoccerPitchPlanRepository = soccerPitchSoccerPitchPlanRepository;
             _companyScheduleRepository = companyScheduleRepository;
             _personRepository = personRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long soccerPitchPlanId)
@@ -77,7 +80,7 @@ namespace EasySoccer.BLL
             return soccerPitchReservation;
         }
 
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchPlanId)
+        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchPlanId)
         {
 
             if (selectedDate.Date < DateTime.Now.Date)
@@ -112,11 +115,11 @@ namespace EasySoccer.BLL
                 SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id,
                 Interval = selectedSoccerPitch.Interval
             };
-            if (personId.HasValue)
+            if (userId != default(Guid))
             {
-                var person = await _personRepository.GetByPersonId(personId.Value);
+                var person = await _personRepository.GetByUserIdAsync(userId);
                 if (person != null)
-                    soccerPitchReservation.PersonId = personId;
+                    soccerPitchReservation.PersonId = person.Id;
             }
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)

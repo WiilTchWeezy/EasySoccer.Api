@@ -10,7 +10,7 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<List<Person>> GetAsync(string filter);
         Task<Person> GetByEmailAsync(string email);
         Task<Person> GetByPhoneAsync(string phone);
-        Task<Person> GetAsync(Guid userId);
+        Task<Person> GetByUserIdAsync(Guid userId);
         Task<Person> GetByPersonId(Guid personId);
     }
 }

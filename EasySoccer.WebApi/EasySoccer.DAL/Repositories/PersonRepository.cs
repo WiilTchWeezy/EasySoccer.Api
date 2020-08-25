@@ -20,11 +20,6 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.PersonQuery.Where(x => x.Name.Contains(filter) || x.Phone.Contains(filter)).ToListAsync();
         }
 
-        public Task<Person> GetAsync(Guid userId)
-        {
-            return _dbContext.PersonQuery.Where(x => x.UserId != null && x.UserId == userId).FirstOrDefaultAsync();
-        }
-
         public Task<Person> GetByEmailAsync(string email)
         {
             return _dbContext.PersonQuery.Where(x => x.Email.Equals(email)).FirstOrDefaultAsync();
@@ -38,6 +33,11 @@ namespace EasySoccer.DAL.Repositories
         public Task<Person> GetByPhoneAsync(string phone)
         {
             return _dbContext.PersonQuery.Where(x => x.Phone == phone).FirstOrDefaultAsync();
+        }
+
+        public Task<Person> GetByUserIdAsync(Guid userId)
+        {
+            return _dbContext.PersonQuery.Where(x => x.UserId != null && x.UserId == userId).FirstOrDefaultAsync();
         }
     }
 }

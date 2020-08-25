@@ -79,7 +79,7 @@ namespace EasySoccer.BLL
             var user = await _userRepository.LoginBySocialMediaAsync(id);
             if (user != null)
             {
-                var person = await _personRepository.GetAsync(user.Id);
+                var person = await _personRepository.GetByUserIdAsync(user.Id);
                 if (person == null)
                     throw new BussinessException("Ops! Ocorreu um erro, cadastro não encontrado.");
                 var personUser = new PersonUserResponse(person, user);
@@ -141,7 +141,7 @@ namespace EasySoccer.BLL
             var user = await _userRepository.GetAsync(userId);
             if (user == null)
                 throw new BussinessException("Usuário não encontrado.");
-            var person = await _personRepository.GetAsync(userId);
+            var person = await _personRepository.GetByUserIdAsync(userId);
             if (person == null)
                 throw new BussinessException("Pessoa não encontrado.");
             var personUserResponse = new PersonUserResponse(person, user);
@@ -150,7 +150,7 @@ namespace EasySoccer.BLL
 
         public async Task<PersonUserResponse> UpdateAsync(Guid userId, string name, string email, string phoneNumber)
         {
-            var person = await _personRepository.GetAsync(userId);
+            var person = await _personRepository.GetByUserIdAsync(userId);
             if (person == null)
                 throw new BussinessException("Usuário não encontrado");
             if (!string.IsNullOrEmpty(name))
