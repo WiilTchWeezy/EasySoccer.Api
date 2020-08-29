@@ -19,9 +19,9 @@ namespace EasySoccer.DAL.Repositories
             var query = _dbContext.CompanyQuery.Where(x => x.Active == true).Skip((page - 1) * pageSize).Take(pageSize);
             if (string.IsNullOrEmpty(name) == false)
                 query = query.Where(x => x.Name.Contains(name));
-            if (orderField.Equals("Name") && orderDirection.Equals("ASC"))
+            if (orderField == "Name" && orderDirection == "ASC")
                 query = query.OrderBy(x => x.Name);
-            if (orderField.Equals("Name") && orderDirection.Equals("DESC"))
+            if (orderField == "Name" && orderDirection == "DESC")
                 query = query.OrderByDescending(x => x.Name);
             return query.ToListAsync();
         }
