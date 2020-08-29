@@ -14,9 +14,16 @@ namespace EasySoccer.DAL.Repositories
         {
         }
 
-        public Task<List<Company>> GetAsync(string description, int page, int pageSize)
+        public Task<List<Company>> GetAsync(int page, int pageSize, string name, string orderField, string orderDirection)
         {
-            return _dbContext.CompanyQuery.Where(x => (description == null || x.Description.Contains(description)) && x.Active == true).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            var query = _dbContext.CompanyQuery.Where(x => x.Active == true).Skip((page - 1) * pageSize).Take(pageSize);
+            if (string.IsNullOrEmpty(name) == false)
+                query = query.Where(x => x.Name.Contains(name));
+            if (orderField.Equals("Name") && orderDirection.Equals("ASC"))
+                query = query.OrderBy(x => x.Name);
+            if (orderField.Equals("Name") && orderDirection.Equals("DESC"))
+                query = query.OrderByDescending(x => x.Name);
+            return query.ToListAsync();
         }
 
         public Task<Company> GetAsync(long id)

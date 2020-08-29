@@ -84,17 +84,20 @@ namespace EasySoccer.BLL
             return company;
         }
 
-        public async Task<List<Company>> GetAsync(double? longitude, double? latitude, string description, int page, int pageSize)
+        public async Task<List<Company>> GetAsync(double? longitude, double? latitude, int page, int pageSize, string name, string orderField, string orderDirection)
         {
-            var companies = await _companyRepository.GetAsync(description, page, pageSize);
+            var companies = await _companyRepository.GetAsync(page, pageSize, name, orderField, orderDirection);
 
-            if (longitude.HasValue && latitude.HasValue)
+            if (orderField.Equals("Location"))
             {
-                foreach (var item in companies)
+                if (longitude.HasValue && latitude.HasValue)
                 {
-                    item.Distance = LocationHelper.Haversine(longitude.Value, latitude.Value, (double)item.Longitude, (double)item.Latitude);
+                    foreach (var item in companies)
+                    {
+                        item.Distance = LocationHelper.Haversine(longitude.Value, latitude.Value, (double)item.Longitude, (double)item.Latitude);
+                    }
+                    return companies.OrderBy(c => c.Distance).ToList();
                 }
-                return companies.OrderBy(c => c.Distance).ToList();
             }
             return companies;
         }
@@ -322,7 +325,7 @@ namespace EasySoccer.BLL
                 await _formInputRepository.Create(formInput);
                 await _dbContext.SaveChangesAsync();
                 await _emailService.SendTextEmailAsync(formContactReceiverEmail, formContactReceiverName, string.Format(" Novo contato recebido - {0} - Nome:{1} - Email: {2}", request.Subject, request.Name, request.Email), String.Format("Nome: {0} - Email: {1} Mensagem: {2}", request.Name, request.Email, request.Message));
-                formInput.Status = FormStatusEnum.Success;  
+                formInput.Status = FormStatusEnum.Success;
                 formInput.Message = "Registro Processado";
                 await _formInputRepository.Edit(formInput);
                 await _dbContext.SaveChangesAsync();

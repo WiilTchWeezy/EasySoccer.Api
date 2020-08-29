@@ -6,7 +6,7 @@ namespace EasySoccer.DAL.Infra.Repositories
 {
     public interface ICompanyRepository: IRepositoryBase
     {
-        Task<List<Company>> GetAsync(string description, int page, int pageSize);
+        Task<List<Company>> GetAsync( int page, int pageSize, string name, string orderField, string orderDirection);
         Task<Company> GetAsync(long id);
         Task<Company> GetAsync(string companyDocument);
     }
