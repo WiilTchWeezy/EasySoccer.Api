@@ -88,7 +88,7 @@ namespace EasySoccer.BLL
         {
             var companies = await _companyRepository.GetAsync(page, pageSize, name, orderField, orderDirection);
 
-            if (orderField.Equals("Location"))
+            if (orderField == "Location")
             {
                 if (longitude.HasValue && latitude.HasValue)
                 {
