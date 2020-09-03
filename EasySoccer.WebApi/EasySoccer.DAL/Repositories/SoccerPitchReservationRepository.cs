@@ -111,5 +111,11 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.SoccerPitchReservationQuery.Where(x => x.SelectedDateStart.Month == month).CountAsync();
         }
+
+        public Task<List<SoccerPitchReservation>> GetAsync(long companyId, DateTime selectedDate)
+        {
+            return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.Person)
+                .Where(x => x.SoccerPitch.CompanyId == companyId && x.SelectedDateStart.Date == selectedDate.Date).ToListAsync(); 
+        }
     }
 }

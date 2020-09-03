@@ -29,7 +29,7 @@ namespace EasySoccer.BLL
             IEasySoccerDbContext dbContext,
             ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository,
             ICompanyScheduleRepository companyScheduleRepository,
-            IPersonRepository personRepository, 
+            IPersonRepository personRepository,
             IUserRepository userRepository)
         {
             _soccerPitchReservationRepository = soccerPitchReservationRepository;
@@ -398,6 +398,54 @@ namespace EasySoccer.BLL
             await _soccerPitchReservationRepository.Edit(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
             return soccerPitchReservation;
+        }
+
+        public async Task<List<GetSchedulesResponse>> GetSchedulesResponses(long companyId, DateTime selectDate)
+        {
+            var response = new List<GetSchedulesResponse>();
+            var reservations = await _soccerPitchReservationRepository.GetAsync(companyId, selectDate);
+            var soccerPitchs = await _soccerPitchRepository.GetByCompanyAsync((int)companyId);
+            var companySchedule = await _companyScheduleRepository.GetAsync(companyId, (int)selectDate.DayOfWeek);
+            if (companySchedule != null)
+            {
+                for (int i = (int)companySchedule?.StartHour; i <= (int)companySchedule?.FinalHour; i++)
+                {
+                    response.Add(new GetSchedulesResponse 
+                    { 
+                        Hour = $"{i}:00",
+                        HourSpan = TimeSpan.FromHours(i),
+                        Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents 
+                        {
+                            PersonName = x.Person != null ? x.Person.Name : "",
+                            ScheduleHour = $"{x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00}  - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ",
+                            SoccerPitch = x.SoccerPitch.Name,
+                            HasReservation = true,
+                            SoccerPitchId = x.SoccerPitchId
+                        }).ToList()
+                    });
+                }
+            }
+            foreach (var item in response)
+            {
+                if (item.Events.Count > 0)
+                {
+                    foreach (var soccerPitch in soccerPitchs)
+                    {
+                        if(item.Events.Where(x => x.SoccerPitchId == soccerPitch.Id).Any() == false)
+                        {
+                            var hourEnd = item.HourSpan.Add(TimeSpan.FromMinutes(soccerPitch.Interval.HasValue ? soccerPitch.Interval.Value : 60));
+                            item.Events.Add(new GetSchedulesResponseEvents 
+                            {
+                                ScheduleHour = $"{item.HourSpan.Hours:00}:{item.HourSpan.Minutes:00}  - {hourEnd.Hours:00}:{hourEnd.Minutes:00} ",
+                                SoccerPitch = soccerPitch.Name,
+                                HasReservation = false,
+                                SoccerPitchId = soccerPitch.Id
+                            });
+                        }
+                    }
+                }
+            }
+            return response;
         }
     }
 }

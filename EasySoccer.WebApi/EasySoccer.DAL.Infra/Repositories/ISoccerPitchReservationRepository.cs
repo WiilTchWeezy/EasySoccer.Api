@@ -18,5 +18,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<SoccerPitchReservation> GetAsync(DateTime selectedDate, long companyId, long soccerPitchId);
         Task<List<SoccerPitchReservation>> GetByUserAsync(Guid userId);
         Task<SoccerPitchReservation> GetAsync(DateTime dateStart, DateTime dateEnd, long soccerPitch);
+        Task<List<SoccerPitchReservation>> GetAsync(long companyId, DateTime selectedDate);
     }
 }
