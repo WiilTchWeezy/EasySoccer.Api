@@ -115,7 +115,7 @@ namespace EasySoccer.DAL.Repositories
         public Task<List<SoccerPitchReservation>> GetAsync(long companyId, DateTime selectedDate)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.Person)
-                .Where(x => x.SoccerPitch.CompanyId == companyId && x.SelectedDateStart.Date == selectedDate.Date).ToListAsync(); 
+                .Where(x => x.SoccerPitch.CompanyId == companyId && x.SelectedDateStart.Date == selectedDate.Date).OrderBy(x => x.SoccerPitch.Name).ToListAsync(); 
         }
     }
 }
