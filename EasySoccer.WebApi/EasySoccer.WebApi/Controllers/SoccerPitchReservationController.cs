@@ -137,7 +137,8 @@ namespace EasySoccer.WebApi.Controllers
                     x.SoccerPitchId,
                     x.Status,
                     x.SoccerPitchSoccerPitchPlanId,
-                    CompanyName = x.SoccerPitch.Company.Name
+                    CompanyName = x.SoccerPitch.Company.Name,
+                    Logo = x.SoccerPitch.Company.Logo
                 }).ToList());
             }
             catch (Exception e)
