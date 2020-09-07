@@ -47,9 +47,14 @@ namespace EasySoccer.DAL.Repositories
                 .ToListAsync();
         }
 
-        public Task<SoccerPitchReservation> GetAsync(Guid id)
+        public Task<SoccerPitchReservation> GetAsync(Guid id, bool includePerson, bool includeSoccerPitchInfo)
         {
-            return _dbContext.SoccerPitchReservationQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var query = _dbContext.SoccerPitchReservationQuery.Where(x => x.Id == id);
+            if (includePerson)
+                query = query.Include(x => x.Person);
+            if (includeSoccerPitchInfo)
+                query = query.Include(x => x.SoccerPitch).Include(x => x.SoccerPitch.Company).Include(x => x.SoccerPitchSoccerPitchPlan).Include(x => x.SoccerPitchSoccerPitchPlan.SoccerPitchPlan);
+            return query.FirstOrDefaultAsync();
         }
 
         public Task<SoccerPitchReservation> GetAsync(DateTime selectedDate, long companyId, long soccerPitchId)
@@ -115,7 +120,7 @@ namespace EasySoccer.DAL.Repositories
         public Task<List<SoccerPitchReservation>> GetAsync(long companyId, DateTime selectedDate)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.Person)
-                .Where(x => x.SoccerPitch.CompanyId == companyId && x.SelectedDateStart.Date == selectedDate.Date).OrderBy(x => x.SoccerPitch.Name).ToListAsync(); 
+                .Where(x => x.SoccerPitch.CompanyId == companyId && x.SelectedDateStart.Date == selectedDate.Date).OrderBy(x => x.SoccerPitch.Name).ToListAsync();
         }
     }
 }

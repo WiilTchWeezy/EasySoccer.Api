@@ -160,5 +160,34 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(new { message = e.Message });
             }
         }
+
+        [Route("getInfo"), HttpGet]
+        public async Task<IActionResult> GetReservationInfoAsync([FromQuery] Guid reservationId)
+        {
+            try
+            {
+                var reservation = await _uow.SoccerPitchReservationBLL.GetReservationInfoAsync(reservationId);
+                return Ok(new
+                {
+                    reservation.Id,
+                    reservation.Interval,
+                    reservation.Note,
+                    reservation.PersonId,
+                    PersonName = reservation.Person.Name,
+                    PersonPhone = reservation.Person.Phone,
+                    reservation.SelectedDateStart,
+                    reservation.SelectedDateEnd,
+                    reservation.SoccerPitchId,
+                    SoccerPitchName = reservation.SoccerPitch.Name,
+                    SoccerPitchPlanId = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId,
+                    SoccerPitchPlanName = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlan.Name,
+                    SoccerPitchPlanDescription = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlan.Description
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+        }
     }
 }

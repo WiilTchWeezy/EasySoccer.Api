@@ -410,11 +410,11 @@ namespace EasySoccer.BLL
             {
                 for (int i = (int)companySchedule?.StartHour; i <= (int)companySchedule?.FinalHour; i++)
                 {
-                    response.Add(new GetSchedulesResponse 
-                    { 
+                    response.Add(new GetSchedulesResponse
+                    {
                         Hour = $"{i}:00",
                         HourSpan = TimeSpan.FromHours(i),
-                        Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents 
+                        Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents
                         {
                             PersonName = x.Person != null ? x.Person.Name : "",
                             ScheduleHour = $"{x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00}  - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ",
@@ -431,10 +431,10 @@ namespace EasySoccer.BLL
                 {
                     foreach (var soccerPitch in soccerPitchs)
                     {
-                        if(item.Events.Where(x => x.SoccerPitchId == soccerPitch.Id).Any() == false)
+                        if (item.Events.Where(x => x.SoccerPitchId == soccerPitch.Id).Any() == false)
                         {
                             var hourEnd = item.HourSpan.Add(TimeSpan.FromMinutes(soccerPitch.Interval.HasValue ? soccerPitch.Interval.Value : 60));
-                            item.Events.Add(new GetSchedulesResponseEvents 
+                            item.Events.Add(new GetSchedulesResponseEvents
                             {
                                 ScheduleHour = $"{item.HourSpan.Hours:00}:{item.HourSpan.Minutes:00}  - {hourEnd.Hours:00}:{hourEnd.Minutes:00} ",
                                 SoccerPitch = soccerPitch.Name,
@@ -446,6 +446,11 @@ namespace EasySoccer.BLL
                 }
             }
             return response;
+        }
+
+        public Task<SoccerPitchReservation> GetReservationInfoAsync(Guid reservationId)
+        {
+            return _soccerPitchReservationRepository.GetAsync(reservationId, true, true);
         }
     }
 }
