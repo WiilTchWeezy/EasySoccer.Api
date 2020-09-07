@@ -9,7 +9,7 @@ namespace EasySoccer.DAL.Infra.Repositories
     {
         Task<List<SoccerPitchReservation>> GetAsync(DateTime date, long[] soccerPitchs, int page, int pageSize);
         Task<List<SoccerPitchReservation>> GetAsync(long[] soccerPitchs, int page, int pageSize, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName);
-        Task<SoccerPitchReservation> GetAsync(Guid id, bool includePerson, bool includeSoccerPitchInfo);
+        Task<SoccerPitchReservation> GetAsync(Guid id, bool includePerson = false, bool includeSoccerPitchInfo = false);
         Task<int> GetTotalAsync(long companyId, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName);
         Task<List<SoccerPitchReservation>> GetResumeAsync();
         Task<int> GetTotalByMonthAsync(int month);
