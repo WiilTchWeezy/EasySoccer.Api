@@ -47,7 +47,7 @@ namespace EasySoccer.DAL.Repositories
                 .ToListAsync();
         }
 
-        public Task<SoccerPitchReservation> GetAsync(Guid id, bool includePerson, bool includeSoccerPitchInfo)
+        public Task<SoccerPitchReservation> GetAsync(Guid id, bool includePerson = false, bool includeSoccerPitchInfo = false)
         {
             var query = _dbContext.SoccerPitchReservationQuery.Where(x => x.Id == id);
             if (includePerson)
