@@ -183,6 +183,7 @@ namespace EasySoccer.WebApi.Controllers
                     SoccerPitchPlanName = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlan.Name,
                     SoccerPitchPlanDescription = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlan.Description,
                     SoccerPitchImage = reservation.SoccerPitch.ImageName,
+                    SoccerPitchSportType = reservation.SoccerPitch.SportType.Name,
                     CompanyImage = reservation.SoccerPitch.Company.Logo,
                     CompanyName = reservation.SoccerPitch.Company.Name,
                     CompanyAddress = reservation.SoccerPitch.Company.CompleteAddress,
