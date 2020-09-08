@@ -185,7 +185,8 @@ namespace EasySoccer.WebApi.Controllers
                     SoccerPitchImage = reservation.SoccerPitch.ImageName,
                     CompanyImage = reservation.SoccerPitch.Company.Logo,
                     CompanyName = reservation.SoccerPitch.Company.Name,
-                    CompanyAddress = reservation.SoccerPitch.Company.CompleteAddress
+                    CompanyAddress = reservation.SoccerPitch.Company.CompleteAddress,
+                    CompanyCity = reservation.SoccerPitch.Company.City
                 });
             }
             catch (Exception e)
