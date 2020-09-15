@@ -1,0 +1,17 @@
+[
+  {
+    "PlanName": "Mensal",
+    "TotalValue": 240.00,
+    "MaxInstallments":  1
+  },
+  {
+    "PlanName": "Semestral",
+    "Value": 1080.00,
+    "MaxInstallments": 6
+  },
+  {
+    "PlanName": "Anual",
+    "Value": 1680.00,
+    "MaxInstallments": 12
+  }
+]
