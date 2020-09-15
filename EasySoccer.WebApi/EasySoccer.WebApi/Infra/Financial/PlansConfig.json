@@ -1,8 +1,8 @@
 [
   {
     "PlanName": "Mensal",
-    "TotalValue": 240,
-    "MaxInstallments":  1
+    "Value": 240,
+    "MaxInstallments": 1
   },
   {
     "PlanName": "Semestral",
