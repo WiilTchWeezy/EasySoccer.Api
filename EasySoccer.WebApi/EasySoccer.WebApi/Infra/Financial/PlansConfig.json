@@ -2,16 +2,19 @@
   {
     "PlanName": "Mensal",
     "Value": 240,
-    "MaxInstallments": 1
+    "MaxInstallments": 1,
+    "PlanId":  1
   },
   {
     "PlanName": "Semestral",
     "Value": 1080,
-    "MaxInstallments": 6
+    "MaxInstallments": 6,
+    "PlanId": 2
   },
   {
     "PlanName": "Anual",
     "Value": 1680,
-    "MaxInstallments": 12
+    "MaxInstallments": 12,
+    "PlanId": 3
   }
 ]
