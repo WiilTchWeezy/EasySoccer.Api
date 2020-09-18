@@ -25,7 +25,6 @@ namespace EasySoccer.Entities
         [Required]
         public decimal Value { get; set; }
 
-        [Required]
         [StringLength(200)]
         public string Transaction { get; set; }
 
