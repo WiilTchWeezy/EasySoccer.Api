@@ -56,6 +56,7 @@ namespace EasySoccer.WebApi.Controllers
                     currentCompany?.CompleteAddress,
                     currentCompany?.CNPJ,
                     currentCompany?.Logo,
+                    currentCompany?.City,
                     Longitude = currentCompany?.Longitude != (decimal)0.00 ? currentCompany?.Longitude : null,
                     Latitude = currentCompany?.Latitude != (decimal)0.00 ? currentCompany?.Latitude : null,
                     CompanySchedules = currentCompany?.CompanySchedules?.Select(x => new

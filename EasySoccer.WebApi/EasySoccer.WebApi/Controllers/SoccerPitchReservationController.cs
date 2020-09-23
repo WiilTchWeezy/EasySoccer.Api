@@ -161,6 +161,19 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("getschedules"), HttpGet]
+        public async Task<IActionResult> GetSchedulesResponses([FromQuery]DateTime selectedDate)
+        {
+            try
+            {
+                return Ok(await _uow.SoccerPitchReservationBLL.GetSchedulesResponses(new CurrentUser(HttpContext).CompanyId, selectedDate));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+        }
+
         [Route("getInfo"), HttpGet]
         public async Task<IActionResult> GetReservationInfoAsync([FromQuery] Guid reservationId)
         {
