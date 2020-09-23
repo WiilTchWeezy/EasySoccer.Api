@@ -161,7 +161,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
-        [Route("getschedules"), HttpGet]
+        [Route("getcompanyschedules"), HttpGet]
         public async Task<IActionResult> GetSchedulesResponses([FromQuery]DateTime selectedDate)
         {
             try
