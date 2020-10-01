@@ -285,7 +285,11 @@ namespace EasySoccer.BLL
                 throw new NotFoundException(currentCompany, id);
             currentCompany.Name = name;
             currentCompany.Description = description;
-            currentCompany.CNPJ = cnpj;
+            if (string.IsNullOrEmpty(cnpj) == false)
+            {
+                cnpj = cnpj.Replace(".", "").Replace("-", "").Replace("/", "");
+                currentCompany.CNPJ = cnpj;
+            }
             currentCompany.CompleteAddress = completeAddress;
             currentCompany.WorkOnHoliDays = workOnHolidays;
             if (longitude.HasValue)
@@ -295,15 +299,18 @@ namespace EasySoccer.BLL
             await _companyRepository.Edit(currentCompany);
             await _dbContext.SaveChangesAsync();
 
-            foreach (var item in companySchedules)
+            if (companySchedules != null)
             {
-                var currentSchedule = await _companyScheduleRepository.GetAsync(item.CompanyId, item.Day);
-                if (currentSchedule == null)
-                    throw new NotFoundException(item.CompanyId, item.Day);
-                currentSchedule.StartHour = item.StartHour;
-                currentSchedule.FinalHour = item.FinalHour;
-                currentSchedule.WorkOnThisDay = item.WorkOnThisDay;
-                await _companyScheduleRepository.Edit(currentSchedule);
+                foreach (var item in companySchedules)
+                {
+                    var currentSchedule = await _companyScheduleRepository.GetAsync(item.CompanyId, item.Day);
+                    if (currentSchedule == null)
+                        throw new NotFoundException(item.CompanyId, item.Day);
+                    currentSchedule.StartHour = item.StartHour;
+                    currentSchedule.FinalHour = item.FinalHour;
+                    currentSchedule.WorkOnThisDay = item.WorkOnThisDay;
+                    await _companyScheduleRepository.Edit(currentSchedule);
+                }
             }
             await _dbContext.SaveChangesAsync();
 
