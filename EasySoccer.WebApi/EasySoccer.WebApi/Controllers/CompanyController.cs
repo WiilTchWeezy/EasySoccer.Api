@@ -133,5 +133,19 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
+
+        [Route("active"), HttpPost]
+        public async Task<IActionResult> ActiveAsync([FromBody]CompanyActiveRequest request)
+        {
+            try
+            {
+                await _uow.CompanyBLL.ActiveAsync(new CurrentUser(HttpContext).CompanyId, request.Active);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
     }
 }

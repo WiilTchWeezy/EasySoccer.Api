@@ -345,5 +345,19 @@ namespace EasySoccer.BLL
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        public async Task ActiveAsync(long companyId, bool active)
+        {
+            var currentCompany = await _companyRepository.GetAsync(companyId);
+            if(currentCompany != null)
+            {
+                if(active != currentCompany.Active)
+                {
+                    currentCompany.Active = active;
+                    await _companyRepository.Edit(currentCompany);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+        }
     }
 }

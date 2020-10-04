@@ -15,5 +15,6 @@ namespace EasySoccer.BLL.Infra
 
         Task SaveFormInputCompanyAsync(FormInputCompanyEntryRequest request);
         Task SaveFormInputContactAsync(FormInputContactRequest request);
+        Task ActiveAsync(long companyId, bool active);
     }
 }
