@@ -44,6 +44,12 @@ namespace EasySoccer.DAL
         public DbSet<Person> Person { get; set; }
         public IQueryable<Person> PersonQuery { get { return Person; } }
 
+        public DbSet<City> City { get; set; }
+        public IQueryable<City> CityQuery { get { return City; } }
+
+        public DbSet<State> State { get; set; }
+        public IQueryable<State> StateQuery { get { return State; } }
+
         #region Infra
 
         public EasySoccerDbContext(DbContextOptions op) : base(op)

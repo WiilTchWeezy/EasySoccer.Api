@@ -34,8 +34,7 @@ namespace EasySoccer.Entities
 
         public decimal? Longitude { get; set; }
 
-        [StringLength(50)]
-        public string City { get; set; }
+        public int? IdCity { get; set; }
 
         [StringLength(200)]
         public string CompleteAddress { get; set; }
@@ -46,6 +45,9 @@ namespace EasySoccer.Entities
         public double Distance { get; set; }
 
         public virtual ICollection<CompanySchedule> CompanySchedules { get; set; }
+
+        [ForeignKey("IdCity")]
+        public virtual City City { get; set; }
 
     }
 }

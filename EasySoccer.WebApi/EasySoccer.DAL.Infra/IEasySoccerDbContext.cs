@@ -26,6 +26,8 @@ namespace EasySoccer.DAL.Infra
         IQueryable<FormInput> FormInputQuery { get; }
         IQueryable<CompanyFinancialRecord> CompanyFinancialRecordQuery { get; }
         IQueryable<Person> PersonQuery { get; }
+        IQueryable<State> StateQuery { get; }
+        IQueryable<City> CityQuery { get; }
 
     }
 }
