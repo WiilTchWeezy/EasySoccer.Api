@@ -56,6 +56,7 @@ namespace EasySoccer.WebApi.Controllers
                     currentCompany?.CompleteAddress,
                     currentCompany?.CNPJ,
                     currentCompany?.Logo,
+                    currentCompany?.IdCity,
                     City = currentCompany.IdCity.HasValue ? currentCompany?.City.Name : string.Empty,
                     currentCompany?.Active,
                     Longitude = currentCompany?.Longitude != (decimal)0.00 ? currentCompany?.Longitude : null,
@@ -81,7 +82,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                await _uow.CompanyBLL.UpdateAsync(new CurrentUser(HttpContext).CompanyId, request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude, request.CompleteAddress, request.CompanySchedules);
+                await _uow.CompanyBLL.UpdateAsync(new CurrentUser(HttpContext).CompanyId, request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude, request.CompleteAddress, request.CompanySchedules, request.IdCity);
                 return Ok();
             }
             catch (Exception e)

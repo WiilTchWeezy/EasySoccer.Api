@@ -30,6 +30,7 @@ namespace EasySoccer.BLL
         private ICompanyUserRepository _companyUserRepository;
         private IConfiguration _configuration;
         private ICompanyFinancialRecordRepository _companyFinancialRecordRepository;
+        private ICityRepository _cityRepository;
         private int daysFree = 0;
         private string formContactReceiverName = string.Empty;
         private string formContactReceiverEmail = string.Empty;
@@ -42,7 +43,8 @@ namespace EasySoccer.BLL
             IEmailService emailService,
             ICompanyUserRepository companyUserRepository,
             IConfiguration configuration,
-            ICompanyFinancialRecordRepository companyFinancialRecordRepository)
+            ICompanyFinancialRecordRepository companyFinancialRecordRepository,
+            ICityRepository cityRepository)
         {
             _companyRepository = companyRepository;
             _dbContext = dbContext;
@@ -53,6 +55,7 @@ namespace EasySoccer.BLL
             _companyUserRepository = companyUserRepository;
             _configuration = configuration;
             _companyFinancialRecordRepository = companyFinancialRecordRepository;
+            _cityRepository = cityRepository;
             var financialConfig = configuration.GetSection("FinancialConfiguration");
             if (financialConfig != null)
             {
@@ -278,7 +281,7 @@ namespace EasySoccer.BLL
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules)
+        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules, int? idCity)
         {
             var currentCompany = await _companyRepository.GetAsync(id);
             if (currentCompany == null)
@@ -296,6 +299,14 @@ namespace EasySoccer.BLL
                 currentCompany.Longitude = longitude;
             if (latitude.HasValue)
                 currentCompany.Latitude = latitude;
+            if (idCity.HasValue)
+            {
+                var city = await _cityRepository.GetAsync(idCity.Value);
+                if(city != null)
+                {
+                    currentCompany.IdCity = city.Id;
+                }
+            }
             await _companyRepository.Edit(currentCompany);
             await _dbContext.SaveChangesAsync();
 
