@@ -20,5 +20,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.CityQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
+
+        public Task<List<City>> GetCitiesByState(int idState)
+        {
+            return _dbContext.CityQuery.Where(x => x.IdState == idState).ToListAsync();
+        }
     }
 }

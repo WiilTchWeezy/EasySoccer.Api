@@ -149,5 +149,34 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
+
+
+        [AllowAnonymous]
+        [Route("getcitiesbystate"), HttpGet]
+        public async Task<IActionResult> GetCitiesByStateAsync([FromQuery]int IdState)
+        {
+            try
+            {
+                return Ok(await _uow.CompanyBLL.GetCitiesByState(IdState));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
+        [AllowAnonymous]
+        [Route("getstates"), HttpGet]
+        public async Task<IActionResult> GetStateAsync()
+        {
+            try
+            {
+                return Ok(await _uow.CompanyBLL.GetStates());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
     }
 }

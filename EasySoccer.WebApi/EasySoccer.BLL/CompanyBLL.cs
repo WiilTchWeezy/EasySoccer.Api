@@ -31,6 +31,7 @@ namespace EasySoccer.BLL
         private IConfiguration _configuration;
         private ICompanyFinancialRecordRepository _companyFinancialRecordRepository;
         private ICityRepository _cityRepository;
+        IStateRepository _stateRepository;
         private int daysFree = 0;
         private string formContactReceiverName = string.Empty;
         private string formContactReceiverEmail = string.Empty;
@@ -44,7 +45,8 @@ namespace EasySoccer.BLL
             ICompanyUserRepository companyUserRepository,
             IConfiguration configuration,
             ICompanyFinancialRecordRepository companyFinancialRecordRepository,
-            ICityRepository cityRepository)
+            ICityRepository cityRepository,
+            IStateRepository stateRepository)
         {
             _companyRepository = companyRepository;
             _dbContext = dbContext;
@@ -56,6 +58,7 @@ namespace EasySoccer.BLL
             _configuration = configuration;
             _companyFinancialRecordRepository = companyFinancialRecordRepository;
             _cityRepository = cityRepository;
+            _stateRepository = stateRepository;
             var financialConfig = configuration.GetSection("FinancialConfiguration");
             if (financialConfig != null)
             {
@@ -369,6 +372,16 @@ namespace EasySoccer.BLL
                     await _dbContext.SaveChangesAsync();
                 }
             }
+        }
+
+        public Task<List<City>> GetCitiesByState(int IdState)
+        {
+            return _cityRepository.GetCitiesByState(IdState);
+        }
+
+        public Task<List<State>> GetStates()
+        {
+            return _stateRepository.GetAsync();
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿using EasySoccer.Entities;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Infra.Repositories
 {
-    public interface ICityRepository : IRepositoryBase
+    public interface IStateRepository: IRepositoryBase
     {
-        Task<City> GetAsync(int Id);
-
-        Task<List<City>> GetCitiesByState(int idState);
+        Task<List<State>> GetAsync();
     }
 }
