@@ -58,6 +58,7 @@ namespace EasySoccer.WebApi.Controllers
                     currentCompany?.Logo,
                     currentCompany?.IdCity,
                     IdState = currentCompany.City != null ? currentCompany.City.IdState : 0,
+                    State = currentCompany.City != null && currentCompany.City.State != null ? currentCompany.City.State.Name : string.Empty,
                     City = currentCompany.IdCity.HasValue ? currentCompany?.City.Name : string.Empty,
                     currentCompany?.Active,
                     Longitude = currentCompany?.Longitude != (decimal)0.00 ? currentCompany?.Longitude : null,
