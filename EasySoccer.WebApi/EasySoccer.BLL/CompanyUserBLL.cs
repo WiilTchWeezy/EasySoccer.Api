@@ -76,7 +76,7 @@ namespace EasySoccer.BLL
 
             currentUser.Name = name;
             currentUser.Email = email;
-            currentUser.Phone = phone;
+            currentUser.Phone = phone.Trim().Replace(")", "").Replace("(", "").Replace("-", "");
             await _companyUserRepository.Edit(currentUser);
             await _dbContext.SaveChangesAsync();
             return currentUser;
