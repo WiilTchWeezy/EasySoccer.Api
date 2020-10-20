@@ -18,10 +18,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<SportType>> GetAsync(long companyId)
         {
-            return _dbContext.SoccerPitchQuery
-                .Include(x => x.SportType)
-                .Where(x => x.CompanyId == companyId)
-                .Select(x => x.SportType).Distinct().ToListAsync();
+            return _dbContext.SportTypeQuery.ToListAsync();
         }
     }
 }

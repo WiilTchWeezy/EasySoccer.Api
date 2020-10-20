@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EasySoccer.BLL.Infra.DTO
 {
@@ -11,5 +9,7 @@ namespace EasySoccer.BLL.Infra.DTO
         public string PersonName { get; set; }
         public bool HasReservation { get; set; }
         public long SoccerPitchId { get; set; }
+
+        public Guid SoccerPitchReservationId { get; set; }
     }
 }

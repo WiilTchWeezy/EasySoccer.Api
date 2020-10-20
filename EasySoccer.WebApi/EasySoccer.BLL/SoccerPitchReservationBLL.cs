@@ -420,7 +420,8 @@ namespace EasySoccer.BLL
                             ScheduleHour = $"{x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00}  - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ",
                             SoccerPitch = x.SoccerPitch.Name,
                             HasReservation = true,
-                            SoccerPitchId = x.SoccerPitchId
+                            SoccerPitchId = x.SoccerPitchId,
+                            SoccerPitchReservationId = x.Id
                         }).ToList()
                     });
                 }
