@@ -79,9 +79,8 @@ namespace EasySoccer.WebApi.Controllers
         public async Task<IActionResult> PatchAsync([FromBody]SoccerPitchPlanRequest request)
         {
             try
-            {
-                await _uow.SoccerPitchPlanBLL.UpdateAsync(request.id, request.Name, request.Value, request.Description);
-                return Ok();
+            {                
+                return Ok(await _uow.SoccerPitchPlanBLL.UpdateAsync(request.id, request.Name, request.Value, request.Description););
             }
             catch (Exception e)
             {
