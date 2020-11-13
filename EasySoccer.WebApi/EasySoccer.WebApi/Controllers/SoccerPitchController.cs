@@ -112,11 +112,11 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("getsporttypes"), HttpGet]
-        public async Task<IActionResult> GetSportTypeAsync([FromQuery] long companyId)
+        public async Task<IActionResult> GetSportTypeAsync()
         {
             try
             {
-                return Ok((await _uow.SoccerPitchBLL.GetSportTypeAsync(companyId)).Select(x => new
+                return Ok((await _uow.SoccerPitchBLL.GetSportTypeAsync()).Select(x => new
                 {
                     x.Id,
                     x.Name
