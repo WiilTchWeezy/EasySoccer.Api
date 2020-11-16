@@ -71,6 +71,11 @@ namespace EasySoccer.BLL
             return _sportTypeRepository.GetAsync();
         }
 
+        public Task<List<SportType>> GetSportTypeAsync(long companyId)
+        {
+            return _sportTypeRepository.GetAsync(companyId);
+        }
+
         public Task<int> GetTotalAsync()
         {
             return _soccerPitchRepository.GetTotalAsync();

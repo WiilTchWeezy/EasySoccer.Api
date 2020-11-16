@@ -20,5 +20,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.SportTypeQuery.ToListAsync();
         }
+
+        public Task<List<SportType>> GetAsync(long companyId)
+        {
+            return _dbContext.SportTypeQuery.ToListAsync();
+        }
     }
 }

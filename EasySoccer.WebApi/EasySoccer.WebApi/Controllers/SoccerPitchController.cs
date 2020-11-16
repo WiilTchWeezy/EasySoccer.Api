@@ -129,7 +129,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("getcompanysporttypes"), HttpGet]
-        public async Task<IActionResult> GetSportTypeAsync()
+        public async Task<IActionResult> GetCompanySportTypesAsync()
         {
             try
             {
@@ -153,6 +153,48 @@ namespace EasySoccer.WebApi.Controllers
             {
                 await _uow.SoccerPitchBLL.SaveImageAsync(new CurrentUser(HttpContext).CompanyId, request.SoccerPitchId, request.ImageBase64);
                 return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
+        [Route("getcompanysporttypes"), HttpGet]
+        public async Task<IActionResult> GetColorToCalendarAsync()
+        {
+            try
+            {
+                var dynamicList = new List<dynamic>();
+                dynamicList.Add(new 
+                {
+                    Name= "Azul",
+                    Value= "#1fc5ff"
+                });
+
+                dynamicList.Add(new
+                {
+                    Name = "Rosa",
+                    Value = "#ff1f55"
+                });
+
+                dynamicList.Add(new
+                {
+                    Name = "Amarelo",
+                    Value = "#ffc91f"
+                });
+
+                dynamicList.Add(new
+                {
+                    Name = "Laranja",
+                    Value = "#ff591f"
+                });
+                dynamicList.Add(new
+                {
+                    Name = "Verde",
+                    Value = "#1fff59"
+                });
+                return Ok(dynamicList);
             }
             catch (Exception e)
             {

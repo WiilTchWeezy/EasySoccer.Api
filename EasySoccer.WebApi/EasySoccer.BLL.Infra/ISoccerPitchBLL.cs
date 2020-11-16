@@ -10,6 +10,7 @@ namespace EasySoccer.BLL.Infra
         Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval, string color);
         Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval, string color);
         Task<List<SportType>> GetSportTypeAsync();
+        Task<List<SportType>> GetSportTypeAsync(long companyId);
         Task<int> GetTotalAsync();
         Task SaveImageAsync(long companyId, long soccerPitchId, string imageBase64);
     }

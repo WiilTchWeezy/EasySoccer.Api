@@ -80,7 +80,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {                
-                return Ok(await _uow.SoccerPitchPlanBLL.UpdateAsync(request.id, request.Name, request.Value, request.Description););
+                return Ok(await _uow.SoccerPitchPlanBLL.UpdateAsync(request.id, request.Name, request.Value, request.Description));
             }
             catch (Exception e)
             {
