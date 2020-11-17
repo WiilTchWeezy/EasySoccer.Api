@@ -160,7 +160,7 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
-        [Route("getcompanysporttypes"), HttpGet]
+        [Route("getcolors"), HttpGet]
         public async Task<IActionResult> GetColorToCalendarAsync()
         {
             try
