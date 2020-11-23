@@ -35,7 +35,7 @@ namespace EasySoccer.DAL.Repositories
         {
             var query = _dbContext.SoccerPitchQuery.Where(x => x.Id == id);
             if (includeInfo)
-                query.Include(x => x.SoccerPitchSoccerPitchPlans).Include(x => x.SportType).Include("SoccerPitchSoccerPitchPlans.SoccerPitchPlan");
+                query = query.Include(x => x.SoccerPitchSoccerPitchPlans).Include(x => x.SportType).Include("SoccerPitchSoccerPitchPlans.SoccerPitchPlan");
             return query.FirstOrDefaultAsync();
         }
 
