@@ -13,5 +13,8 @@ namespace EasySoccer.BLL.Infra
         Task<List<SportType>> GetSportTypeAsync(long companyId);
         Task<int> GetTotalAsync();
         Task SaveImageAsync(long companyId, long soccerPitchId, string imageBase64);
+
+        Task<SoccerPitch> GetByIdAsync(long id);
+
     }
 }

@@ -8,7 +8,7 @@ namespace EasySoccer.DAL.Infra.Repositories
     {
         Task<long[]> GetByCompanyIdAsync(long companyId);
         Task<List<SoccerPitch>> GetAsync(int page, int pageSize, long companyId);
-        Task<SoccerPitch> GetAsync(long id);
+        Task<SoccerPitch> GetAsync(long id, bool includeInfo = false);
         Task<List<SoccerPitch>> GetByCompanyAsync(int company);
         Task<int> GetTotalAsync();
         Task<List<SoccerPitch>> GetAsync(long companyId, int sportType);

@@ -201,5 +201,35 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
+
+        [Route("getbyid"), HttpGet]
+        public async Task<IActionResult> GetByIdAsync([FromQuery]long Id)
+        {
+            try
+            {
+                var x = await _uow.SoccerPitchBLL.GetByIdAsync(Id);
+                return Ok(new
+                {
+                    x.Id,
+                    x.Active,
+                    x.Description,
+                    x.HasRoof,
+                    x.Name,
+                    x.NumberOfPlayers,
+                    Plans = x.SoccerPitchSoccerPitchPlans.Select(y => y.SoccerPitchPlan).ToList(),
+                    x.SoccerPitchSoccerPitchPlans,
+                    x.SportTypeId,
+                    x.SportType,
+                    SportTypeName = x.SportType.Name,
+                    x.Interval,
+                    x.ImageName,
+                    x.Color
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
     }
 }

@@ -31,9 +31,12 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.SoccerPitchQuery.Where(x => x.CompanyId == company).OrderBy(x => x.Name).ToListAsync();
         }
 
-        public Task<SoccerPitch> GetAsync(long id)
+        public Task<SoccerPitch> GetAsync(long id, bool includeInfo = false)
         {
-            return _dbContext.SoccerPitchQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var query = _dbContext.SoccerPitchQuery.Where(x => x.Id == id);
+            if (includeInfo)
+                query.Include(x => x.SoccerPitchSoccerPitchPlans).Include(x => x.SportType).Include("SoccerPitchSoccerPitchPlans.SoccerPitchPlan");
+            return query.FirstOrDefaultAsync();
         }
 
         public Task<int> GetTotalAsync()
