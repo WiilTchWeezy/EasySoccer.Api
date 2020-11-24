@@ -18,6 +18,8 @@ namespace EasySoccer.WebApi.ApiRequests
         public int Interval { get; set; }
 
         public string Color { get; set; }
+
+        public string ImageBase64 { get; set; }
     }
 
     public class SoccerPitchSoccerPitchPlanRequest

@@ -30,7 +30,7 @@ namespace EasySoccer.BLL
             _blobStorageService = blobStorageService;
         }
 
-        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval, string color)
+        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval, string color, string imageBase64)
         {
             var soccerPitch = new SoccerPitch
             {
@@ -48,6 +48,13 @@ namespace EasySoccer.BLL
                 Color = color
             };
             await _soccerPitchRepository.Create(soccerPitch);
+
+            if (string.IsNullOrEmpty(imageBase64) == false)
+            {
+                var bytes = Convert.FromBase64String(imageBase64);
+                var fileName = await _blobStorageService.Save(bytes, BlobContainerEnum.SoccerPitchContainer);
+                soccerPitch.ImageName = fileName;
+            }
             foreach (var item in soccerPitchPlansId)
             {
                 await _soccerPitchSoccerPitchPlanRepository.Create(new SoccerPitchSoccerPitchPlan

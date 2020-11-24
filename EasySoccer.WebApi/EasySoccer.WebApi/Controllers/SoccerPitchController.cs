@@ -88,7 +88,7 @@ namespace EasySoccer.WebApi.Controllers
             {
 
                 var plansId = request.Plans?.Select(x => x.Id).ToArray();
-                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval, request.Color));
+                return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval, request.Color, request.ImageBase64));
             }
             catch (Exception e)
             {
