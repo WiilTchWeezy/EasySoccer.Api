@@ -50,6 +50,11 @@ namespace EasySoccer.DAL
         public DbSet<State> State { get; set; }
         public IQueryable<State> StateQuery { get { return State; } }
 
+        public DbSet<UserToken> UserToken { get; set; }
+        public IQueryable<UserToken> UserTokenQuery { get { return UserToken; } }
+
+        
+
         #region Infra
 
         public EasySoccerDbContext(DbContextOptions op) : base(op)

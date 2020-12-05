@@ -89,5 +89,21 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("inserttoken"), HttpPost]
+        public async Task<IActionResult> InsertTokenAsync([FromBody] UserTokenRequest request)
+        {
+            try
+            {
+                var userToken = await _companyUserUow.CompanyUserBLL.InsertUserToken(new CurrentUser(HttpContext).UserId, request.Token);
+                return Ok(userToken);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        
+
     }
 }

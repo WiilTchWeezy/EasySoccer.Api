@@ -92,6 +92,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<ICityRepository, CityRepository>();
             services.AddScoped<IStateRepository, StateRepository>();
+            services.AddScoped<IUserTokenRepository, UserTokenRepository>();
             #endregion
 
             #region Services

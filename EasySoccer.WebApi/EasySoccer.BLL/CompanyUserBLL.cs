@@ -13,11 +13,13 @@ namespace EasySoccer.BLL
         private ICompanyUserRepository _companyUserRepository;
         private ICompanyFinancialRecordRepository _companyFinancialRecordRepository;
         private IEasySoccerDbContext _dbContext;
-        public CompanyUserBLL(ICompanyUserRepository companyUserRepository, IEasySoccerDbContext dbContext, ICompanyFinancialRecordRepository companyFinancialRecordRepository)
+        private IUserTokenRepository _userTokenRepository;
+        public CompanyUserBLL(ICompanyUserRepository companyUserRepository, IEasySoccerDbContext dbContext, ICompanyFinancialRecordRepository companyFinancialRecordRepository, IUserTokenRepository userTokenRepository)
         {
             _companyUserRepository = companyUserRepository;
             _companyFinancialRecordRepository = companyFinancialRecordRepository;
             _dbContext = dbContext;
+            _userTokenRepository = userTokenRepository;
         }
 
         public async Task<bool> ChangePasswordAsync(long userId, string oldPassword, string newPassword)
@@ -53,6 +55,34 @@ namespace EasySoccer.BLL
         public async Task<CompanyUser> GetAsync(long userId)
         {
             return await _companyUserRepository.GetAsync(userId);
+        }
+
+        public async Task<UserToken> InsertUserToken(long userId, string token)
+        {
+            var currentCompanyUser = await _companyUserRepository.GetAsync(userId);
+            if (currentCompanyUser == null)
+                throw new BussinessException("Usuário não encontrado");
+            var currentUserToken = await _userTokenRepository.GetAsync(token, userId);
+            if (currentUserToken != null)
+            {
+                currentUserToken.IsActive = true;
+                currentUserToken.LogOffDate = null;
+                await _userTokenRepository.Edit(currentUserToken);
+                await _dbContext.SaveChangesAsync();
+                return currentUserToken;
+            }
+            var userToken = new UserToken
+            {
+                Id = new Guid(),
+                IsActive = true,
+                CompanyUserId = userId,
+                CreatedDate = DateTime.Now,
+                Token = token,
+                TokenType = Entities.Enum.TokenTypeEnum.Mobile
+            };
+            await _userTokenRepository.Edit(userToken);
+            await _dbContext.SaveChangesAsync();
+            return userToken;
         }
 
         public async Task<CompanyUser> LoginAsync(string email, string password)
