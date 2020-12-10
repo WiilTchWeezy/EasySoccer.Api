@@ -15,5 +15,6 @@ namespace EasySoccer.BLL.Infra
         Task<CompanyUser> UpdateAsync(long userId, string name, string email, string phone);
 
         Task<UserToken> InsertUserToken(long userId, string token);
+        Task<UserToken> LogOffUserToken(long userId, string token);
     }
 }

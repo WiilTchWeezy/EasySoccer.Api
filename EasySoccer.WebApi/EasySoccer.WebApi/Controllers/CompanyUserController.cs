@@ -103,7 +103,19 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
-        
+        [Route("logofftoken"), HttpPost]
+        public async Task<IActionResult> LogOffTokenAsync([FromBody] UserTokenRequest request)
+        {
+            try
+            {
+                var userToken = await _companyUserUow.CompanyUserBLL.LogOffUserToken(new CurrentUser(HttpContext).UserId, request.Token);
+                return Ok(userToken);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
     }
 }

@@ -98,6 +98,18 @@ namespace EasySoccer.BLL
             return companyUser;
         }
 
+        public async Task<UserToken> LogOffUserToken(long userId, string token)
+        {
+            var userToken = await _userTokenRepository.GetAsync(token, userId);
+            if (userToken == null)
+                throw new BussinessException("Usuário não encontrado.");
+            userToken.IsActive = false;
+            userToken.LogOffDate = DateTime.UtcNow;
+            await _userTokenRepository.Edit(userToken);
+            await _dbContext.SaveChangesAsync();
+            return userToken;
+        }
+
         public async Task<CompanyUser> UpdateAsync(long userId, string name, string email, string phone)
         {
             var currentUser = await _companyUserRepository.GetAsync(userId);
