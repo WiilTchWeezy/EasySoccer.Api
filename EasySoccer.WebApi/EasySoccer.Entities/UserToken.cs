@@ -21,7 +21,7 @@ namespace EasySoccer.Entities
         public DateTime CreatedDate { get; set; }
         [Required]
         public bool IsActive { get; set; }
-        [Required]
+
         public DateTime? LogOffDate { get; set; }
     }
 }

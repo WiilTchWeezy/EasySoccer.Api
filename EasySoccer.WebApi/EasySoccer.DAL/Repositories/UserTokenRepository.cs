@@ -15,7 +15,8 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<UserToken> GetAsync(string token, long userId)
         {
-            return _dbContext.UserTokenQuery.Where(x => x.Token == token && x.CompanyUserId == userId).FirstOrDefaultAsync();
+            var query = _dbContext.UserTokenQuery.Where(x => x.Token == token && x.CompanyUserId != null && x.CompanyUserId.Value == userId);
+            return query.FirstOrDefaultAsync();
         }
     }
 }

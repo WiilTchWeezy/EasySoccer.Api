@@ -80,7 +80,7 @@ namespace EasySoccer.BLL
                 Token = token,
                 TokenType = Entities.Enum.TokenTypeEnum.Mobile
             };
-            await _userTokenRepository.Edit(userToken);
+            await _userTokenRepository.Create(userToken);
             await _dbContext.SaveChangesAsync();
             return userToken;
         }
