@@ -108,8 +108,8 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var userToken = await _companyUserUow.CompanyUserBLL.LogOffUserToken(new CurrentUser(HttpContext).UserId, request.Token);
-                return Ok(userToken);
+                await _companyUserUow.CompanyUserBLL.LogOffUserToken(new CurrentUser(HttpContext).UserId, request.Token);
+                return Ok();
             }
             catch (Exception e)
             {
