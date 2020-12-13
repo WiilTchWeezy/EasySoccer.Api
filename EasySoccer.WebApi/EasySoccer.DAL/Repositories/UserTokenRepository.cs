@@ -2,6 +2,7 @@
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,6 +18,11 @@ namespace EasySoccer.DAL.Repositories
         {
             var query = _dbContext.UserTokenQuery.Where(x => x.Token == token && x.CompanyUserId != null && x.CompanyUserId.Value == userId);
             return query.FirstOrDefaultAsync();
+        }
+
+        public Task<List<UserToken>> GetAsync(long[] companyUserIds)
+        {
+            return _dbContext.UserTokenQuery.Where(x => x.CompanyUserId != null && companyUserIds.Contains(x.CompanyUserId.Value)).ToListAsync();
         }
     }
 }

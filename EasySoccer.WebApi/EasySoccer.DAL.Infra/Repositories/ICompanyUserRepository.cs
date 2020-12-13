@@ -1,4 +1,5 @@
 ﻿using EasySoccer.Entities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Infra.Repositories
@@ -8,5 +9,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<CompanyUser> LoginAsync(string email, string password);
         Task<CompanyUser> GetAsync(long userId);
         Task<CompanyUser> GetAsync(string userEmail);
+        Task<List<CompanyUser>> GetByCompanyIdAsync(long cpmpanyId);
     }
 }

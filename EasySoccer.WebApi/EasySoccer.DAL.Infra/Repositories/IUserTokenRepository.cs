@@ -9,5 +9,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     public interface IUserTokenRepository : IRepositoryBase
     {
         Task<UserToken> GetAsync(string token, long userId);
+        Task<List<UserToken>> GetAsync(long[] companyUserIds);
     }
 }
