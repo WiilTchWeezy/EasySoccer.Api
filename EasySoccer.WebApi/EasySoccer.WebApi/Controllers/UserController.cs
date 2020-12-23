@@ -119,5 +119,33 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e);
             }
         }
+
+        [Route("inserttoken"), HttpPost]
+        public async Task<IActionResult> InsertTokenAsync([FromBody] UserTokenRequest request)
+        {
+            try
+            {
+                var userToken = await _uoW.UserBLL.InsertUserToken(new MobileUser(HttpContext).UserId, request.Token);
+                return Ok(userToken);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Route("logofftoken"), HttpPost]
+        public async Task<IActionResult> LogOffTokenAsync([FromBody] UserTokenRequest request)
+        {
+            try
+            {
+                await _uoW.UserBLL.LogOffUserToken(new MobileUser(HttpContext).UserId, request.Token);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

@@ -20,12 +20,14 @@ namespace EasySoccer.BLL
         private IEasySoccerDbContext _dbContext;
         private IPersonRepository _personRepository;
         private ICryptographyService _cryptographyService;
-        public UserBLL(IUserRepository userRepository, IPersonRepository personRepository, IEasySoccerDbContext dbContext, ICryptographyService cryptographyService)
+        private IUserTokenRepository _userTokenRepository;
+        public UserBLL(IUserRepository userRepository, IPersonRepository personRepository, IEasySoccerDbContext dbContext, ICryptographyService cryptographyService, IUserTokenRepository userTokenRepository)
         {
             _userRepository = userRepository;
             _dbContext = dbContext;
             _personRepository = personRepository;
             _cryptographyService = cryptographyService;
+            _userTokenRepository = userTokenRepository;
         }
 
         public async Task<bool> ChangeUserPassword(string oldPassword, Guid userId, string newPassword)
@@ -273,6 +275,46 @@ namespace EasySoccer.BLL
                     return response;
                 }
             }
+        }
+
+        public async Task<UserToken> InsertUserToken(Guid userId, string token)
+        {
+            var currentUser = await _userRepository.GetAsync(userId);
+            if (currentUser == null)
+                throw new BussinessException("Usuário não encontrado");
+            var currentUserToken = await _userTokenRepository.GetAsync(token, userId);
+            if (currentUserToken != null)
+            {
+                currentUserToken.IsActive = true;
+                currentUserToken.LogOffDate = null;
+                await _userTokenRepository.Edit(currentUserToken);
+                await _dbContext.SaveChangesAsync();
+                return currentUserToken;
+            }
+            var userToken = new UserToken
+            {
+                Id = new Guid(),
+                IsActive = true,
+                UserId = userId,
+                CreatedDate = DateTime.Now,
+                Token = token,
+                TokenType = Entities.Enum.TokenTypeEnum.Mobile
+            };
+            await _userTokenRepository.Create(userToken);
+            await _dbContext.SaveChangesAsync();
+            return userToken;
+        }
+
+        public async Task<UserToken> LogOffUserToken(Guid userId, string token)
+        {
+            var userToken = await _userTokenRepository.GetAsync(token, userId);
+            if (userToken == null)
+                throw new BussinessException("Usuário não encontrado.");
+            userToken.IsActive = false;
+            userToken.LogOffDate = DateTime.UtcNow;
+            await _userTokenRepository.Edit(userToken);
+            await _dbContext.SaveChangesAsync();
+            return userToken;
         }
     }
 }
