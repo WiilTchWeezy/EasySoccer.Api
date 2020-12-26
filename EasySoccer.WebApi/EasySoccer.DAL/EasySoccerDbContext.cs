@@ -53,7 +53,10 @@ namespace EasySoccer.DAL
         public DbSet<UserToken> UserToken { get; set; }
         public IQueryable<UserToken> UserTokenQuery { get { return UserToken; } }
 
-        
+        public DbSet<CompanyUserNotification> CompanyUserNotification { get; set; }
+        public IQueryable<CompanyUserNotification> CompanyUserNotificationQuery { get { return CompanyUserNotification; } }
+
+
 
         #region Infra
 

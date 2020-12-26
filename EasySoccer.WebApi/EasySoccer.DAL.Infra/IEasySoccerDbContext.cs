@@ -29,6 +29,7 @@ namespace EasySoccer.DAL.Infra
         IQueryable<State> StateQuery { get; }
         IQueryable<City> CityQuery { get; }
         IQueryable<UserToken> UserTokenQuery { get; }
+        IQueryable<CompanyUserNotification> CompanyUserNotificationQuery { get; }
 
     }
 }

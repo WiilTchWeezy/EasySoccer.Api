@@ -1,11 +1,7 @@
-﻿using EasySoccer.BLL.Exceptions;
-using EasySoccer.BLL.Infra.Services.PushNotification;
+﻿using EasySoccer.BLL.Infra.Services.PushNotification;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EasySoccer.BLL.Services.PushNotification
