@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasySoccer.Entities.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -12,7 +13,7 @@ namespace EasySoccer.Entities
         public Guid Id { get; set; }
 
         [Required]
-        public int NotificationTypeEnum { get; set; }
+        public NotificationTypeEnum NotificationTypeEnum { get; set; }
 
         [Required]
         [StringLength(200)]

@@ -16,5 +16,6 @@ namespace EasySoccer.BLL.Infra
 
         Task<UserToken> InsertUserToken(long userId, string token);
         Task<UserToken> LogOffUserToken(long userId, string token);
+        Task<List<CompanyUserNotification>> GetCompanyUserNotificationsAsync(long companyUserId, int page = 1, int pageSize = 10);
     }
 }

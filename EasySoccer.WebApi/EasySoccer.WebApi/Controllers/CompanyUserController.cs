@@ -117,5 +117,19 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("getNotifications"), HttpGet]
+        public async Task<IActionResult> GetNotificationsAsync()
+        {
+            try
+            {
+                var companyUserNoitications = await _companyUserUow.CompanyUserBLL.GetCompanyUserNotificationsAsync(new CurrentUser(HttpContext).UserId);
+                return Ok(companyUserNoitications);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
     }
 }

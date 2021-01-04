@@ -4,6 +4,7 @@ using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EasySoccer.BLL
@@ -14,12 +15,19 @@ namespace EasySoccer.BLL
         private ICompanyFinancialRecordRepository _companyFinancialRecordRepository;
         private IEasySoccerDbContext _dbContext;
         private IUserTokenRepository _userTokenRepository;
-        public CompanyUserBLL(ICompanyUserRepository companyUserRepository, IEasySoccerDbContext dbContext, ICompanyFinancialRecordRepository companyFinancialRecordRepository, IUserTokenRepository userTokenRepository)
+        private ICompanyUserNotificationRepository _companyUserNotificationRepository;
+        public CompanyUserBLL
+            (ICompanyUserRepository companyUserRepository, 
+            IEasySoccerDbContext dbContext, 
+            ICompanyFinancialRecordRepository companyFinancialRecordRepository, 
+            IUserTokenRepository userTokenRepository,
+            ICompanyUserNotificationRepository companyUserNotificationRepository)
         {
             _companyUserRepository = companyUserRepository;
             _companyFinancialRecordRepository = companyFinancialRecordRepository;
             _dbContext = dbContext;
             _userTokenRepository = userTokenRepository;
+            _companyUserNotificationRepository = companyUserNotificationRepository;
         }
 
         public async Task<bool> ChangePasswordAsync(long userId, string oldPassword, string newPassword)
@@ -55,6 +63,11 @@ namespace EasySoccer.BLL
         public async Task<CompanyUser> GetAsync(long userId)
         {
             return await _companyUserRepository.GetAsync(userId);
+        }
+
+        public Task<List<CompanyUserNotification>> GetCompanyUserNotificationsAsync(long companyUserId, int page = 1, int pageSize = 10)
+        {
+            return _companyUserNotificationRepository.GetAsync(companyUserId, page, pageSize);
         }
 
         public async Task<UserToken> InsertUserToken(long userId, string token)
