@@ -13,7 +13,7 @@ namespace EasySoccer.Entities
         public Guid Id { get; set; }
 
         [Required]
-        public NotificationTypeEnum NotificationTypeEnum { get; set; }
+        public NotificationTypeEnum NotificationType { get; set; }
 
         [Required]
         [StringLength(200)]
