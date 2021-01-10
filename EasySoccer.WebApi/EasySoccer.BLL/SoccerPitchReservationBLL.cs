@@ -24,9 +24,9 @@ namespace EasySoccer.BLL
         private ICompanyScheduleRepository _companyScheduleRepository;
         private IPersonRepository _personRepository;
         private IUserRepository _userRepository;
-        private INotificationService _notificationService;
         private IUserTokenRepository _userTokenRepository;
         private ICompanyUserRepository _companyUserRepository;
+        private ICompanyUserNotificationBLL _companyUserNotificationBLL;
         public SoccerPitchReservationBLL
             (ISoccerPitchReservationRepository soccerPitchReservationRepository,
             ISoccerPitchRepository soccerPitchRepository,
@@ -35,9 +35,9 @@ namespace EasySoccer.BLL
             ICompanyScheduleRepository companyScheduleRepository,
             IPersonRepository personRepository,
             IUserRepository userRepository,
-            INotificationService notificationService,
             IUserTokenRepository userTokenRepository,
-            ICompanyUserRepository companyUserRepository)
+            ICompanyUserRepository companyUserRepository,
+            ICompanyUserNotificationBLL companyUserNotificationBLL)
         {
             _soccerPitchReservationRepository = soccerPitchReservationRepository;
             _soccerPitchRepository = soccerPitchRepository;
@@ -46,9 +46,9 @@ namespace EasySoccer.BLL
             _companyScheduleRepository = companyScheduleRepository;
             _personRepository = personRepository;
             _userRepository = userRepository;
-            _notificationService = notificationService;
             _userTokenRepository = userTokenRepository;
             _companyUserRepository = companyUserRepository;
+            _companyUserNotificationBLL = companyUserNotificationBLL;
         }
 
         public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long soccerPitchPlanId)
@@ -142,14 +142,12 @@ namespace EasySoccer.BLL
             await _dbContext.SaveChangesAsync();
             var users = await _companyUserRepository.GetByCompanyIdAsync(selectedSoccerPitch.CompanyId);
             var userTokens = await _userTokenRepository.GetAsync(users.Select(x => x.Id).ToArray());
-            if(userTokens != null && userTokens.Any())
+            if (userTokens != null && userTokens.Any())
             {
                 foreach (var item in userTokens)
                 {
-                    var dic = new Dictionary<string, string>();
-                    dic.Add("title", "Novo horário agendado.");
-                    dic.Add("message", "Um novo horário foi agendado no seu complexo esportivo. Acesse seu calendário para mais informações.");
-                    await _notificationService.SendNotification(item.Token, dic);
+                    if (item.CompanyUserId.HasValue)
+                        await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.CompanyUserId.Value, "Novo horário agendado.", "Um novo horário foi agendado no seu complexo esportivo. Acesse seu calendário para mais informações.", item.Token, Entities.Enum.NotificationTypeEnum.NewReservation);
                 }
             }
             return soccerPitchReservation;

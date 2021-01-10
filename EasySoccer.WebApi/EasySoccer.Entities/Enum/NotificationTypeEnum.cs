@@ -2,6 +2,8 @@
 {
     public enum NotificationTypeEnum
     {
-        FinancialRenewal = 1
+        Standard = 1,
+        FinancialRenewal = 2,
+        NewReservation = 3
     }
 }
