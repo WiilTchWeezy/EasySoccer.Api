@@ -7,6 +7,7 @@ using EasySoccer.BLL.Infra.Services.PushNotification;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -147,7 +148,10 @@ namespace EasySoccer.BLL
                 foreach (var item in userTokens)
                 {
                     if (item.CompanyUserId.HasValue)
-                        await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.CompanyUserId.Value, "Novo horário agendado.", "Um novo horário foi agendado no seu complexo esportivo. Acesse seu calendário para mais informações.", item.Token, Entities.Enum.NotificationTypeEnum.NewReservation);
+                    {
+                        var data = JsonConvert.SerializeObject(new { reservationId = soccerPitchReservation.Id });
+                        await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.CompanyUserId.Value, "Novo horário agendado.", "Um novo horário foi agendado no seu complexo esportivo. Acesse seu calendário para mais informações.", item.Token, Entities.Enum.NotificationTypeEnum.NewReservation, data);
+                    }
                 }
             }
             return soccerPitchReservation;

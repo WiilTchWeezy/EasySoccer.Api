@@ -23,7 +23,7 @@ namespace EasySoccer.BLL
             _dbContext = dbContext;
         }
 
-        public async Task<CompanyUserNotification> CreateCompanyUserNotificationAsync(long companyUserId, string title, string message, string token, NotificationTypeEnum notificationTypeEnum)
+        public async Task<CompanyUserNotification> CreateCompanyUserNotificationAsync(long companyUserId, string title, string message, string token, NotificationTypeEnum notificationTypeEnum, string data)
         {
             var companyUserNotification = new CompanyUserNotification
             {
@@ -33,7 +33,8 @@ namespace EasySoccer.BLL
                 Message = message,
                 NotificationType = notificationTypeEnum,
                 Read = false,
-                Title = title
+                Title = title,
+                Data = data
             };
             await _companyUserNotificationRepository.Create(companyUserNotification);
             await _dbContext.SaveChangesAsync();

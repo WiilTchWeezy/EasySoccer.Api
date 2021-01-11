@@ -31,5 +31,7 @@ namespace EasySoccer.Entities
 
         [Required]
         public long IdCompanyUser { get; set; }
+
+        public string Data { get; set; }
     }
 }
