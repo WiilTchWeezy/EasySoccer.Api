@@ -75,6 +75,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<ISoccerPitchPlanBLL, SoccerPitchPlanBLL>();
             services.AddScoped<ICompanyUserBLL, CompanyUserBLL>();
             services.AddScoped<ICompanyScheduleBLL, CompanyScheduleBLL>();
+            services.AddScoped<ICompanyUserNotificationBLL, CompanyUserNotificationBLL>();
             #endregion
 
             #region Repositories

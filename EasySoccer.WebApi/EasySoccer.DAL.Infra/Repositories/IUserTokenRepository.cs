@@ -1,7 +1,6 @@
 ﻿using EasySoccer.Entities;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Infra.Repositories
@@ -12,5 +11,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<UserToken> GetAsync(string token, Guid userId);
         Task<List<UserToken>> GetAsync(long[] companyUserIds);
         Task<List<UserToken>> GetAsync(Guid[] userIds);
+        Task<List<UserToken>> GetAsync(long userId);
     }
 }

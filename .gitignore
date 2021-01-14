@@ -42,3 +42,5 @@
 /EasySoccer.WebApi/EasySoccer.DAL.Infra/bin/Debug/netcoreapp3.1
 /EasySoccer.WebApi/EasySoccer.Entities/bin/Debug/netcoreapp3.1
 /EasySoccer.WebApi/.vs/EasySoccer.WebApi/DesignTimeBuild/.dtbcache.v2
+/EasySoccer.WebApi/EasySoccer.WebJob/bin/Debug/netcoreapp3.1
+/EasySoccer.WebApi/EasySoccer.WebJob/obj

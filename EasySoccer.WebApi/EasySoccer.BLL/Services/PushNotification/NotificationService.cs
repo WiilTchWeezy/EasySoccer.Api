@@ -28,9 +28,9 @@ namespace EasySoccer.BLL.Services.PushNotification
             httpClient.DefaultRequestHeaders.Clear();
             if (string.IsNullOrEmpty(_key) == false)
             {
-                httpClient.DefaultRequestHeaders.Add("Authorization", "key=" + _key);
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={_key}");
             }
-            httpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
             return httpClient;
         }
 

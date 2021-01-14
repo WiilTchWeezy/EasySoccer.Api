@@ -20,5 +20,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.CompanyUserNotificationQuery.Where(x => x.IdCompanyUser == companyUserId).OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
+
+        public Task<CompanyUserNotification> GetAsync(long companyUserId, DateTime date)
+        {
+            return _dbContext.CompanyUserNotificationQuery.Where(x => x.IdCompanyUser == companyUserId && x.CreatedDate.Date > date.Date).FirstOrDefaultAsync();
+        }
     }
 }

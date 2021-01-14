@@ -37,5 +37,10 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.UserTokenQuery.Where(x => x.UserId != null && userIds.Contains(x.UserId.Value)).ToListAsync();
 
         }
+
+        public Task<List<UserToken>> GetAsync(long userId)
+        {
+            return _dbContext.UserTokenQuery.Where(x => x.CompanyUserId != null && x.CompanyUserId.Value == userId && x.LogOffDate == null && x.IsActive == true).ToListAsync();
+        }
     }
 }
