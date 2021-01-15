@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace EasySoccer.WebApi.ApiRequests
+﻿namespace EasySoccer.WebApi.ApiRequests
 {
     public class UserTokenRequest
     {
+        public long CompanyUserId { get; set; }
         public string Token { get; set; }
     }
 }

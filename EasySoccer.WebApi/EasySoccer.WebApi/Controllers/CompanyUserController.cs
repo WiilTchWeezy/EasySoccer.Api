@@ -103,12 +103,13 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("logofftoken"), HttpPost]
         public async Task<IActionResult> LogOffTokenAsync([FromBody] UserTokenRequest request)
         {
             try
             {
-                await _companyUserUow.CompanyUserBLL.LogOffUserToken(new CurrentUser(HttpContext).UserId, request.Token);
+                await _companyUserUow.CompanyUserBLL.LogOffUserToken(request.CompanyUserId, request.Token);
                 return Ok();
             }
             catch (Exception e)
