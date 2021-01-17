@@ -33,5 +33,7 @@ namespace EasySoccer.Entities
         public long IdCompanyUser { get; set; }
 
         public string Data { get; set; }
+
+        public bool? Active { get; set; }
     }
 }
