@@ -132,5 +132,18 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [Route("payment"), HttpPost]
+        public async Task<IActionResult> PaymentAsync([FromBody] PaymentRequest request)
+        {
+            try
+            {
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
     }
 }
