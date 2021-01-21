@@ -2,6 +2,7 @@
 using EasySoccer.BLL.Helper;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.DTO;
+using EasySoccer.BLL.Infra.Helpers;
 using EasySoccer.BLL.Infra.Services.Azure;
 using EasySoccer.BLL.Infra.Services.Azure.Enums;
 using EasySoccer.BLL.Infra.Services.SendGrid;
@@ -182,9 +183,9 @@ namespace EasySoccer.BLL
                         {
                             CompanyId = company.Id,
                             CreatedDate = DateTime.UtcNow,
-                            ExpiresDate = DateTime.UtcNow.AddMonths(this.GetMonthsFromPlan(request.SelectedPlan)),
+                            ExpiresDate = DateTime.UtcNow.AddMonths(FinancialHelper.Instance.GetMonthsFromPlan(request.SelectedPlan)),
                             Paid = true, //TODO - Quando inserir gateway de pagamento inserir false e tratar depois no callBack
-                            Value = this.GetValueFromPlan(request.SelectedPlan),
+                            Value = FinancialHelper.Instance.GetValueFromPlan(request.SelectedPlan),
                             Transaction = null,
                             FinancialPlan = request.SelectedPlan
                         };
@@ -205,51 +206,7 @@ namespace EasySoccer.BLL
 
         }
 
-        private decimal GetValueFromPlan(FinancialPlanEnum financialPlan)
-        {
-            decimal value = 0;
-            switch (financialPlan)
-            {
-                case FinancialPlanEnum.Mensal:
-                    value = 240;
-                    break;
-                case FinancialPlanEnum.Semestral:
-                    value = 1080;
-                    break;
-                case FinancialPlanEnum.Anual:
-                    value = 1680;
-                    break;
-                case FinancialPlanEnum.Free:
-                    value = 0;
-                    break;
-                default:
-                    break;
-            }
-            return value;
-        }
-
-        private int GetMonthsFromPlan(FinancialPlanEnum financialPlan)
-        {
-            int value = 0;
-            switch (financialPlan)
-            {
-                case FinancialPlanEnum.Mensal:
-                    value = 1;
-                    break;
-                case FinancialPlanEnum.Semestral:
-                    value = 6;
-                    break;
-                case FinancialPlanEnum.Anual:
-                    value = 12;
-                    break;
-                case FinancialPlanEnum.Free:
-                    value = 0;
-                    break;
-                default:
-                    break;
-            }
-            return value;
-        }
+        
 
         private List<CompanySchedule> GetDefaultCompanySchedules(long companyId)
         {

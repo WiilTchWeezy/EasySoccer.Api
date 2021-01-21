@@ -6,10 +6,12 @@ using EasySoccer.BLL;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.Services.Azure;
 using EasySoccer.BLL.Infra.Services.Cryptography;
+using EasySoccer.BLL.Infra.Services.PaymentGateway;
 using EasySoccer.BLL.Infra.Services.PushNotification;
 using EasySoccer.BLL.Infra.Services.SendGrid;
 using EasySoccer.BLL.Services.Azure;
 using EasySoccer.BLL.Services.Cryptography;
+using EasySoccer.BLL.Services.PaymentGateway;
 using EasySoccer.BLL.Services.PushNotification;
 using EasySoccer.BLL.Services.SendGrid;
 using EasySoccer.DAL;
@@ -102,6 +104,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ICryptographyService, CryptographyService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IPaymentGatewayService, PaymentGatewayService>();
             #endregion
 
 

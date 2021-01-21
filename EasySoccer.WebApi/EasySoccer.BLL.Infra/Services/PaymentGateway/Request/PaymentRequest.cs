@@ -1,4 +1,6 @@
-﻿namespace EasySoccer.WebApi.ApiRequests
+﻿using System;
+
+namespace EasySoccer.BLL.Infra.Services.PaymentGateway.Request
 {
     public class PaymentRequest
     {
@@ -17,5 +19,16 @@
         public int SelectedPlan { get; set; }
 
         public int SelectedInstallments { get; set; }
+
+        public int StateId { get; set; }
+
+        public int CityId { get; set; }
+
+        public string Neighborhood { get; set; }
+        public string Street { get; set; }
+        public string StreetNumber { get; set; }
+        public string ZipCode { get; set; }
+
+        public string Complementary { get; set; }
     }
 }

@@ -1,8 +1,12 @@
 ﻿using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Infra;
+using EasySoccer.BLL.Infra.Helpers;
+using EasySoccer.BLL.Infra.Services.PaymentGateway;
+using EasySoccer.BLL.Infra.Services.PaymentGateway.Request;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
+using EasySoccer.Entities.Enum;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,18 +20,27 @@ namespace EasySoccer.BLL
         private IEasySoccerDbContext _dbContext;
         private IUserTokenRepository _userTokenRepository;
         private ICompanyUserNotificationRepository _companyUserNotificationRepository;
+        private IPaymentGatewayService _paymentGateWayService;
+        private IStateRepository _stateRepository;
+        private ICityRepository _cityRepository;
         public CompanyUserBLL
-            (ICompanyUserRepository companyUserRepository, 
-            IEasySoccerDbContext dbContext, 
-            ICompanyFinancialRecordRepository companyFinancialRecordRepository, 
+            (ICompanyUserRepository companyUserRepository,
+            IEasySoccerDbContext dbContext,
+            ICompanyFinancialRecordRepository companyFinancialRecordRepository,
             IUserTokenRepository userTokenRepository,
-            ICompanyUserNotificationRepository companyUserNotificationRepository)
+            ICompanyUserNotificationRepository companyUserNotificationRepository,
+            IPaymentGatewayService paymentGateWayService,
+            IStateRepository stateRepository,
+            ICityRepository cityRepository)
         {
             _companyUserRepository = companyUserRepository;
             _companyFinancialRecordRepository = companyFinancialRecordRepository;
             _dbContext = dbContext;
             _userTokenRepository = userTokenRepository;
             _companyUserNotificationRepository = companyUserNotificationRepository;
+            _paymentGateWayService = paymentGateWayService;
+            _stateRepository = stateRepository;
+            _cityRepository = cityRepository;
         }
 
         public async Task<bool> ChangePasswordAsync(long userId, string oldPassword, string newPassword)
@@ -121,6 +134,24 @@ namespace EasySoccer.BLL
             await _userTokenRepository.Edit(userToken);
             await _dbContext.SaveChangesAsync();
             return userToken;
+        }
+
+        public async Task<CompanyFinancialRecord> PayAsync(PaymentRequest request, long companyUserId)
+        {
+            var companyUser = await _companyUserRepository.GetAsync(companyUserId);
+            if (companyUser == null)
+                throw new BussinessException("Usuário não encontrado.");
+            var planValue = FinancialHelper.Instance.GetValueFromPlan((FinancialPlanEnum)request.SelectedPlan);
+            var installment = request.SelectedInstallments > 12 ? 1 : request.SelectedInstallments;
+            var city = await _cityRepository.GetAsync(request.CityId);
+            if (city == null)
+                throw new BussinessException("Cidade não encontrada.");
+            var state = await _stateRepository.GetAsync(request.StateId);
+            if (state == null)
+                throw new BussinessException("Estado não encontrado.");
+
+            var done = await _paymentGateWayService.PayAsync(request, companyUser, planValue, installment, state.Code, city.Name);
+            return new CompanyFinancialRecord();
         }
 
         public async Task<CompanyUser> UpdateAsync(long userId, string name, string email, string phone)

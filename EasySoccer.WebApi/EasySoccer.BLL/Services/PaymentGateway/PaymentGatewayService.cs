@@ -1,0 +1,166 @@
+﻿using EasySoccer.BLL.Infra.Services.PaymentGateway;
+using EasySoccer.BLL.Infra.Services.PaymentGateway.Request;
+using EasySoccer.BLL.Services.PaymentGateway.Requests;
+using EasySoccer.BLL.Services.PaymentGateway.Responses;
+using EasySoccer.Entities;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using PagarMe;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EasySoccer.BLL.Services.PaymentGateway
+{
+    public class PaymentGatewayService : IPaymentGatewayService
+    {
+        private string _key = "";
+        private string _encryptionKey = "";
+        private string _apiUrl = "";
+        public PaymentGatewayService(IConfiguration configuration)
+        {
+            var config = configuration.GetSection("PaymentGatewayConfig");
+            if (config != null)
+            {
+                _key = config.GetValue<string>("ApiKey");
+                _encryptionKey = config.GetValue<string>("ApiEncryption");
+                _apiUrl = config.GetValue<string>("ApiUrl");
+            }
+        }
+
+        private HttpClient CreateClient()
+        {
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(_apiUrl);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+            return httpClient;
+        }
+
+        private async Task<CardResponse> CreateCardAsync(string cardNumber, string securityCode, string cardExpiration, string financialName)
+        {
+            var cardResponse = new CardResponse();
+            var request = new CardRequest
+            {
+                api_key = _key,
+                card_number = cardNumber,
+                card_cvv = securityCode,
+                card_holder_name = financialName,
+                card_expiration_date = cardExpiration.Replace("20", string.Empty)
+            };
+            using (var httpClient = CreateClient())
+            {
+                var httpResponse = await httpClient.PostAsJsonAsync("1/cards", request);
+                var response = await httpResponse.Content.ReadAsStringAsync();
+                cardResponse = JsonConvert.DeserializeObject<CardResponse>(response, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+            }
+            return cardResponse;
+        }
+
+        private async Task<List<CardResponse>> GetCards(string financialName, string cardNumber)
+        {
+            var cardResponseList = new List<CardResponse>();
+            using (var httpClient = CreateClient())
+            {
+                var httpResponse = await httpClient.GetAsync($"1/cards?api_key={_key}&holder_name={financialName}&first_digits={cardNumber.Substring(0, 5)}");
+                var response = await httpResponse.Content.ReadAsStringAsync();
+                cardResponseList = JsonConvert.DeserializeObject<List<CardResponse>>(response, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+            }
+            return cardResponseList;
+        }
+
+        private async Task<Transaction> CreateTransactionAsync(decimal value, string cardHash, CompanyUser companyUser, PaymentRequest request, string stateCode, string cityName)
+        {
+            var transationResponse = new TransactionResponse();
+            var amount = (int)value;
+            PagarMeService.DefaultApiKey = _key;
+            PagarMeService.DefaultEncryptionKey = _encryptionKey;
+            Transaction transaction = new Transaction();
+            DateTime birthDay = DateTime.Now;
+            DateTime.TryParse(request.FinancialBirthDay, out birthDay);
+            transaction.Amount = amount;
+            transaction.Card = new PagarMe.Card
+            {
+                Id = cardHash
+            };
+            transaction.Customer = new PagarMe.Customer()
+            {
+                ExternalId = companyUser.Id.ToString(),
+                Name = request.FinancialName,
+                Type = CustomerType.Individual,
+                Country = "br",
+                Email = companyUser.Email,
+                Documents = new[]
+                {
+                    new PagarMe.Document
+                    {
+                        Type = DocumentType.Cpf,
+                        Number = request.FinancialDocument
+                    }
+                },
+                PhoneNumbers = new string[]
+                {
+                    "+55" + companyUser.Phone.Replace("(", "").Replace(")", "").Replace("-", "")
+                },
+                Birthday = birthDay.ToString("yyyy-MM-dd")
+            };
+            transaction.Billing = new PagarMe.Billing
+            {
+                Name = request.FinancialName,
+                Address = new PagarMe.Address
+                {
+                    Country = "br",
+                    State = stateCode,
+                    City = cityName,
+                    Neighborhood = request.Neighborhood,
+                    Street = request.Street,
+                    StreetNumber = request.StreetNumber,
+                    Zipcode = request.ZipCode,
+                    Complementary = request.Complementary
+                }
+            };
+            transaction.Item = new[]
+            {
+                  new PagarMe.Item()
+                  {
+                    Id = "1",
+                    Title = "Licença EasySoccer",
+                    Quantity = 1,
+                    Tangible = false,
+                    UnitPrice = amount
+                  }
+            };
+            await transaction.SaveAsync();
+            return transaction;
+        }
+
+
+        public async Task<bool> PayAsync(PaymentRequest request, CompanyUser companyUser, decimal planValue, int installments, string cityName, string stateCode)
+        {
+            bool done = false;
+            CardResponse card = null;
+            var cards = await GetCards(request.FinancialName, request.CardNumber);
+            if (cards != null && cards.Count > 0 && cards.Count == 1)
+            {
+                card = cards.FirstOrDefault();
+            }
+            if (card == null)
+                card = await this.CreateCardAsync(request.CardNumber, request.SecurityCode, request.CardExpiration, request.FinancialName);
+            if (card != null && string.IsNullOrEmpty(card.id) == false)
+            {
+                int amount = (int)planValue * 100;
+                var transaction = await CreateTransactionAsync(amount, card.id, companyUser, request, stateCode, cityName);
+            }
+            return done;
+        }
+    }
+}

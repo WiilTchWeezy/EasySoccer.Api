@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EasySoccer.BLL.Infra.Services.PaymentGateway.Request;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
@@ -24,7 +25,7 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("post"), HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]CompanyUserRequest request)
+        public async Task<IActionResult> PostAsync([FromBody] CompanyUserRequest request)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("changepassword"), HttpPost]
-        public async Task<IActionResult> ChangePasswordAsync([FromBody]UserChangePasswordRequest request)
+        public async Task<IActionResult> ChangePasswordAsync([FromBody] UserChangePasswordRequest request)
         {
             try
             {
@@ -70,7 +71,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("patch"), HttpPatch]
-        public async Task<IActionResult> PatchAsync([FromBody] CompanyUserRequest request )
+        public async Task<IActionResult> PatchAsync([FromBody] CompanyUserRequest request)
         {
             try
             {
@@ -137,6 +138,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
+                await _companyUserUow.CompanyUserBLL.PayAsync(request, new CurrentUser(HttpContext).UserId);
                 return Ok();
             }
             catch (Exception e)

@@ -1,4 +1,5 @@
-﻿using EasySoccer.Entities;
+﻿using EasySoccer.BLL.Infra.Services.PaymentGateway.Request;
+using EasySoccer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,5 +18,7 @@ namespace EasySoccer.BLL.Infra
         Task<UserToken> InsertUserToken(long userId, string token);
         Task<UserToken> LogOffUserToken(long userId, string token);
         Task<List<CompanyUserNotification>> GetCompanyUserNotificationsAsync(long companyUserId, int page = 1, int pageSize = 10);
+
+        Task<CompanyFinancialRecord> PayAsync(PaymentRequest request, long companyUserId);
     }
 }
