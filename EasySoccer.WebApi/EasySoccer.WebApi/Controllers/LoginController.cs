@@ -157,14 +157,14 @@ namespace EasySoccer.WebApi.Controllers
                 SigningCredentials = signingConfigurations.SigningCredentials,
                 Subject = identity,
                 NotBefore = dataCriacao,
-                Expires = fromCompany ? (DateTime?)DateTime.UtcNow.AddHours(48) : null
+                Expires = DateTime.UtcNow.AddDays(3)
             });
             var token = handler.WriteToken(securityToken);
 
             return new TokenResponse
             {
                 Token = token,
-                ExpireDate = DateTime.UtcNow.AddHours(48)
+                ExpireDate = DateTime.UtcNow.AddDays(3)
             };
         }
 

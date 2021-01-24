@@ -6,5 +6,6 @@ namespace EasySoccer.WebApi.Security.Entity
     {
         public string Token { get; set; }
         public DateTime ExpireDate { get; set; }
+        public Guid RefreshToken { get; set; }
     }
 }

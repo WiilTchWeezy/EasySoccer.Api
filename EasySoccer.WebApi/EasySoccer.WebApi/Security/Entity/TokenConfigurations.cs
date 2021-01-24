@@ -5,5 +5,6 @@
         public string Audience { get; set; }
         public string Issuer { get; set; }
         public int Seconds { get; set; } = 120;
+        public string TokenSecret { get; set; }
     }
 }

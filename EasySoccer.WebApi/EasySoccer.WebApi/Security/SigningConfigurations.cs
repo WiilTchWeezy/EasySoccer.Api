@@ -1,22 +1,21 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace EasySoccer.WebApi.Security
 {
     public class SigningConfigurations
     {
-        public SecurityKey Key { get; }
         public SigningCredentials SigningCredentials { get; }
 
-        public SigningConfigurations()
+        public SigningConfigurations(IConfiguration configuration)
         {
-            using (var provider = new RSACryptoServiceProvider(2048))
-            {
-                Key = new RsaSecurityKey(provider.ExportParameters(true));
-            }
-
+            var configSection = configuration.GetSection("TokenConfigurations");
+            var key = configSection.GetValue<string>("TokenSecret");
+            var keyBytes = Encoding.ASCII.GetBytes(key);
             SigningCredentials = new SigningCredentials(
-                Key, SecurityAlgorithms.RsaSha256Signature);
+                new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature);
         }
     }
 }

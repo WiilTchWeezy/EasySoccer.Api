@@ -88,6 +88,7 @@ namespace EasySoccer.BLL.Services.PaymentGateway
             DateTime birthDay = DateTime.Now;
             DateTime.TryParse(request.FinancialBirthDay, out birthDay);
             transaction.Amount = amount;
+            transaction.Installments = request.SelectedInstallments;
             transaction.Card = new PagarMe.Card
             {
                 Id = cardHash
@@ -107,12 +108,15 @@ namespace EasySoccer.BLL.Services.PaymentGateway
                         Number = request.FinancialDocument
                     }
                 },
-                PhoneNumbers = new string[]
-                {
-                    "+55" + companyUser.Phone.Replace("(", "").Replace(")", "").Replace("-", "")
-                },
                 Birthday = birthDay.ToString("yyyy-MM-dd")
             };
+            if (string.IsNullOrEmpty(companyUser.Phone) == false)
+            {
+                transaction.Customer.PhoneNumbers = new string[]
+                {
+                    string.IsNullOrEmpty(companyUser.Phone) ? string.Empty : "+55" + companyUser.Phone.Replace(" ","").Replace("(", "").Replace(")", "").Replace("-", "")
+                };
+            }
             transaction.Billing = new PagarMe.Billing
             {
                 Name = request.FinancialName,

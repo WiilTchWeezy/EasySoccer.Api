@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using EasySoccer.BLL;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.Services.Azure;
@@ -31,6 +32,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace EasySoccer.WebApi
@@ -110,7 +112,7 @@ namespace EasySoccer.WebApi
 
             #region TokenConfiguration
 
-            var signingConfigutation = new SigningConfigurations();
+            var signingConfigutation = new SigningConfigurations(Configuration);
             services.AddSingleton(signingConfigutation);
 
             var tokenConfigurations = new TokenConfigurations();
@@ -118,7 +120,7 @@ namespace EasySoccer.WebApi
                 Configuration.GetSection("TokenConfigurations"))
                     .Configure(tokenConfigurations);
             services.AddSingleton(tokenConfigurations);
-
+            var key = Encoding.ASCII.GetBytes(tokenConfigurations.TokenSecret);
             services.AddAuthentication(authOptions =>
             {
                 authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -127,11 +129,12 @@ namespace EasySoccer.WebApi
             .AddJwtBearer(bearerOptions =>
             {
                 var paramsValidation = bearerOptions.TokenValidationParameters;
-                paramsValidation.IssuerSigningKey = signingConfigutation.Key;
+                paramsValidation.IssuerSigningKey = new SymmetricSecurityKey(key);
                 paramsValidation.ValidAudience = tokenConfigurations.Audience;
                 paramsValidation.ValidIssuer = tokenConfigurations.Issuer;
                 paramsValidation.ValidateIssuerSigningKey = true;
                 paramsValidation.ValidateLifetime = false;
+                paramsValidation.RequireExpirationTime = false;
             });
 
             services.AddAuthorization(auth =>
@@ -181,6 +184,8 @@ namespace EasySoccer.WebApi
             }
             app.UseCors("AllowAll");
             app.UseMvc();
+
+            app.UseAuthentication();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
