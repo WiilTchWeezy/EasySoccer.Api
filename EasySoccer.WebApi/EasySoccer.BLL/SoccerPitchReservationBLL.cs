@@ -150,7 +150,8 @@ namespace EasySoccer.BLL
                     if (item.CompanyUserId.HasValue)
                     {
                         var data = JsonConvert.SerializeObject(new { reservationId = soccerPitchReservation.Id });
-                        await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.CompanyUserId.Value, "Novo horário agendado.", "Um novo horário foi agendado no seu complexo esportivo. Acesse seu calendário para mais informações.", item.Token, Entities.Enum.NotificationTypeEnum.NewReservation, data);
+                        var message = string.Format("Um novo horário foi agendado no seu complexo esportivo, na quadra {0}. Acesse seu calendário para mais informações.", selectedSoccerPitch.Name);
+                        await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.CompanyUserId.Value, "Novo horário agendado.", message, item.Token, Entities.Enum.NotificationTypeEnum.NewReservation, data);
                     }
                 }
             }
