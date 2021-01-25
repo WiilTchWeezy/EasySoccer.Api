@@ -147,7 +147,7 @@ namespace EasySoccer.BLL
             {
                 var data = JsonConvert.SerializeObject(new { reservationId = soccerPitchReservation.Id });
                 var message = string.Format("Um novo horário foi agendado no seu complexo esportivo, na quadra {0}. Acesse seu calendário para mais informações.", selectedSoccerPitch.Name);
-                await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.Id, "Novo horário agendado.", message, item.Token, Entities.Enum.NotificationTypeEnum.NewReservation, data);
+                await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.Id, "Novo horário agendado.", message, Entities.Enum.NotificationTypeEnum.NewReservation, data);
             }
             return soccerPitchReservation;
         }
