@@ -35,7 +35,6 @@ namespace EasySoccer.DAL.Repositories
         public Task<List<UserToken>> GetAsync(Guid[] userIds)
         {
             return _dbContext.UserTokenQuery.Where(x => x.UserId != null && userIds.Contains(x.UserId.Value)).ToListAsync();
-
         }
 
         public Task<List<UserToken>> GetAsync(long companyUserId)

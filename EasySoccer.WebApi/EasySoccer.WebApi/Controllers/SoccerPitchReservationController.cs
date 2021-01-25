@@ -200,7 +200,9 @@ namespace EasySoccer.WebApi.Controllers
                     CompanyImage = reservation.SoccerPitch.Company.Logo,
                     CompanyName = reservation.SoccerPitch.Company.Name,
                     CompanyAddress = reservation.SoccerPitch.Company.CompleteAddress,
-                    CompanyCity = reservation.SoccerPitch.Company.IdCity.HasValue ? reservation.SoccerPitch.Company.City.Name : string.Empty
+                    CompanyCity = reservation.SoccerPitch.Company.IdCity.HasValue ? reservation.SoccerPitch.Company.City.Name : string.Empty,
+                    SelectedHourStart = new { Hour = reservation.SelectedDateStart.TimeOfDay.Hours.ToString("00"), Minute = reservation.SelectedDateStart.TimeOfDay.Minutes.ToString("00") },
+                    SelectedHourEnd = new { Hour = reservation.SelectedDateEnd.TimeOfDay.Hours.ToString("00"), Minute = reservation.SelectedDateEnd.TimeOfDay.Minutes.ToString("00") }
                 });
             }
             catch (Exception e)
