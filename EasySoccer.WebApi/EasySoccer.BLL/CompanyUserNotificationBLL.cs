@@ -16,14 +16,16 @@ namespace EasySoccer.BLL
         private INotificationService _notificationService;
         private ICompanyUserNotificationRepository _companyUserNotificationRepository;
         private IEasySoccerDbContext _dbContext;
-        public CompanyUserNotificationBLL(INotificationService notificationService, ICompanyUserNotificationRepository companyUserNotificationRepository, IEasySoccerDbContext dbContext)
+        private IUserTokenRepository _userTokenRepository;
+        public CompanyUserNotificationBLL(INotificationService notificationService, ICompanyUserNotificationRepository companyUserNotificationRepository, IEasySoccerDbContext dbContext, IUserTokenRepository userTokenRepository)
         {
             _notificationService = notificationService;
             _companyUserNotificationRepository = companyUserNotificationRepository;
             _dbContext = dbContext;
+            _userTokenRepository = userTokenRepository;
         }
 
-        public async Task<CompanyUserNotification> CreateCompanyUserNotificationAsync(long companyUserId, string title, string message, string token, NotificationTypeEnum notificationTypeEnum, string data)
+        public async Task<CompanyUserNotification> CreateCompanyUserNotificationAsync(long companyUserId, string title, string message, NotificationTypeEnum notificationTypeEnum, string data)
         {
             var companyUserNotification = new CompanyUserNotification
             {
@@ -38,10 +40,17 @@ namespace EasySoccer.BLL
             };
             await _companyUserNotificationRepository.Create(companyUserNotification);
             await _dbContext.SaveChangesAsync();
-            var dic = new Dictionary<string, string>();
-            dic.Add("title", title);
-            dic.Add("message", message);
-            await _notificationService.SendNotification(token, dic);
+            var userTokens = await _userTokenRepository.GetAsync(companyUserId);
+            if(userTokens != null)
+            {
+                foreach (var item in userTokens)
+                {
+                    var dic = new Dictionary<string, string>();
+                    dic.Add("title", title);
+                    dic.Add("message", message);
+                    await _notificationService.SendNotification(item.Token, dic);
+                }
+            }
             return companyUserNotification;
         }
     }

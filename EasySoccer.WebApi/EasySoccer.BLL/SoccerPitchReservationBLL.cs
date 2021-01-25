@@ -142,18 +142,12 @@ namespace EasySoccer.BLL
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
             var users = await _companyUserRepository.GetByCompanyIdAsync(selectedSoccerPitch.CompanyId);
-            var userTokens = await _userTokenRepository.GetAsync(users.Select(x => x.Id).ToArray());
-            if (userTokens != null && userTokens.Any())
+
+            foreach (var item in users)
             {
-                foreach (var item in userTokens)
-                {
-                    if (item.CompanyUserId.HasValue)
-                    {
-                        var data = JsonConvert.SerializeObject(new { reservationId = soccerPitchReservation.Id });
-                        var message = string.Format("Um novo horário foi agendado no seu complexo esportivo, na quadra {0}. Acesse seu calendário para mais informações.", selectedSoccerPitch.Name);
-                        await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.CompanyUserId.Value, "Novo horário agendado.", message, item.Token, Entities.Enum.NotificationTypeEnum.NewReservation, data);
-                    }
-                }
+                var data = JsonConvert.SerializeObject(new { reservationId = soccerPitchReservation.Id });
+                var message = string.Format("Um novo horário foi agendado no seu complexo esportivo, na quadra {0}. Acesse seu calendário para mais informações.", selectedSoccerPitch.Name);
+                await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.Id, "Novo horário agendado.", message, item.Token, Entities.Enum.NotificationTypeEnum.NewReservation, data);
             }
             return soccerPitchReservation;
         }
