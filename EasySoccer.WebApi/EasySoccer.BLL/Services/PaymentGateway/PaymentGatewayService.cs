@@ -1,4 +1,5 @@
-﻿using EasySoccer.BLL.Infra.Services.PaymentGateway;
+﻿using EasySoccer.BLL.Infra.DTO;
+using EasySoccer.BLL.Infra.Services.PaymentGateway;
 using EasySoccer.BLL.Infra.Services.PaymentGateway.Request;
 using EasySoccer.BLL.Services.PaymentGateway.Requests;
 using EasySoccer.BLL.Services.PaymentGateway.Responses;
@@ -148,9 +149,9 @@ namespace EasySoccer.BLL.Services.PaymentGateway
         }
 
 
-        public async Task<bool> PayAsync(PaymentRequest request, CompanyUser companyUser, decimal planValue, int installments, string cityName, string stateCode)
+        public async Task<TransactionResponse> PayAsync(PaymentRequest request, CompanyUser companyUser, decimal planValue, int installments, string cityName, string stateCode)
         {
-            bool done = false;
+            TransactionResponse transactionResponse = null;
             CardResponse card = null;
             var cards = await GetCards(request.FinancialName, request.CardNumber);
             if (cards != null && cards.Count > 0 && cards.Count == 1)
@@ -163,8 +164,15 @@ namespace EasySoccer.BLL.Services.PaymentGateway
             {
                 int amount = (int)planValue * 100;
                 var transaction = await CreateTransactionAsync(amount, card.id, companyUser, request, stateCode, cityName);
+                if(transaction != null)
+                {
+                    transactionResponse = new TransactionResponse();
+                    transactionResponse.IsAuthorized = transaction.Status == TransactionStatus.Paid;
+                    transactionResponse.TransactionJson = JsonConvert.SerializeObject(new { transaction.AuthorizationCode, transaction.Nsu, transaction.Id });
+                    transactionResponse.Status = (int)transaction.Status;
+                }
             }
-            return done;
+            return transactionResponse;
         }
     }
 }

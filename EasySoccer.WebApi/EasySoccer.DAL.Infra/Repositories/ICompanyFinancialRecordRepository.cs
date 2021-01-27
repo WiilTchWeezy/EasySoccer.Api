@@ -9,6 +9,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     public interface ICompanyFinancialRecordRepository : IRepositoryBase
     {
         Task<CompanyFinancialRecord> GetByCompanyAsync(long companyId);
-        Task<List<CompanyFinancialRecord>> GetCompaniesToGetLate();
+        Task<List<Company>> GetCompaniesToGetLate();
     }
 }

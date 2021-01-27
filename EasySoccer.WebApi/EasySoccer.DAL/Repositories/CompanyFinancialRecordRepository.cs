@@ -17,13 +17,13 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<CompanyFinancialRecord> GetByCompanyAsync(long companyId)
         {
-            return _dbContext.CompanyFinancialRecordQuery.Where(x => x.CompanyId == companyId && x.Paid == true && x.ExpiresDate.Date >= DateTime.UtcNow.Date).FirstOrDefaultAsync();
+            return _dbContext.CompanyFinancialRecordQuery.Where(x => x.CompanyId == companyId && x.Paid == true && x.ExpiresDate.Date >= DateTime.UtcNow.Date).OrderByDescending(x => x.ExpiresDate).FirstOrDefaultAsync();
         }
 
-        public Task<List<CompanyFinancialRecord>> GetCompaniesToGetLate()
+        public Task<List<Company>> GetCompaniesToGetLate()
         {
             var date = DateTime.UtcNow.AddDays(-7);
-            return _dbContext.CompanyFinancialRecordQuery.Include(x => x.Company).Where(x => x.Paid == true && x.ExpiresDate.Date >= date.Date).ToListAsync();
+            return _dbContext.CompanyFinancialRecordQuery.Include(x => x.Company).Where(x => x.Paid == true && x.ExpiresDate.Date >= date.Date).Select(x => x.Company).Distinct().ToListAsync();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace EasySoccer.Entities
@@ -31,6 +32,9 @@ namespace EasySoccer.Entities
 
         [Required]
         public long IdCompanyUser { get; set; }
+
+        [ForeignKey("IdCompanyUser")]
+        public virtual CompanyUser CompanyUser { get; set; }
 
         public string Data { get; set; }
 

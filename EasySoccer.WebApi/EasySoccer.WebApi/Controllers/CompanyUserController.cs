@@ -138,7 +138,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                await _companyUserUow.CompanyUserBLL.PayAsync(request, new CurrentUser(HttpContext).UserId);
+                await _companyUserUow.CompanyUserBLL.PayAsync(request, new CurrentUser(HttpContext).UserId, new CurrentUser(HttpContext).CompanyId);
                 return Ok();
             }
             catch (Exception e)

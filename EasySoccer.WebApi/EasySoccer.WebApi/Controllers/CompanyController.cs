@@ -49,6 +49,9 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var currentCompany = await _uow.CompanyBLL.GetAsync(new CurrentUser(HttpContext).CompanyId);
+                var currentFinancialRecord = await _uow.CompanyBLL.GetCurrentFinancialInfoAsync(new CurrentUser(HttpContext).CompanyId);
+                if (currentFinancialRecord != null)
+                    currentFinancialRecord.Company = null;
                 return Ok(new
                 {
                     currentCompany?.Name,
@@ -70,7 +73,8 @@ namespace EasySoccer.WebApi.Controllers
                         x.FinalHour,
                         x.StartHour,
                         x.WorkOnThisDay
-                    }).ToList()
+                    }).ToList(),
+                    FinancialInfo = currentFinancialRecord
                 });
             }
             catch (Exception e)

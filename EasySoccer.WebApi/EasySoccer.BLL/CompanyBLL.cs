@@ -340,5 +340,10 @@ namespace EasySoccer.BLL
         {
             return _stateRepository.GetAsync();
         }
+
+        public Task<CompanyFinancialRecord> GetCurrentFinancialInfoAsync(long companyId)
+        {
+            return _companyFinancialRecordRepository.GetByCompanyAsync(companyId);
+        }
     }
 }

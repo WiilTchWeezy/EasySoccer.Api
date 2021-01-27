@@ -45,13 +45,13 @@ namespace EasySoccer.WebJob.Jobs
                 Console.WriteLine(string.Format("{0} - {1} registros encontrados.", DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm"), companies.Count));
                 foreach (var item in companies)
                 {
-                    var companyUsers = await _companyUserRepository.GetByCompanyIdAsync(item.CompanyId);
+                    var companyUsers = await _companyUserRepository.GetByCompanyIdAsync(item.Id);
                     foreach (var user in companyUsers)
                     {
-                        var companyUserNotification = await _companyUserNotificationRepository.GetAsync(user.Id, DateTime.UtcNow.AddDays(-7));
+                        var companyUserNotification = await _companyUserNotificationRepository.GetAsync(user.Id, DateTime.UtcNow.AddDays(-7), NotificationTypeEnum.FinancialRenewal);
                         if (companyUserNotification == null)
                         {
-                            Console.WriteLine(string.Format("{0} - Inserindo notificação para usuário {1} - Empresa: {2}.", DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm"), user.Name, item.Company.Name));
+                            Console.WriteLine(string.Format("{0} - Inserindo notificação para usuário {1} - Empresa: {2}.", DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm"), user.Name, item.Name));
                             companyUserNotification = new CompanyUserNotification
                             {
                                 CreatedDate = DateTime.UtcNow,

@@ -136,7 +136,7 @@ namespace EasySoccer.BLL
             return userToken;
         }
 
-        public async Task<CompanyFinancialRecord> PayAsync(PaymentRequest request, long companyUserId)
+        public async Task<CompanyFinancialRecord> PayAsync(PaymentRequest request, long companyUserId, long companyId)
         {
             var companyUser = await _companyUserRepository.GetAsync(companyUserId);
             if (companyUser == null)
@@ -150,8 +150,40 @@ namespace EasySoccer.BLL
             if (state == null)
                 throw new BussinessException("Estado não encontrado.");
 
-            var done = await _paymentGateWayService.PayAsync(request, companyUser, planValue, installment, state.Code, city.Name);
-            return new CompanyFinancialRecord();
+            var transaction = await _paymentGateWayService.PayAsync(request, companyUser, planValue, installment, state.Code, city.Name);
+            if (transaction != null)
+            {
+                if (transaction.IsAuthorized)
+                {
+                    var companyFinancialRecord = new CompanyFinancialRecord()
+                    {
+                        FinancialPlan = (FinancialPlanEnum)request.SelectedPlan,
+                        CompanyId = companyId,
+                        CreatedDate = DateTime.UtcNow,
+                        ExpiresDate = DateTime.UtcNow.AddMonths(FinancialHelper.Instance.GetMonthsFromPlan((FinancialPlanEnum)request.SelectedPlan)),
+                        Paid = transaction.IsAuthorized,
+                        Transaction = transaction.TransactionJson,
+                        Value = planValue
+                    };
+                    await _companyFinancialRecordRepository.Create(companyFinancialRecord);
+                    var userNotifications = await _companyUserNotificationRepository.GetAsync(companyId, NotificationTypeEnum.FinancialRenewal);
+                    if(userNotifications != null)
+                    {
+                        foreach (var item in userNotifications)
+                        {
+                            item.Active = false;
+                            await _companyUserNotificationRepository.Edit(item);
+                        }
+                    }
+                    await _dbContext.SaveChangesAsync();
+                    return companyFinancialRecord;
+                }
+                else
+                {
+                    throw new BussinessException("Não foi possível realizar o pagamento.");
+                }
+            }
+            return null;
         }
 
         public async Task<CompanyUser> UpdateAsync(long userId, string name, string email, string phone)
