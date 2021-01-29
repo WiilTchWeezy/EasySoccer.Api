@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using PagarMe;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -90,7 +91,7 @@ namespace EasySoccer.BLL.Services.PaymentGateway
                 PagarMeService.DefaultEncryptionKey = _encryptionKey;
                 Transaction transaction = new Transaction();
                 DateTime birthDay = DateTime.Now;
-                DateTime.TryParse(request.FinancialBirthDay, out birthDay);
+                DateTime.TryParse(request.FinancialBirthDay, new CultureInfo("pt-BR"), DateTimeStyles.AdjustToUniversal, out birthDay);
                 transaction.Amount = amount;
                 transaction.Installments = request.SelectedInstallments;
                 transaction.Card = new PagarMe.Card
