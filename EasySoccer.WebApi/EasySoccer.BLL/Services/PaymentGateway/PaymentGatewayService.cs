@@ -1,4 +1,5 @@
-﻿using EasySoccer.BLL.Infra.DTO;
+﻿using EasySoccer.BLL.Exceptions;
+using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.BLL.Infra.Services.PaymentGateway;
 using EasySoccer.BLL.Infra.Services.PaymentGateway.Request;
 using EasySoccer.BLL.Services.PaymentGateway.Requests;
@@ -81,60 +82,62 @@ namespace EasySoccer.BLL.Services.PaymentGateway
 
         private async Task<Transaction> CreateTransactionAsync(decimal value, string cardHash, CompanyUser companyUser, PaymentRequest request, string stateCode, string cityName)
         {
-            var transationResponse = new TransactionResponse();
-            var amount = (int)value;
-            PagarMeService.DefaultApiKey = _key;
-            PagarMeService.DefaultEncryptionKey = _encryptionKey;
-            Transaction transaction = new Transaction();
-            DateTime birthDay = DateTime.Now;
-            DateTime.TryParse(request.FinancialBirthDay, out birthDay);
-            transaction.Amount = amount;
-            transaction.Installments = request.SelectedInstallments;
-            transaction.Card = new PagarMe.Card
+            try
             {
-                Id = cardHash
-            };
-            transaction.Customer = new PagarMe.Customer()
-            {
-                ExternalId = companyUser.Id.ToString(),
-                Name = request.FinancialName,
-                Type = CustomerType.Individual,
-                Country = "br",
-                Email = companyUser.Email,
-                Documents = new[]
+                var transationResponse = new TransactionResponse();
+                var amount = (int)value;
+                PagarMeService.DefaultApiKey = _key;
+                PagarMeService.DefaultEncryptionKey = _encryptionKey;
+                Transaction transaction = new Transaction();
+                DateTime birthDay = DateTime.Now;
+                DateTime.TryParse(request.FinancialBirthDay, out birthDay);
+                transaction.Amount = amount;
+                transaction.Installments = request.SelectedInstallments;
+                transaction.Card = new PagarMe.Card
                 {
+                    Id = cardHash
+                };
+                transaction.Customer = new PagarMe.Customer()
+                {
+                    ExternalId = companyUser.Id.ToString(),
+                    Name = request.FinancialName,
+                    Type = CustomerType.Individual,
+                    Country = "br",
+                    Email = companyUser.Email,
+                    Documents = new[]
+                    {
                     new PagarMe.Document
                     {
                         Type = DocumentType.Cpf,
                         Number = request.FinancialDocument
                     }
                 },
-                Birthday = birthDay.ToString("yyyy-MM-dd")
-            };
-            if (string.IsNullOrEmpty(companyUser.Phone) == false)
-            {
-                transaction.Customer.PhoneNumbers = new string[]
-                {
-                    string.IsNullOrEmpty(companyUser.Phone) ? string.Empty : "+55" + companyUser.Phone.Replace(" ","").Replace("(", "").Replace(")", "").Replace("-", "")
+                    Birthday = birthDay.ToString("yyyy-MM-dd")
                 };
-            }
-            transaction.Billing = new PagarMe.Billing
-            {
-                Name = request.FinancialName,
-                Address = new PagarMe.Address
+                if (string.IsNullOrEmpty(companyUser.Phone) == false)
                 {
-                    Country = "br",
-                    State = stateCode,
-                    City = cityName,
-                    Neighborhood = request.Neighborhood,
-                    Street = request.Street,
-                    StreetNumber = request.StreetNumber,
-                    Zipcode = request.ZipCode,
-                    Complementary = request.Complementary
+                    transaction.Customer.PhoneNumbers = new string[]
+                    {
+                    string.IsNullOrEmpty(companyUser.Phone) ? string.Empty : "+55" + companyUser.Phone.Replace(" ","").Replace("(", "").Replace(")", "").Replace("-", "")
+                    };
                 }
-            };
-            transaction.Item = new[]
-            {
+                transaction.Billing = new PagarMe.Billing
+                {
+                    Name = request.FinancialName,
+                    Address = new PagarMe.Address
+                    {
+                        Country = "br",
+                        State = stateCode,
+                        City = cityName,
+                        Neighborhood = request.Neighborhood,
+                        Street = request.Street,
+                        StreetNumber = request.StreetNumber,
+                        Zipcode = request.ZipCode,
+                        Complementary = request.Complementary
+                    }
+                };
+                transaction.Item = new[]
+                {
                   new PagarMe.Item()
                   {
                     Id = "1",
@@ -144,8 +147,20 @@ namespace EasySoccer.BLL.Services.PaymentGateway
                     UnitPrice = amount
                   }
             };
-            await transaction.SaveAsync();
-            return transaction;
+                await transaction.SaveAsync();
+                return transaction;
+            }
+            catch (PagarMe.PagarMeException pgmeEx)
+            {
+                if (pgmeEx.Error != null && pgmeEx.Error.Errors != null && pgmeEx.Error.Errors.Count() > 0)
+                {
+                    throw new BussinessException(string.Join(" - ", pgmeEx.Error.Errors.Select(x => x.Message).ToArray()));
+                }
+                else
+                {
+                    throw pgmeEx;
+                }
+            }
         }
 
 
@@ -164,7 +179,7 @@ namespace EasySoccer.BLL.Services.PaymentGateway
             {
                 int amount = (int)planValue * 100;
                 var transaction = await CreateTransactionAsync(amount, card.id, companyUser, request, stateCode, cityName);
-                if(transaction != null)
+                if (transaction != null)
                 {
                     transactionResponse = new TransactionResponse();
                     transactionResponse.IsAuthorized = transaction.Status == TransactionStatus.Paid;
