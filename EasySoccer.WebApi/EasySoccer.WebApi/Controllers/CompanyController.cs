@@ -29,7 +29,7 @@ namespace EasySoccer.WebApi.Controllers
                 .Select(x => new
                 {
                     x.Active,
-                    City = x.City.Name,
+                    City = x.City?.Name,
                     x.CNPJ,
                     x.CompanySchedules,
                     x.CompleteAddress,
