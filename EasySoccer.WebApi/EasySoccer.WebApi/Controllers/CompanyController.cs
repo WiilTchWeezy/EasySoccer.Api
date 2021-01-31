@@ -23,14 +23,33 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("get"), HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]GetCompanyRequest request)
+        public async Task<IActionResult> GetAsync([FromQuery] GetCompanyRequest request)
         {
-            return Ok(await _uow.CompanyBLL.GetAsync(request.Longitude, request.Latitude, request.Page, request.PageSize, request.Name, request.OrderField, request.OrderDirection));
+            return Ok((await _uow.CompanyBLL.GetAsync(request.Longitude, request.Latitude, request.Page, request.PageSize, request.Name, request.OrderField, request.OrderDirection))
+                .Select(x => new
+                {
+                    x.Active,
+                    City = x.City.Name,
+                    x.CNPJ,
+                    x.CompanySchedules,
+                    x.CompleteAddress,
+                    x.CreatedDate,
+                    x.Description,
+                    x.Distance,
+                    x.Id,
+                    x.IdCity,
+                    x.Latitude,
+                    x.Logo,
+                    x.Longitude,
+                    x.Name,
+                    x.WorkOnHoliDays
+                })
+                .ToList());
         }
 
         [AllowAnonymous]
         [Route("post"), HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]CompanyRequest request)
+        public async Task<IActionResult> PostAsync([FromBody] CompanyRequest request)
         {
             try
             {
@@ -84,7 +103,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("patchcompanyinfo"), HttpPatch]
-        public async Task<IActionResult> UpdateCompanyInfoAsync([FromBody]CompanyRequest request)
+        public async Task<IActionResult> UpdateCompanyInfoAsync([FromBody] CompanyRequest request)
         {
             try
             {
@@ -98,7 +117,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("saveimage"), HttpPost]
-        public async Task<IActionResult> SaveImageAsync([FromBody]CompanyImageRequest request)
+        public async Task<IActionResult> SaveImageAsync([FromBody] CompanyImageRequest request)
         {
             try
             {
@@ -113,7 +132,7 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("companyforminput"), HttpPost]
-        public async Task<IActionResult> CompanyFormInputAsync([FromBody]FormInputCompanyEntryRequest request)
+        public async Task<IActionResult> CompanyFormInputAsync([FromBody] FormInputCompanyEntryRequest request)
         {
             try
             {
@@ -128,7 +147,7 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("contactforminput"), HttpPost]
-        public async Task<IActionResult> ContactFormInputAsync([FromBody]FormInputContactRequest request)
+        public async Task<IActionResult> ContactFormInputAsync([FromBody] FormInputContactRequest request)
         {
             try
             {
@@ -142,7 +161,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("active"), HttpPost]
-        public async Task<IActionResult> ActiveAsync([FromBody]CompanyActiveRequest request)
+        public async Task<IActionResult> ActiveAsync([FromBody] CompanyActiveRequest request)
         {
             try
             {
@@ -158,7 +177,7 @@ namespace EasySoccer.WebApi.Controllers
 
         [AllowAnonymous]
         [Route("getcitiesbystate"), HttpGet]
-        public async Task<IActionResult> GetCitiesByStateAsync([FromQuery]int IdState)
+        public async Task<IActionResult> GetCitiesByStateAsync([FromQuery] int IdState)
         {
             try
             {

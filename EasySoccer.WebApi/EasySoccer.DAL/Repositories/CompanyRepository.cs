@@ -16,7 +16,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<Company>> GetAsync(int page, int pageSize, string name, string orderField, string orderDirection)
         {
-            var query = _dbContext.CompanyQuery.Where(x => x.Active == true).Skip((page - 1) * pageSize).Take(pageSize);
+            var query = _dbContext.CompanyQuery.Include(x => x.City).Where(x => x.Active == true).Skip((page - 1) * pageSize).Take(pageSize);
             if (string.IsNullOrEmpty(name) == false)
                 query = query.Where(x => x.Name.Contains(name));
             if (orderField == "Name" && orderDirection == "ASC")
