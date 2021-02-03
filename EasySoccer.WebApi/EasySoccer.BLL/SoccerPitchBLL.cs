@@ -1,5 +1,6 @@
 ﻿using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Infra;
+using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.BLL.Infra.Services.Azure;
 using EasySoccer.BLL.Infra.Services.Azure.Enums;
 using EasySoccer.DAL.Infra;
@@ -30,7 +31,7 @@ namespace EasySoccer.BLL
             _blobStorageService = blobStorageService;
         }
 
-        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval, string color, string imageBase64)
+        public async Task<SoccerPitch> CreateAsync(string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, SoccerPitchPlanRequest[] soccerPitchPlansId, int sportTypeId, int interval, string color, string imageBase64)
         {
             var soccerPitch = new SoccerPitch
             {
@@ -60,8 +61,9 @@ namespace EasySoccer.BLL
                 await _soccerPitchSoccerPitchPlanRepository.Create(new SoccerPitchSoccerPitchPlan
                 {
                     CreatedDate = DateTime.UtcNow,
-                    SoccerPitchPlanId = item,
-                    SoccerPitchId = soccerPitch.Id
+                    SoccerPitchPlanId = item.Id,
+                    SoccerPitchId = soccerPitch.Id,
+                    IsDefault = item.IsDefault
                 });
             }
             await _dbContext.SaveChangesAsync();

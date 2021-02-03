@@ -19,6 +19,9 @@ namespace EasySoccer.Entities
         [Required]
         public DateTime CreatedDate { get; set; }
 
+        [Required]
+        public bool IsDefault { get; set; }
+
         [ForeignKey("SoccerPitchPlanId")]
         public virtual SoccerPitchPlan SoccerPitchPlan { get; set; }
     }
