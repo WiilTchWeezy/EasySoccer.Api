@@ -140,12 +140,16 @@ namespace EasySoccer.BLL
             {
                 await _soccerPitchSoccerPitchPlanRepository.Create(new SoccerPitchSoccerPitchPlan { SoccerPitchPlanId = item.Id, IsDefault = item.IsDefault, SoccerPitchId = id, CreatedDate = DateTime.Now });
             }
+
             var plansToEdit = currentPlans.Where(x => soccerPitchPlansId.Select(y => y.Id).ToArray().Contains(x.SoccerPitchPlanId)).ToList();
             foreach (var item in plansToEdit)
             {
                 var request = soccerPitchPlansId.Where(x => x.Id == item.Id).FirstOrDefault();
                 if (request != null)
-                    await _soccerPitchSoccerPitchPlanRepository.Edit(new SoccerPitchSoccerPitchPlan { Id = item.Id, IsDefault = request.IsDefault });
+                {
+                    item.IsDefault = request.IsDefault;
+                    await _soccerPitchSoccerPitchPlanRepository.Edit(item);
+                }
             }
 
             await _dbContext.SaveChangesAsync();
