@@ -144,7 +144,7 @@ namespace EasySoccer.BLL
             var plansToEdit = currentPlans.Where(x => soccerPitchPlansId.Select(y => y.Id).ToArray().Contains(x.SoccerPitchPlanId)).ToList();
             foreach (var item in plansToEdit)
             {
-                var request = soccerPitchPlansId.Where(x => x.Id == item.Id).FirstOrDefault();
+                var request = soccerPitchPlansId.Where(x => x.Id == item.SoccerPitchPlanId).FirstOrDefault();
                 if (request != null)
                 {
                     item.IsDefault = request.IsDefault;
