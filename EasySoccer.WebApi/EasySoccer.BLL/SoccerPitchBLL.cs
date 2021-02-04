@@ -118,7 +118,7 @@ namespace EasySoccer.BLL
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, int[] soccerPitchPlansId, int sportTypeId, int interval, string color)
+        public async Task<SoccerPitch> UpdateAsync(long id, string name, string description, bool hasRoof, int numberOfPlayers, long companyId, bool active, SoccerPitchPlanRequest[] soccerPitchPlansId, int sportTypeId, int interval, string color)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(id);
             if (soccerPitch == null)
@@ -127,7 +127,7 @@ namespace EasySoccer.BLL
             var currentPlans = await _soccerPitchSoccerPitchPlanRepository.GetAsync(id);
             if (currentPlans != null && currentPlans.Count > 0)
             {
-                var plansToDelete = currentPlans.Where(x => soccerPitchPlansId.Contains(x.SoccerPitchPlanId) == false).ToList();
+                var plansToDelete = currentPlans.Where(x => soccerPitchPlansId.Select(y => y.Id).ToArray().Contains(x.SoccerPitchPlanId) == false).ToList();
                 foreach (var item in plansToDelete)
                 {
                     await _soccerPitchSoccerPitchPlanRepository.Delete(item);
@@ -135,11 +135,19 @@ namespace EasySoccer.BLL
                 await _dbContext.SaveChangesAsync();
             }
             var currentPlansIds = currentPlans.Select(x => x.SoccerPitchPlanId).ToList();
-            var plansToAdd = soccerPitchPlansId.Where(x => currentPlansIds.Contains(x) == false).ToList();
+            var plansToAdd = soccerPitchPlansId.Where(x => currentPlansIds.Contains(x.Id) == false).ToList();
             foreach (var item in plansToAdd)
             {
-                await _soccerPitchSoccerPitchPlanRepository.Create(new SoccerPitchSoccerPitchPlan { SoccerPitchPlanId = item, SoccerPitchId = id, CreatedDate = DateTime.Now });
+                await _soccerPitchSoccerPitchPlanRepository.Create(new SoccerPitchSoccerPitchPlan { SoccerPitchPlanId = item.Id, IsDefault = item.IsDefault, SoccerPitchId = id, CreatedDate = DateTime.Now });
             }
+            var plansToEdit = currentPlans.Where(x => soccerPitchPlansId.Select(y => y.Id).ToArray().Contains(x.SoccerPitchPlanId)).ToList();
+            foreach (var item in plansToEdit)
+            {
+                var request = soccerPitchPlansId.Where(x => x.Id == item.Id).FirstOrDefault();
+                if (request != null)
+                    await _soccerPitchSoccerPitchPlanRepository.Edit(new SoccerPitchSoccerPitchPlan { Id = item.Id, IsDefault = request.IsDefault });
+            }
+
             await _dbContext.SaveChangesAsync();
 
             soccerPitch.Name = name;

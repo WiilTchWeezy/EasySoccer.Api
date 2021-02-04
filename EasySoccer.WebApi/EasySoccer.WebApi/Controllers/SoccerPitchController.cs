@@ -101,7 +101,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var plansId = request.Plans?.Select(x => x.Id).ToArray();
+                var plansId = request.Plans?.Select(x => new EasySoccer.BLL.Infra.DTO.SoccerPitchPlanRequest { Id = x.Id, IsDefault = x.IsDefault }).ToArray();
                 return Ok(await _uow.SoccerPitchBLL.UpdateAsync(request.Id, request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval, request.Color));
             }
             catch (Exception e)
