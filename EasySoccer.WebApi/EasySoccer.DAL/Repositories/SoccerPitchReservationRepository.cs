@@ -85,7 +85,7 @@ namespace EasySoccer.DAL.Repositories
             (
             (x.SelectedDateStart >= dateStart && x.SelectedDateStart <= dateEnd)
             ||
-            (x.SelectedDateEnd >= dateStart && x.SelectedDateEnd <= dateEnd))
+            (x.SelectedDateEnd > dateStart && x.SelectedDateEnd <= dateEnd))
             ).FirstOrDefaultAsync();
         }
 
