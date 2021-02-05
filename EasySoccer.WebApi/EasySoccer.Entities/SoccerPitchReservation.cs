@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasySoccer.Entities.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -37,6 +38,8 @@ namespace EasySoccer.Entities
         public DateTime SelectedDateEnd { get; set; }
 
         public Guid? PersonId { get; set; }
+
+        public ApplicationEnum Application { get; set; }
 
         [ForeignKey("SoccerPitchId")]
         public virtual SoccerPitch SoccerPitch { get; set; }

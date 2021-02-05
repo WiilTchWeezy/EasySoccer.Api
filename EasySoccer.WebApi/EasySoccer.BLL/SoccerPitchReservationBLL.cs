@@ -7,6 +7,7 @@ using EasySoccer.BLL.Infra.Services.PushNotification;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
+using EasySoccer.Entities.Enum;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -52,13 +53,22 @@ namespace EasySoccer.BLL
             _companyUserNotificationBLL = companyUserNotificationBLL;
         }
 
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long companyUserId, long soccerPitchPlanId)
+
+        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long? companyUserId, long soccerPitchPlanId, ApplicationEnum application)
         {
             var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
                 throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
+
+            if (selectedDate.Date < DateTime.Now.Date)
+                throw new BussinessException("Não é possível agendar datas menores que a atual.");
+
             var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
             var selectedDateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourFinish.Hours, hourFinish.Minutes, hourFinish.Seconds);
+
+            var selectedSoccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
+            if (selectedSoccerPitch == null)
+                throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
 
             var reservationAvaliable = await CheckReservationIsAvaliable(selectedDateStart, soccerPitchId, selectedDateEnd);
             if (reservationAvaliable.IsAvaliable == false)
@@ -73,7 +83,7 @@ namespace EasySoccer.BLL
                 SelectedDateEnd = selectedDateEnd,
                 SoccerPitchId = soccerPitchId,
                 Status = (int)StatusEnum.AguardandoAprovacao,
-                StatusChangedUserId = companyUserId,
+                StatusChangedUserId = companyUserId.HasValue ? companyUserId.Value : (long?)null,
                 SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id
             };
 
@@ -81,59 +91,13 @@ namespace EasySoccer.BLL
             {
                 var person = await _personRepository.GetByPersonId(personId.Value);
                 if (person != null)
-                    soccerPitchReservation.PersonId = personId;
-            }
-            var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
-            if (validationResponse.IsValid == false)
-                throw new BussinessException(validationResponse.ErrorFormatted);
-            await _soccerPitchReservationRepository.Create(soccerPitchReservation);
-            await _dbContext.SaveChangesAsync();
-            return soccerPitchReservation;
-        }
-
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid userId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchPlanId)
-        {
-
-            if (selectedDate.Date < DateTime.Now.Date)
-                throw new BussinessException("Não é possível agendar datas menores que a atual.");
-
-            var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
-            if (soccerPicthPlanRelation == null)
-                throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
-
-            var selectedSoccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
-
-            if (selectedSoccerPitch == null)
-                throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
-
-
-            var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
-            var selectedDateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourFinish.Hours, hourFinish.Minutes, hourFinish.Seconds);
-
-            var reservationAvaliable = await CheckReservationIsAvaliable(selectedDateStart, soccerPitchId, selectedDateEnd);
-            if (reservationAvaliable.IsAvaliable == false)
-                throw new BussinessException("Horário selecionado não esta disponivel");
-            var soccerPitchReservation = new SoccerPitchReservation
-            {
-                Id = Guid.NewGuid(),
-                CreatedDate = DateTime.UtcNow,
-                Note = note,
-                SelectedDateStart = selectedDateStart,
-                SelectedDateEnd = selectedDateEnd,
-                SoccerPitchId = soccerPitchId,
-                Status = (int)StatusEnum.AguardandoAprovacao,
-                StatusChangedUserId = null,
-                SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id,
-                Interval = selectedSoccerPitch.Interval
-            };
-            if (userId != default)
-            {
-                var person = await _personRepository.GetByUserIdAsync(userId);
-                if (person != null)
                 {
-                    if (string.IsNullOrEmpty(person.Phone))
-                        throw new BussinessException("É necessário preencher um telefone para realizar um agendamento.");
-                    soccerPitchReservation.PersonId = person.Id;
+                    if (application == ApplicationEnum.MobileUser)
+                    {
+                        if (string.IsNullOrEmpty(person.Phone))
+                            throw new BussinessException("É necessário preencher um telefone para realizar um agendamento.");
+                    }
+                    soccerPitchReservation.PersonId = personId;
                 }
             }
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
@@ -142,12 +106,14 @@ namespace EasySoccer.BLL
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
             var users = await _companyUserRepository.GetByCompanyIdAsync(selectedSoccerPitch.CompanyId);
-
-            foreach (var item in users)
+            if (application == ApplicationEnum.MobileUser)
             {
-                var data = JsonConvert.SerializeObject(new { reservationId = soccerPitchReservation.Id });
-                var message = string.Format("Um novo horário foi agendado no seu complexo esportivo, na quadra {0}. Acesse seu calendário para mais informações.", selectedSoccerPitch.Name);
-                await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.Id, "Novo horário agendado.", message, Entities.Enum.NotificationTypeEnum.NewReservation, data);
+                foreach (var item in users)
+                {
+                    var data = JsonConvert.SerializeObject(new { reservationId = soccerPitchReservation.Id });
+                    var message = string.Format("Um novo horário foi agendado no seu complexo esportivo, na quadra {0}. Acesse seu calendário para mais informações.", selectedSoccerPitch.Name);
+                    await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.Id, "Novo horário agendado.", message, Entities.Enum.NotificationTypeEnum.NewReservation, data);
+                }
             }
             return soccerPitchReservation;
         }
