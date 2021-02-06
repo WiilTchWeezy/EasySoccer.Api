@@ -50,10 +50,11 @@ namespace EasySoccer.WebApi.Controllers
             {
                 return Ok((await _uow.SoccerPitchPlanBLL.GetAsync(soccerPitchId)).Select(x => new
                 {
-                    x.Id,
-                    x.Name,
-                    x.Value,
-                    x.Description
+                    x.SoccerPitchPlan.Id,
+                    x.SoccerPitchPlan.Name,
+                    x.SoccerPitchPlan.Value,
+                    x.SoccerPitchPlan.Description,
+                    x.IsDefault
                 }).ToList());
             }
             catch (Exception e)

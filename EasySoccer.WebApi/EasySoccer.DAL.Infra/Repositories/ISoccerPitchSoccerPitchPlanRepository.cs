@@ -8,6 +8,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     {
         Task<List<SoccerPitchSoccerPitchPlan>> GetAsync(long soccerPitch);
         Task<SoccerPitchSoccerPitchPlan> GetAsync(long soccerPitch, long soccerPitchPlan);
-        Task<List<SoccerPitchPlan>> GetPlansAsync(long soccerPitch);
+        Task<List<SoccerPitchSoccerPitchPlan>> GetPlansAsync(long soccerPitch);
     }
 }
