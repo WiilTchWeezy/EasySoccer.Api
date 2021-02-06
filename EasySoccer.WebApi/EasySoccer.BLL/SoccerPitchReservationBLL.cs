@@ -84,7 +84,8 @@ namespace EasySoccer.BLL
                 SoccerPitchId = soccerPitchId,
                 Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = companyUserId.HasValue ? companyUserId.Value : (long?)null,
-                SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id
+                SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id,
+                Application = application
             };
 
             if (personId.HasValue)
@@ -99,6 +100,11 @@ namespace EasySoccer.BLL
                     }
                     soccerPitchReservation.PersonId = personId;
                 }
+            }
+            else
+            {
+                if (application == ApplicationEnum.MobileUser)
+                    throw new BussinessException("É necessário estar autenticado para realizar um agendamento.");
             }
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)
