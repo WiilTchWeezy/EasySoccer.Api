@@ -85,20 +85,34 @@ namespace EasySoccer.BLL
                 Status = (int)StatusEnum.AguardandoAprovacao,
                 StatusChangedUserId = companyUserId.HasValue ? companyUserId.Value : (long?)null,
                 SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id,
-                Application = application
+                Application = application,
+                Interval = selectedSoccerPitch.Interval
             };
 
             if (personId.HasValue)
             {
-                var person = await _personRepository.GetByPersonId(personId.Value);
-                if (person != null)
+                if (application == ApplicationEnum.MobileUser)
                 {
-                    if (application == ApplicationEnum.MobileUser)
+                    var user = await _userRepository.GetAsync(personId.Value);
+                    if(user == null)
+                        throw new BussinessException("Erro ao realizar o agendamento. Usuário não encontrado");
+                    var person = await _personRepository.GetByUserIdAsync(user.Id);
+                    if (person == null)
+                        throw new BussinessException("Erro ao realizar o agendamento. Erro no cadastro do usuário.");
+                    soccerPitchReservation.PersonId = person.Id;
+                }
+                else
+                {
+                    var person = await _personRepository.GetByPersonId(personId.Value);
+                    if (person != null)
                     {
-                        if (string.IsNullOrEmpty(person.Phone))
-                            throw new BussinessException("É necessário preencher um telefone para realizar um agendamento.");
+                        if (application == ApplicationEnum.MobileUser)
+                        {
+                            if (string.IsNullOrEmpty(person.Phone))
+                                throw new BussinessException("É necessário preencher um telefone para realizar um agendamento.");
+                        }
+                        soccerPitchReservation.PersonId = personId;
                     }
-                    soccerPitchReservation.PersonId = personId;
                 }
             }
             else
