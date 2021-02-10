@@ -206,7 +206,7 @@ namespace EasySoccer.BLL
 
         }
 
-        
+
 
         private List<CompanySchedule> GetDefaultCompanySchedules(long companyId)
         {
@@ -231,8 +231,15 @@ namespace EasySoccer.BLL
             var currentCompany = await _companyRepository.GetAsync(companyId);
             if (currentCompany == null)
                 throw new BussinessException("Empresa não encontrada!");
-            if (string.IsNullOrEmpty(currentCompany.Logo) == false)
-                _blobStorageService.Delete(currentCompany.Logo, BlobContainerEnum.CompanyContainer);
+            try
+            {
+                if (string.IsNullOrEmpty(currentCompany.Logo) == false)
+                    _blobStorageService.Delete(currentCompany.Logo, BlobContainerEnum.CompanyContainer);
+            }
+            catch (Exception e)
+            {
+
+            }
 
             var bytes = Convert.FromBase64String(imageBase64);
             var fileName = await _blobStorageService.Save(bytes, BlobContainerEnum.CompanyContainer);
@@ -262,7 +269,7 @@ namespace EasySoccer.BLL
             if (idCity.HasValue)
             {
                 var city = await _cityRepository.GetAsync(idCity.Value);
-                if(city != null)
+                if (city != null)
                 {
                     currentCompany.IdCity = city.Id;
                 }
@@ -320,9 +327,9 @@ namespace EasySoccer.BLL
         public async Task ActiveAsync(long companyId, bool active)
         {
             var currentCompany = await _companyRepository.GetAsync(companyId);
-            if(currentCompany != null)
+            if (currentCompany != null)
             {
-                if(active != currentCompany.Active)
+                if (active != currentCompany.Active)
                 {
                     currentCompany.Active = active;
                     await _companyRepository.Edit(currentCompany);

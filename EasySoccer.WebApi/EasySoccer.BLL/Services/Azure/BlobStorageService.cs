@@ -22,7 +22,7 @@ namespace EasySoccer.BLL.Services.Azure
         {
             get
             {
-                if(_storageAccount == null)
+                if (_storageAccount == null)
                     _storageAccount = CloudStorageAccount.Parse(_connectionString);
                 return _storageAccount;
             }
@@ -41,9 +41,16 @@ namespace EasySoccer.BLL.Services.Azure
 
         public async void Delete(string fileName, string blobContainer)
         {
-            var containerReference = blobClient.GetContainerReference(blobContainer);            
-            var cloudBlockBlob = containerReference.GetBlockBlobReference(fileName);
-            await cloudBlockBlob.DeleteAsync();
+            try
+            {
+                var containerReference = blobClient.GetContainerReference(blobContainer);
+                var cloudBlockBlob = containerReference.GetBlockBlobReference(fileName);
+                await cloudBlockBlob.DeleteAsync();
+            }
+            catch (Exception)
+            {
+                return;
+            }
         }
 
         public async Task<string> Save(byte[] bytes, string blobContainer, string fileName = "")

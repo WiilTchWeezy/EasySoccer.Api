@@ -106,9 +106,9 @@ namespace EasySoccer.BLL
                 {
                     _blobStorageService.Delete(soccerPitch.ImageName, BlobContainerEnum.SoccerPitchContainer);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    
                 }
             }
             var bytes = Convert.FromBase64String(imageBase64);

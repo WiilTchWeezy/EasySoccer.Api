@@ -120,11 +120,11 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("getuserschedules"), HttpGet]
-        public async Task<IActionResult> GetUserSchedulesAsync()
+        public async Task<IActionResult> GetUserSchedulesAsync([FromQuery] GetBaseRequest request)
         {
             try
             {
-                return Ok((await _uow.SoccerPitchReservationBLL.GetUserSchedulesAsync(new MobileUser(HttpContext).UserId)).Select(x => new
+                return Ok((await _uow.SoccerPitchReservationBLL.GetUserSchedulesAsync(new MobileUser(HttpContext).UserId, request.Page, request.PageSize)).Select(x => new
                 {
                     x.Id,
                     SelectedDate = x.SelectedDateStart,
