@@ -92,10 +92,12 @@ namespace EasySoccer.DAL.Repositories
         public Task<List<SoccerPitchReservation>> GetByUserAsync(Guid userId, int page, int pageSize)
         {
             return _dbContext.SoccerPitchReservationQuery
-                .Include(x => x.Person).Include(x => x.SoccerPitch).Include(x => x.SoccerPitch.Company)
                 .Where(x => x.Person.UserId.HasValue && x.Person.UserId == userId)
+                .Include(x => x.Person).Include(x => x.SoccerPitch).Include(x => x.SoccerPitch.Company)
+                .OrderByDescending(x => x.SelectedDateStart)
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize).ToListAsync();
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         public Task<List<SoccerPitchReservation>> GetResumeAsync()
