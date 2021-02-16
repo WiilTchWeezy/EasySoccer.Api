@@ -361,9 +361,9 @@ namespace EasySoccer.BLL
             return _soccerPitchReservationRepository.GetTotalAsync(companyId, initialDate, finalDate, soccerPitchId, soccerPitchPlanId, userName);
         }
 
-        public Task<List<SoccerPitchReservation>> GetUserSchedulesAsync(Guid userId, int page, int pageSize)
+        public async Task<List<SoccerPitchReservation>> GetUserSchedulesAsync(Guid userId, int page, int pageSize)
         {
-            return _soccerPitchReservationRepository.GetByUserAsync(userId, page, pageSize);
+            return (await _soccerPitchReservationRepository.GetByUserAsync(userId, page, pageSize)).OrderByDescending(x => x.SelectedDateStart).ToList();
         }
 
         public async Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId)

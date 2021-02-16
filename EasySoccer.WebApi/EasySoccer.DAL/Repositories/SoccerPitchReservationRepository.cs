@@ -95,8 +95,7 @@ namespace EasySoccer.DAL.Repositories
                 .Include(x => x.Person).Include(x => x.SoccerPitch).Include(x => x.SoccerPitch.Company)
                 .Where(x => x.Person.UserId.HasValue && x.Person.UserId == userId)
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .OrderByDescending(x => x.SelectedDateStart).ToListAsync();
+                .Take(pageSize).ToListAsync();
         }
 
         public Task<List<SoccerPitchReservation>> GetResumeAsync()
