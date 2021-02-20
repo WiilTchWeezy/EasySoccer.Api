@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EasySoccer.BLL.Exceptions;
+using EasySoccer.BLL.Infra.Helpers;
+using EasySoccer.Entities.Enum;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.ApiRequests.Base;
 using EasySoccer.WebApi.Controllers.Base;
@@ -26,7 +28,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("get"), HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]GetSoccerPitchReservationRequest request)
+        public async Task<IActionResult> GetAsync([FromQuery] GetSoccerPitchReservationRequest request)
         {
             try
             {
@@ -53,21 +55,22 @@ namespace EasySoccer.WebApi.Controllers
                         UserId = x.Person?.UserId,
                         x.SoccerPitchId,
                         x.Status,
+                        StatusDescription = EnumHelper.Instance.GetStatusEnumDescription(x.Status),
                         x.SoccerPitchSoccerPitchPlanId,
                         x.Interval,
                         SoccerPitchPlanId = x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId
                     }).ToList(),
                     Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId, request.InitialDate, request.FinalDate, request.SoccerPitchId, request.SoccerPitchPlanId, request.UserName)
-                });
+                });;
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
         [Route("post"), HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]SoccerPitchReservationRequest request)
+        public async Task<IActionResult> PostAsync([FromBody] SoccerPitchReservationRequest request)
         {
             try
             {
@@ -75,12 +78,12 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new { message = e.Message });
             }
         }
 
         [Route("patch"), HttpPatch]
-        public async Task<IActionResult> PatchAsync([FromBody]SoccerPitchReservationRequest request)
+        public async Task<IActionResult> PatchAsync([FromBody] SoccerPitchReservationRequest request)
         {
             try
             {
@@ -107,7 +110,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("makeschedule"), HttpPost]
-        public async Task<IActionResult> MakeScheduleAsync([FromBody]SoccerPitchReservationRequest request)
+        public async Task<IActionResult> MakeScheduleAsync([FromBody] SoccerPitchReservationRequest request)
         {
             try
             {
@@ -136,6 +139,7 @@ namespace EasySoccer.WebApi.Controllers
                     UserId = x.Person?.UserId,
                     x.SoccerPitchId,
                     x.Status,
+                    StatusDescription = EnumHelper.Instance.GetStatusEnumDescription(x.Status),
                     x.SoccerPitchSoccerPitchPlanId,
                     CompanyName = x.SoccerPitch.Company.Name,
                     Logo = x.SoccerPitch.Company.Logo
@@ -143,13 +147,13 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
         [AllowAnonymous]
         [Route("getschedules"), HttpGet]
-        public async Task<IActionResult> GetSchedulesResponses([FromQuery]long companyId, [FromQuery]DateTime selectedDate)
+        public async Task<IActionResult> GetSchedulesResponses([FromQuery] long companyId, [FromQuery] DateTime selectedDate)
         {
             try
             {
@@ -162,7 +166,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("getcompanyschedules"), HttpGet]
-        public async Task<IActionResult> GetSchedulesResponses([FromQuery]DateTime selectedDate)
+        public async Task<IActionResult> GetSchedulesResponses([FromQuery] DateTime selectedDate)
         {
             try
             {
@@ -191,6 +195,8 @@ namespace EasySoccer.WebApi.Controllers
                     reservation.SelectedDateStart,
                     reservation.SelectedDateEnd,
                     reservation.SoccerPitchId,
+                    reservation.Status,
+                    StatusDescription = EnumHelper.Instance.GetStatusEnumDescription(reservation.Status),
                     SoccerPitchName = reservation.SoccerPitch.Name,
                     SoccerPitchPlanId = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId,
                     SoccerPitchPlanName = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlan.Name,
@@ -204,6 +210,20 @@ namespace EasySoccer.WebApi.Controllers
                     SelectedHourStart = new { Hour = reservation.SelectedDateStart.TimeOfDay.Hours.ToString("00"), Minute = reservation.SelectedDateStart.TimeOfDay.Minutes.ToString("00") },
                     SelectedHourEnd = new { Hour = reservation.SelectedDateEnd.TimeOfDay.Hours.ToString("00"), Minute = reservation.SelectedDateEnd.TimeOfDay.Minutes.ToString("00") }
                 });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+        }
+
+        [Route("changeStatus"), HttpPost]
+        public async Task<IActionResult> ChangeStatusAsync([FromBody] ChangeStatusRequest request)
+        {
+            try
+            {
+                await _uow.SoccerPitchReservationBLL.ChangeStatusAsync(request.ReservationId, (StatusEnum)request.Status);
+                return Ok();
             }
             catch (Exception e)
             {

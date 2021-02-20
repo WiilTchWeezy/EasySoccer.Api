@@ -21,5 +21,6 @@ namespace EasySoccer.BLL.Infra
         Task<List<SoccerPitchReservation>> GetUserSchedulesAsync(Guid userId, int page, int pageSize);
         Task<List<GetSchedulesResponse>> GetSchedulesResponses(long companyId, DateTime selectDate);
         Task<SoccerPitchReservation> GetReservationInfoAsync(Guid reservationId);
+        Task<bool> ChangeStatusAsync(Guid reservationId, StatusEnum status);
     }
 }

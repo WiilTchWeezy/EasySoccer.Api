@@ -1,9 +1,7 @@
 ﻿using EasySoccer.Entities.Enum;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace EasySoccer.Entities
 {
@@ -18,7 +16,7 @@ namespace EasySoccer.Entities
         [Required]
         public DateTime CreatedDate { get; set; }
 
-        public int Status { get; set; }
+        public StatusEnum Status { get; set; }
 
         public long? StatusChangedUserId { get; set; }
 

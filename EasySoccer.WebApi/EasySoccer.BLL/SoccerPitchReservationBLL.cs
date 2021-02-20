@@ -1,9 +1,7 @@
-﻿using EasySoccer.BLL.Enums;
-using EasySoccer.BLL.Exceptions;
+﻿using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Helper;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.DTO;
-using EasySoccer.BLL.Infra.Services.PushNotification;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
@@ -12,7 +10,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EasySoccer.BLL
@@ -82,7 +79,7 @@ namespace EasySoccer.BLL
                 SelectedDateStart = selectedDateStart,
                 SelectedDateEnd = selectedDateEnd,
                 SoccerPitchId = soccerPitchId,
-                Status = (int)StatusEnum.AguardandoAprovacao,
+                Status = StatusEnum.Waiting,
                 StatusChangedUserId = companyUserId.HasValue ? companyUserId.Value : (long?)null,
                 SoccerPitchSoccerPitchPlanId = soccerPicthPlanRelation.Id,
                 Application = application,
@@ -125,9 +122,9 @@ namespace EasySoccer.BLL
                 throw new BussinessException(validationResponse.ErrorFormatted);
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
-            var users = await _companyUserRepository.GetByCompanyIdAsync(selectedSoccerPitch.CompanyId);
             if (application == ApplicationEnum.MobileUser)
             {
+                var users = await _companyUserRepository.GetByCompanyIdAsync(selectedSoccerPitch.CompanyId);
                 foreach (var item in users)
                 {
                     var data = JsonConvert.SerializeObject(new { reservationId = soccerPitchReservation.Id });
@@ -457,6 +454,20 @@ namespace EasySoccer.BLL
         public Task<SoccerPitchReservation> GetReservationInfoAsync(Guid reservationId)
         {
             return _soccerPitchReservationRepository.GetAsync(reservationId, true, true);
+        }
+
+        public async Task<bool> ChangeStatusAsync(Guid reservationId, StatusEnum status)
+        {
+            bool response = false;
+            var reservation = await _soccerPitchReservationRepository.GetAsync(reservationId);
+            if (reservation == null)
+                throw new BussinessException("Agendamento não encontrado.");
+            if(reservation.Status == StatusEnum.Concluded)
+                throw new BussinessException("Não é possivel alterar o status de um agendamento finalizado.");
+            reservation.Status = status;
+            await _soccerPitchReservationRepository.Edit(reservation);
+            await _dbContext.SaveChangesAsync();
+            return response;
         }
     }
 }
