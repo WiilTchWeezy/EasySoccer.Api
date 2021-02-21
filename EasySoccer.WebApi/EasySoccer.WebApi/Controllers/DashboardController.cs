@@ -69,7 +69,7 @@ namespace EasySoccer.WebApi.Controllers
                         {
                             startDate = x.SelectedDateStart,
                             endDate = x.SelectedDateEnd,
-                            title = $"{x.SoccerPitch.Name} - {x.Person?.Name} - ( {x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00} - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} )",
+                            title = $"{x.SoccerPitch.Name} - {x.Person?.Name} - ( {x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00} - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ) - {EnumHelper.Instance.GetStatusEnumDescription(x.Status)}",
                             color = string.IsNullOrEmpty(x.SoccerPitch.Color) ? "#ff591f" : x.SoccerPitch?.Color,
                             id = x.Id,
                             status = x.Status,
