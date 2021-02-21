@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EasySoccer.BLL.Infra.Helpers;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
 using EasySoccer.WebApi.UoWs;
@@ -70,7 +71,9 @@ namespace EasySoccer.WebApi.Controllers
                             endDate = x.SelectedDateEnd,
                             title = $"{x.SoccerPitch.Name} - {x.Person?.Name} - ( {x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00} - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} )",
                             color = string.IsNullOrEmpty(x.SoccerPitch.Color) ? "#ff591f" : x.SoccerPitch?.Color,
-                            id = x.Id
+                            id = x.Id,
+                            status = x.Status,
+                            statusDescription = EnumHelper.Instance.GetStatusEnumDescription(x.Status)
                         }).ToList()
                     );
             }

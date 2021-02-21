@@ -222,7 +222,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                await _uow.SoccerPitchReservationBLL.ChangeStatusAsync(request.ReservationId, (StatusEnum)request.Status);
+                await _uow.SoccerPitchReservationBLL.ChangeStatusAsync(request.ReservationId, (StatusEnum)request.Status, new CurrentUser(HttpContext).UserId);
                 return Ok();
             }
             catch (Exception e)

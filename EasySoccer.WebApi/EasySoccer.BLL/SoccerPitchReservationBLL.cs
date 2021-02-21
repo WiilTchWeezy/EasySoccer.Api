@@ -456,7 +456,7 @@ namespace EasySoccer.BLL
             return _soccerPitchReservationRepository.GetAsync(reservationId, true, true);
         }
 
-        public async Task<bool> ChangeStatusAsync(Guid reservationId, StatusEnum status)
+        public async Task<bool> ChangeStatusAsync(Guid reservationId, StatusEnum status, long userId)
         {
             bool response = false;
             var reservation = await _soccerPitchReservationRepository.GetAsync(reservationId);
@@ -465,8 +465,11 @@ namespace EasySoccer.BLL
             if(reservation.Status == StatusEnum.Concluded)
                 throw new BussinessException("Não é possivel alterar o status de um agendamento finalizado.");
             reservation.Status = status;
+            reservation.StatusChangedUserId = userId;
+            reservation.ModifiedDate = DateTime.UtcNow;
             await _soccerPitchReservationRepository.Edit(reservation);
             await _dbContext.SaveChangesAsync();
+            //TODO notificar person se status é confirmado ou cancelado
             return response;
         }
     }

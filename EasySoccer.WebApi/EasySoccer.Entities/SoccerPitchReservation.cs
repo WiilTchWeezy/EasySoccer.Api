@@ -37,6 +37,8 @@ namespace EasySoccer.Entities
 
         public Guid? PersonId { get; set; }
 
+        public DateTime? ModifiedDate { get; set; }
+
         public ApplicationEnum Application { get; set; }
 
         [ForeignKey("SoccerPitchId")]
