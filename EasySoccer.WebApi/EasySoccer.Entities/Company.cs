@@ -41,6 +41,10 @@ namespace EasySoccer.Entities
 
         [Required]
         public bool Active { get; set; }
+
+        [Required]
+        public bool InsertReservationConfirmed { get; set; }
+
         [NotMapped]
         public double Distance { get; set; }
 

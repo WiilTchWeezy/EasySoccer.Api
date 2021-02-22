@@ -79,6 +79,7 @@ namespace EasySoccer.WebApi.Controllers
                     currentCompany?.CNPJ,
                     currentCompany?.Logo,
                     currentCompany?.IdCity,
+                    currentCompany?.InsertReservationConfirmed,
                     IdState = currentCompany.City != null ? currentCompany.City.IdState : 0,
                     State = currentCompany.City != null && currentCompany.City.State != null ? currentCompany.City.State.Name : string.Empty,
                     City = currentCompany.IdCity.HasValue ? currentCompany?.City.Name : string.Empty,

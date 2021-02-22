@@ -155,12 +155,16 @@ namespace EasySoccer.BLL
             {
                 if (transaction.IsAuthorized)
                 {
+                    var currentFinancialRecord = await _companyFinancialRecordRepository.GetByCompanyAsync(companyId);
+                    DateTime expiresDate = DateTime.UtcNow;
+                    if (currentFinancialRecord != null)
+                        expiresDate = currentFinancialRecord.ExpiresDate;
                     var companyFinancialRecord = new CompanyFinancialRecord()
                     {
                         FinancialPlan = (FinancialPlanEnum)request.SelectedPlan,
                         CompanyId = companyId,
                         CreatedDate = DateTime.UtcNow,
-                        ExpiresDate = DateTime.UtcNow.AddMonths(FinancialHelper.Instance.GetMonthsFromPlan((FinancialPlanEnum)request.SelectedPlan)),
+                        ExpiresDate = expiresDate.AddMonths(FinancialHelper.Instance.GetMonthsFromPlan((FinancialPlanEnum)request.SelectedPlan)),
                         Paid = transaction.IsAuthorized,
                         Transaction = transaction.TransactionJson,
                         Value = planValue
