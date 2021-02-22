@@ -26,6 +26,7 @@ namespace EasySoccer.BLL
         private IUserTokenRepository _userTokenRepository;
         private ICompanyUserRepository _companyUserRepository;
         private ICompanyUserNotificationBLL _companyUserNotificationBLL;
+        private ICompanyRepository _companyRepository;
         public SoccerPitchReservationBLL
             (ISoccerPitchReservationRepository soccerPitchReservationRepository,
             ISoccerPitchRepository soccerPitchRepository,
@@ -36,7 +37,8 @@ namespace EasySoccer.BLL
             IUserRepository userRepository,
             IUserTokenRepository userTokenRepository,
             ICompanyUserRepository companyUserRepository,
-            ICompanyUserNotificationBLL companyUserNotificationBLL)
+            ICompanyUserNotificationBLL companyUserNotificationBLL,
+            ICompanyRepository companyRepository)
         {
             _soccerPitchReservationRepository = soccerPitchReservationRepository;
             _soccerPitchRepository = soccerPitchRepository;
@@ -48,6 +50,7 @@ namespace EasySoccer.BLL
             _userTokenRepository = userTokenRepository;
             _companyUserRepository = companyUserRepository;
             _companyUserNotificationBLL = companyUserNotificationBLL;
+            _companyRepository = companyRepository;
         }
 
 
@@ -85,6 +88,11 @@ namespace EasySoccer.BLL
                 Application = application,
                 Interval = selectedSoccerPitch.Interval
             };
+            var company = await _companyRepository.GetAsync(selectedSoccerPitch.CompanyId);
+            if (company == null)
+                throw new BussinessException("Empresa não encontrada.");
+            if (company.InsertReservationConfirmed)
+                soccerPitchReservation.Status = StatusEnum.Confirmed;
 
             if (personId.HasValue)
             {
