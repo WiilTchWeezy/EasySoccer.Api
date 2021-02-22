@@ -42,7 +42,8 @@ namespace EasySoccer.WebApi.Controllers
                         request.FinalDate,
                         request.SoccerPitchId,
                         request.SoccerPitchPlanId,
-                        request.UserName)
+                        request.UserName,
+                        request.Status)
                     ).Select(x => new
                     {
                         x.Id,
@@ -60,7 +61,7 @@ namespace EasySoccer.WebApi.Controllers
                         x.Interval,
                         SoccerPitchPlanId = x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId
                     }).ToList(),
-                    Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId, request.InitialDate, request.FinalDate, request.SoccerPitchId, request.SoccerPitchPlanId, request.UserName)
+                    Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId, request.InitialDate, request.FinalDate, request.SoccerPitchId, request.SoccerPitchPlanId, request.UserName, request.Status)
                 });;
             }
             catch (Exception e)
@@ -229,6 +230,17 @@ namespace EasySoccer.WebApi.Controllers
             {
                 return BadRequest(new { message = e.Message });
             }
+        }
+
+        [Route("getReservationStatus"), HttpGet]
+        public async Task<IActionResult> GetStatus()
+        {
+            var statusList = new List<dynamic>();
+            statusList.Add(new { Key = StatusEnum.Waiting, Text = EnumHelper.Instance.GetStatusEnumDescription(StatusEnum.Waiting) });
+            statusList.Add(new { Key = StatusEnum.Canceled, Text = EnumHelper.Instance.GetStatusEnumDescription(StatusEnum.Canceled) });
+            statusList.Add(new { Key = StatusEnum.Confirmed, Text = EnumHelper.Instance.GetStatusEnumDescription(StatusEnum.Confirmed) });
+            statusList.Add(new { Key = StatusEnum.Concluded, Text = EnumHelper.Instance.GetStatusEnumDescription(StatusEnum.Concluded) });
+            return Ok(statusList);
         }
     }
 }
