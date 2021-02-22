@@ -9,7 +9,7 @@ namespace EasySoccer.BLL.Infra
     {
         Task<List<Company>> GetAsync(double? longitude, double? latitude, int page, int pageSize, string name, string orderField, string orderDirection);
         Task<Company> CreateAsync(string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude);
-        Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules, int? idCity);
+        Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules, int? idCity, bool insertReservationConfirmed);
         Task<Company> GetAsync(long companyId);
         Task<CompanyFinancialRecord> GetCurrentFinancialInfoAsync(long companyId);
         Task SaveImageAsync(long companyId, string imageBase64);

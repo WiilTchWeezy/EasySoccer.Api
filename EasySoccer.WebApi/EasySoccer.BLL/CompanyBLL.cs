@@ -248,7 +248,7 @@ namespace EasySoccer.BLL
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules, int? idCity)
+        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules, int? idCity, bool insertReservationConfirmed)
         {
             var currentCompany = await _companyRepository.GetAsync(id);
             if (currentCompany == null)
@@ -274,6 +274,7 @@ namespace EasySoccer.BLL
                     currentCompany.IdCity = city.Id;
                 }
             }
+            currentCompany.InsertReservationConfirmed = insertReservationConfirmed;
             await _companyRepository.Edit(currentCompany);
             await _dbContext.SaveChangesAsync();
 

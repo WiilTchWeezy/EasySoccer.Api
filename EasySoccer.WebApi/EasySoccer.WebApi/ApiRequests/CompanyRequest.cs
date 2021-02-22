@@ -14,6 +14,7 @@ namespace EasySoccer.WebApi.ApiRequests
         public int? IdCity { get; set; }
         public bool WorkOnHolidays { get; set; }
         public string CompleteAddress { get; set; }
+        public bool InsertReservationConfirmed { get; set; }
         public List<CompanySchedulesRequest> CompanySchedules { get; set; }
     }
 }
