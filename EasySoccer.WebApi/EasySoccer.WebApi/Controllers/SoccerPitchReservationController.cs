@@ -59,7 +59,8 @@ namespace EasySoccer.WebApi.Controllers
                         StatusDescription = EnumHelper.Instance.GetStatusEnumDescription(x.Status),
                         x.SoccerPitchSoccerPitchPlanId,
                         x.Interval,
-                        SoccerPitchPlanId = x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId
+                        SoccerPitchPlanId = x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId,
+                        SoccerPitchColor = x.SoccerPitch.Color
                     }).ToList(),
                     Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId, request.InitialDate, request.FinalDate, request.SoccerPitchId, request.SoccerPitchPlanId, request.UserName, request.Status)
                 });;
