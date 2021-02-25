@@ -28,7 +28,7 @@ namespace EasySoccer.DAL.Repositories
                 .ToListAsync();
         }
 
-        public Task<List<SoccerPitchReservation>> GetAsync(long[] soccerPitchs, int page, int pageSize, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName, StatusEnum? status)
+        public Task<List<SoccerPitchReservation>> GetAsync(long[] soccerPitchs, int page, int pageSize, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName, StatusEnum[] status)
         {
             return _dbContext.SoccerPitchReservationQuery
                 .Where(
@@ -38,7 +38,7 @@ namespace EasySoccer.DAL.Repositories
                 && (soccerPitchId.HasValue == false || x.SoccerPitchId == soccerPitchId)
                 && (soccerPitchPlanId.HasValue == false || x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId == soccerPitchPlanId)
                 && (userName == null || (x.Person.Name.Contains(userName) || x.Person.Phone.Contains(userName)))
-                && (status == null || x.Status == status.Value)
+                && (status == null || status.Contains(x.Status))
                 )
                 .Include(x => x.SoccerPitch)
                 .Include(x => x.Person)
@@ -108,7 +108,7 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.Person).Take(10).ToListAsync();
         }
 
-        public Task<int> GetTotalAsync(long companyId, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName, StatusEnum? status)
+        public Task<int> GetTotalAsync(long companyId, DateTime? initialDate, DateTime? finalDate, int? soccerPitchId, int? soccerPitchPlanId, string userName, StatusEnum[] status)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.Person)
                 .Where(
@@ -118,7 +118,7 @@ namespace EasySoccer.DAL.Repositories
                 && (soccerPitchId.HasValue == false || x.SoccerPitchId == soccerPitchId)
                 && (soccerPitchPlanId.HasValue == false || x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId == soccerPitchPlanId)
                 && (userName == null || (x.Person.Name.Contains(userName) || x.Person.Phone.Contains(userName)))
-                && (status == null || x.Status == status.Value)
+                && (status == null || status.Contains(x.Status))
                 ).CountAsync();
         }
 
