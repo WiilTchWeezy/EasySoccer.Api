@@ -79,7 +79,7 @@ namespace EasySoccer.WebApi.Controllers
                         SoccerPitchPlanId = x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId,
                         SoccerPitchColor = x.SoccerPitch.Color
                     }).ToList(),
-                    Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId, request.InitialDate, request.FinalDate, request.SoccerPitchId, request.SoccerPitchPlanId, request.UserName, request.Status)
+                    Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId, request.InitialDate, request.FinalDate, request.SoccerPitchId, request.SoccerPitchPlanId, request.UserName, status)
                 });;
             }
             catch (Exception e)
