@@ -45,7 +45,8 @@ namespace EasySoccer.WebApi.Controllers
                             {
                                 int statusInt = 0;
                                 int.TryParse(item, out statusInt);
-                                statusList.Add((StatusEnum)statusInt);
+                                if (statusInt != 0)
+                                    statusList.Add((StatusEnum)statusInt);
                             }
                             status = statusList.ToArray();
                         }

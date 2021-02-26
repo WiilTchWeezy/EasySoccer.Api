@@ -33,14 +33,14 @@ namespace EasySoccer.WebApi.Controllers
         [AllowAnonymous]
         [Route("api/login/token"), HttpGet]
         public async Task<IActionResult> LoginAsync
-            ([FromQuery]string email, [FromQuery]string password,
-            [FromServices]TokenConfigurations tokenConfigurations,
-            [FromServices]SigningConfigurations signingConfigurations)
+            ([FromQuery] string email, [FromQuery] string password,
+            [FromServices] TokenConfigurations tokenConfigurations,
+            [FromServices] SigningConfigurations signingConfigurations)
         {
             var personUserResponse = await _uow.UserBLL.LoginAsync(email, password);
             if (personUserResponse != null)
             {
-                var token = GenerateToken(new GenericIdentity(personUserResponse.Email, "Email"), tokenConfigurations, signingConfigurations, false,new[] {
+                var token = GenerateToken(new GenericIdentity(personUserResponse.Email, "Email"), tokenConfigurations, signingConfigurations, false, new[] {
                         new Claim(JwtRegisteredClaimNames.Jti, personUserResponse.UserId.ToString()),
                         new Claim(JwtRegisteredClaimNames.UniqueName, personUserResponse.UserId.ToString()),
                         new Claim (JwtRegisteredClaimNames.Gender, ProfilesEnum.User.ToString()),
@@ -61,9 +61,9 @@ namespace EasySoccer.WebApi.Controllers
         [AllowAnonymous]
         [Route("api/login/tokenfromfacebook"), HttpGet]
         public async Task<IActionResult> LoginFromFacebookAsync
-        ([FromQuery]FacebookLoginRequest request,
-        [FromServices]TokenConfigurations tokenConfigurations,
-        [FromServices]SigningConfigurations signingConfigurations)
+        ([FromQuery] FacebookLoginRequest request,
+        [FromServices] TokenConfigurations tokenConfigurations,
+        [FromServices] SigningConfigurations signingConfigurations)
         {
             try
             {
@@ -97,9 +97,9 @@ namespace EasySoccer.WebApi.Controllers
         [AllowAnonymous]
         [Route("api/login/tokencompany"), HttpGet]
         public async Task<IActionResult> LoginCompanyAsync
-    ([FromQuery]string email, [FromQuery]string password,
-    [FromServices]TokenConfigurations tokenConfigurations,
-    [FromServices]SigningConfigurations signingConfigurations)
+    ([FromQuery] string email, [FromQuery] string password,
+    [FromServices] TokenConfigurations tokenConfigurations,
+    [FromServices] SigningConfigurations signingConfigurations)
         {
             try
             {
@@ -135,7 +135,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
