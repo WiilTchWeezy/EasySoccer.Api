@@ -33,19 +33,32 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 StatusEnum[] status = null;
-                if (string.IsNullOrEmpty(request.Status) == false && request.Status.Contains(";"))
+                if (string.IsNullOrEmpty(request.Status) == false)
                 {
-                    var statusStr = request.Status.Split(";");
-                    if(statusStr != null && statusStr.Length > 0)
+                    if (request.Status.Contains(";"))
+                    {
+                        var statusStr = request.Status.Split(";");
+                        if (statusStr != null && statusStr.Length > 0)
+                        {
+                            var statusList = new List<StatusEnum>();
+                            foreach (var item in statusStr)
+                            {
+                                int statusInt = 0;
+                                int.TryParse(item, out statusInt);
+                                statusList.Add((StatusEnum)statusInt);
+                            }
+                            status = statusList.ToArray();
+                        }
+                    }
+                    else
                     {
                         var statusList = new List<StatusEnum>();
-                        foreach (var item in statusStr)
+                        int statusInt = 0;
+                        if (int.TryParse(request.Status, out statusInt))
                         {
-                            int statusInt = 0;
-                            int.TryParse(item, out statusInt);
                             statusList.Add((StatusEnum)statusInt);
+                            status = statusList.ToArray();
                         }
-                        status = statusList.ToArray();
                     }
                 }
 
@@ -80,7 +93,7 @@ namespace EasySoccer.WebApi.Controllers
                         SoccerPitchColor = x.SoccerPitch.Color
                     }).ToList(),
                     Total = await _uow.SoccerPitchReservationBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId, request.InitialDate, request.FinalDate, request.SoccerPitchId, request.SoccerPitchPlanId, request.UserName, status)
-                });;
+                }); ;
             }
             catch (Exception e)
             {
