@@ -32,6 +32,23 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
+                StatusEnum[] status = null;
+                if (string.IsNullOrEmpty(request.Status) == false && request.Status.Contains(";"))
+                {
+                    var statusStr = request.Status.Split(";");
+                    if(statusStr != null && statusStr.Length > 0)
+                    {
+                        var statusList = new List<StatusEnum>();
+                        foreach (var item in statusStr)
+                        {
+                            int statusInt = 0;
+                            int.TryParse(item, out statusInt);
+                            statusList.Add((StatusEnum)statusInt);
+                        }
+                        status = statusList.ToArray();
+                    }
+                }
+
                 return Ok(new
                 {
                     Data = (await _uow.SoccerPitchReservationBLL.GetAsync(
@@ -43,7 +60,7 @@ namespace EasySoccer.WebApi.Controllers
                         request.SoccerPitchId,
                         request.SoccerPitchPlanId,
                         request.UserName,
-                        request.Status)
+                        status)
                     ).Select(x => new
                     {
                         x.Id,

@@ -12,6 +12,6 @@ namespace EasySoccer.WebApi.ApiRequests
         public int? SoccerPitchPlanId { get; set; }
         public string UserName { get; set; }
 
-        public StatusEnum[] Status { get; set; }
+        public string Status { get; set; }
     }
 }
