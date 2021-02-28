@@ -43,6 +43,7 @@ namespace EasySoccer.DAL.Repositories
                 .Include(x => x.SoccerPitch)
                 .Include(x => x.Person)
                 .Include(x => x.SoccerPitchSoccerPitchPlan)
+                .Include(x => x.SoccerPitchSoccerPitchPlan.SoccerPitchPlan)
                 .OrderByDescending(x => x.SelectedDateStart)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
