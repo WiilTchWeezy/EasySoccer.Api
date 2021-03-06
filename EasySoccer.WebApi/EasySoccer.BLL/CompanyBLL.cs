@@ -353,5 +353,36 @@ namespace EasySoccer.BLL
         {
             return _companyFinancialRecordRepository.GetByCompanyAsync(companyId);
         }
+
+        public async Task SaveFormIndicateCompanyAsync(SaveFormIndicateCompanyRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.Comment) || string.IsNullOrEmpty(request.CompanyEmail) || string.IsNullOrEmpty(request.CompanyName) || string.IsNullOrEmpty(request.CompanyNumber))
+                throw new BussinessException("É necessário informar algum campo");
+            if (string.IsNullOrEmpty(request.CompanyName))
+                throw new BussinessException("É necessário informar o nome da empresa");
+            var formInput = new FormInput
+            {
+                CreatedDate = DateTime.UtcNow,
+                FormType = Entities.Enum.FormTypeEnum.CompanyIndicateMobileEntry,
+                InputData = JsonConvert.SerializeObject(request),
+                Status = Entities.Enum.FormStatusEnum.Inserted,
+                Message = "Registro inserido aguardando processamento."
+            };
+            try
+            {
+                formInput.Status = FormStatusEnum.Success;
+                formInput.Message = "Registro Processado"; 
+                await _formInputRepository.Create(formInput);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                formInput.Status = FormStatusEnum.Error;
+                formInput.Message = e.Message;
+                await _formInputRepository.Edit(formInput);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
     }
 }

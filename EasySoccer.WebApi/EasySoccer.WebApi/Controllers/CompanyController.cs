@@ -203,5 +203,20 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
+
+        [AllowAnonymous]
+        [Route("indicatecompany"), HttpPost]
+        public async Task<IActionResult> PostIndicateCompanyAsync([FromBody] SaveFormIndicateCompanyRequest request)
+        {
+            try
+            {
+                await _uow.CompanyBLL.SaveFormIndicateCompanyAsync(request);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+        }
     }
 }

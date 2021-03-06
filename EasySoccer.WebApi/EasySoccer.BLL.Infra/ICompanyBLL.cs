@@ -19,5 +19,6 @@ namespace EasySoccer.BLL.Infra
         Task ActiveAsync(long companyId, bool active);
         Task<List<City>> GetCitiesByState(int IdState);
         Task<List<State>> GetStates();
+        Task SaveFormIndicateCompanyAsync(SaveFormIndicateCompanyRequest request);
     }
 }

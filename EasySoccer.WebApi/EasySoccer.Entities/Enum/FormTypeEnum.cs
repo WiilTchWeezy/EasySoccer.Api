@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EasySoccer.Entities.Enum
+﻿namespace EasySoccer.Entities.Enum
 {
     public enum FormTypeEnum
     {
         CompanyLandingPageEntry = 1,
-        ContactLandingPageEntry = 2
+        ContactLandingPageEntry = 2,
+        CompanyIndicateMobileEntry = 3
 
     }
 }
