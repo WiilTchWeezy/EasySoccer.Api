@@ -22,13 +22,16 @@ namespace EasySoccer.BLL.Helper
             }
         }
 
-        public async Task<ValidationResponse> Validate(FormInputCompanyEntryRequest entity, ICompanyUserRepository companyUserRepository, ICompanyRepository companyRepository)
+        public async Task<ValidationResponse> Validate(FormInputCompanyEntryRequest entity, ICompanyUserRepository companyUserRepository, ICompanyRepository companyRepository, int daysFree)
         {
             var validationResponse = new ValidationResponse();
             validationResponse.AddValidationMessage(this.ValidateEmail(entity.UserEmail));
             validationResponse.AddValidationMessage(this.ValidateCompanyDocument(entity.CompanyDocument));
-            validationResponse.AddValidationMessage(this.ValidateCardNumberAndSecurityCode(entity.CardNumber, entity.SecurityCode));
-            validationResponse.AddValidationMessage(this.ValidateUserDocument(entity.FinancialDocument));
+            if (daysFree <= 0)
+            {
+                validationResponse.AddValidationMessage(this.ValidateCardNumberAndSecurityCode(entity.CardNumber, entity.SecurityCode));
+                validationResponse.AddValidationMessage(this.ValidateUserDocument(entity.FinancialDocument));
+            }
             validationResponse.AddValidationMessage(await this.ValidateAlreadyExistEmail(entity.UserEmail, companyUserRepository));
             validationResponse.AddValidationMessage(await this.ValidateAlreadyExistCompanyDocument(entity.CompanyDocument, companyRepository));
             return validationResponse;
@@ -143,7 +146,8 @@ namespace EasySoccer.BLL.Helper
 
         private async Task<string> ValidateAlreadyExistCompanyDocument(string companyDocument, ICompanyRepository companyRepository)
         {
-            var currentCompany = await companyRepository.GetAsync(companyDocument);
+            var currentCompanyDocument = companyDocument.Replace(".", "").Replace(",", "").Replace("-", "").Replace("/", "");
+            var currentCompany = await companyRepository.GetAsync(currentCompanyDocument);
             if (currentCompany != null)
                 return $"Já existe uma empresa cadastrada com o CNPJ {companyDocument}";
             return String.Empty;
@@ -153,7 +157,7 @@ namespace EasySoccer.BLL.Helper
         private List<string> ValidateReservationSchedule(SoccerPitchReservation soccerPitchReservation)
         {
             var errorMessages = new List<string>();
-            if(soccerPitchReservation != null)
+            if (soccerPitchReservation != null)
             {
                 if (soccerPitchReservation.SelectedDateEnd <= soccerPitchReservation.SelectedDateStart)
                     errorMessages.Add("O horário final deve ser maior que o horário inicial.");
@@ -162,6 +166,6 @@ namespace EasySoccer.BLL.Helper
             return errorMessages;
         }
 
-        
+
     }
 }

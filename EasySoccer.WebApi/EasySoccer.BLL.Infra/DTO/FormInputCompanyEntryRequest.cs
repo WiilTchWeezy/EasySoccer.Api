@@ -25,8 +25,8 @@ namespace EasySoccer.BLL.Infra.DTO
 
         public string CardExpiration { get; set; }
 
-        public FinancialPlanEnum SelectedPlan { get; set; }
+        public FinancialPlanEnum? SelectedPlan { get; set; }
 
-        public int SelectedInstallments { get; set; }
+        public int? SelectedInstallments { get; set; }
     }
 }

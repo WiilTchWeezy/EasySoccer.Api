@@ -127,7 +127,7 @@ namespace EasySoccer.BLL
             await _formInputRepository.Create(formInput);
             await _dbContext.SaveChangesAsync();
 
-            var validationResponse = await ValidationHelper.Instance.Validate(request, _companyUserRepository, _companyRepository);
+            var validationResponse = await ValidationHelper.Instance.Validate(request, _companyUserRepository, _companyRepository, daysFree);
 
             if (validationResponse.IsValid == false)
             {
@@ -142,7 +142,7 @@ namespace EasySoccer.BLL
                 {
                     var company = new Company
                     {
-                        Active = true,
+                        Active = false,
                         CNPJ = request.CompanyDocument.Replace(".", "").Replace("-", "").Replace("/", ""),
                         Name = request.CompanyName,
                         Description = request.CompanyName,
@@ -183,11 +183,11 @@ namespace EasySoccer.BLL
                         {
                             CompanyId = company.Id,
                             CreatedDate = DateTime.UtcNow,
-                            ExpiresDate = DateTime.UtcNow.AddMonths(FinancialHelper.Instance.GetMonthsFromPlan(request.SelectedPlan)),
+                            ExpiresDate = DateTime.UtcNow.AddMonths(FinancialHelper.Instance.GetMonthsFromPlan(request.SelectedPlan.HasValue ? request.SelectedPlan.Value : FinancialPlanEnum.Free)),
                             Paid = true, //TODO - Quando inserir gateway de pagamento inserir false e tratar depois no callBack
-                            Value = FinancialHelper.Instance.GetValueFromPlan(request.SelectedPlan),
+                            Value = FinancialHelper.Instance.GetValueFromPlan(request.SelectedPlan.HasValue ? request.SelectedPlan.Value : FinancialPlanEnum.Free),
                             Transaction = null,
-                            FinancialPlan = request.SelectedPlan
+                            FinancialPlan = request.SelectedPlan.HasValue ? request.SelectedPlan.Value : FinancialPlanEnum.Free
                         };
                         await _companyFinancialRecordRepository.Create(companyFinancialRecord);
                         //TODO - Payment Gateway insert
@@ -255,11 +255,6 @@ namespace EasySoccer.BLL
                 throw new NotFoundException(currentCompany, id);
             currentCompany.Name = name;
             currentCompany.Description = description;
-            if (string.IsNullOrEmpty(cnpj) == false)
-            {
-                cnpj = cnpj.Replace(".", "").Replace("-", "").Replace("/", "");
-                currentCompany.CNPJ = cnpj;
-            }
             currentCompany.CompleteAddress = completeAddress;
             currentCompany.WorkOnHoliDays = workOnHolidays;
             if (longitude.HasValue)
