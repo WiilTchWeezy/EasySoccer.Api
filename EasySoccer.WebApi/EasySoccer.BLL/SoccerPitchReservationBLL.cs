@@ -91,7 +91,7 @@ namespace EasySoccer.BLL
             var company = await _companyRepository.GetAsync(selectedSoccerPitch.CompanyId);
             if (company == null)
                 throw new BussinessException("Empresa não encontrada.");
-            if (company.InsertReservationConfirmed)
+            if (company.InsertReservationConfirmed || application == ApplicationEnum.MobileAdm || application == ApplicationEnum.WebApp)
                 soccerPitchReservation.Status = StatusEnum.Confirmed;
 
             if (personId.HasValue)
