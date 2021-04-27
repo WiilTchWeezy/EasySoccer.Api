@@ -119,9 +119,9 @@ namespace EasySoccer.BLL
             var formInput = new FormInput
             {
                 CreatedDate = DateTime.UtcNow,
-                FormType = Entities.Enum.FormTypeEnum.CompanyLandingPageEntry,
+                FormType = FormTypeEnum.CompanyLandingPageEntry,
                 InputData = JsonConvert.SerializeObject(request),
-                Status = Entities.Enum.FormStatusEnum.Inserted,
+                Status = FormStatusEnum.Inserted,
                 Message = "Registro inserido aguardando processamento."
             };
             await _formInputRepository.Create(formInput);

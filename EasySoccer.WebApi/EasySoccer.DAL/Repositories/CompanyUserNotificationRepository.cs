@@ -19,7 +19,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<CompanyUserNotification>> GetAsync(long companyUserId, int page = 1, int pageSize = 10)
         {
-            return _dbContext.CompanyUserNotificationQuery.Where(x => x.IdCompanyUser == companyUserId && (x.Active == null || x.Active == true)).OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return _dbContext.CompanyUserNotificationQuery.Where(x => x.IdCompanyUser == companyUserId && (x.Active == null || x.Active == true)).OrderBy(x => x.NotificationType).OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
         public Task<CompanyUserNotification> GetAsync(long companyUserId, DateTime date, NotificationTypeEnum notificationType)
