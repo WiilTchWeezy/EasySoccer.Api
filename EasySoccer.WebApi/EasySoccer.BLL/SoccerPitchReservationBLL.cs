@@ -472,6 +472,12 @@ namespace EasySoccer.BLL
                 throw new BussinessException("Agendamento não encontrado.");
             if(reservation.Status == StatusEnum.Concluded)
                 throw new BussinessException("Não é possivel alterar o status de um agendamento finalizado.");
+            if (status == StatusEnum.Confirmed)
+            {
+                var avaliableResponse = await CheckReservationIsAvaliable(reservation.SelectedDateStart, reservation.SoccerPitchId, reservation.SelectedDateEnd);
+                if(avaliableResponse.IsAvaliable == false)
+                    throw new BussinessException("Existe outro agendamento confirmado nesta data e horário.");
+            }
             reservation.Status = status;
             reservation.StatusChangedUserId = userId;
             reservation.ModifiedDate = DateTime.UtcNow;
