@@ -123,7 +123,7 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var reservation = await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchPlanId);
-                return Ok(new { Id = reservation.Id });
+                return Ok(new { Id = reservation?.Id });
             }
             catch (Exception e)
             {

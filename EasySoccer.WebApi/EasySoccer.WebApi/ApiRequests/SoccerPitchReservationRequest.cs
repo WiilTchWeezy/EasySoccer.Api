@@ -16,5 +16,7 @@ namespace EasySoccer.WebApi.ApiRequests
         public int SoccerPitchPlanId { get; set; }
 
         public ApplicationEnum Application { get; set; }
+
+        public int CurrentTimeOffset { get; set; }
     }
 }

@@ -58,9 +58,12 @@ namespace EasySoccer.BLL
         {
             var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
-                throw new NotFoundException(soccerPicthPlanRelation, soccerPitchPlanId);
+                throw new BussinessException("Não foi encontrado o plano ou a quadra.");
 
-            if (selectedDate.Date < DateTime.Now.Date)
+            //TODO - adicionar Campo na empresa e informar o fuso horário 
+            var currentDateTime = DateTime.UtcNow.AddHours(-3);
+
+            if (selectedDate.Date < currentDateTime.Date)
                 throw new BussinessException("Não é possível agendar datas menores que a atual.");
 
             var selectedDateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hourStart.Hours, hourStart.Minutes, hourStart.Seconds);
