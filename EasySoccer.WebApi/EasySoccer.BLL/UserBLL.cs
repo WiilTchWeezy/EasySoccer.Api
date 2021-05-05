@@ -39,7 +39,8 @@ namespace EasySoccer.BLL
             if (!oldPassword.Equals(currentUser.Password))
                 throw new BussinessException("A senha antiga não está correta");
 
-            currentUser.Password = newPassword;
+            var encryptedPassword = _cryptographyService.Encrypt(newPassword);
+            currentUser.Password = encryptedPassword;
             await _userRepository.Edit(currentUser);
             await _dbContext.SaveChangesAsync();
             return true;

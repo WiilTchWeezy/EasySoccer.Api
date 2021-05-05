@@ -53,7 +53,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.CompanyBLL.CreateAsync(request.Name, request.Description, request.CNPJ, request.WorkOnHolidays, request.Longitude, request.Latitude));
+                return Ok();
             }
             catch (Exception e)
             {

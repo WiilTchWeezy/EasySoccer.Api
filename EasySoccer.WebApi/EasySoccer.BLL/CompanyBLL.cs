@@ -5,6 +5,7 @@ using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.BLL.Infra.Helpers;
 using EasySoccer.BLL.Infra.Services.Azure;
 using EasySoccer.BLL.Infra.Services.Azure.Enums;
+using EasySoccer.BLL.Infra.Services.Cryptography;
 using EasySoccer.BLL.Infra.Services.SendGrid;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
@@ -32,7 +33,8 @@ namespace EasySoccer.BLL
         private IConfiguration _configuration;
         private ICompanyFinancialRecordRepository _companyFinancialRecordRepository;
         private ICityRepository _cityRepository;
-        IStateRepository _stateRepository;
+        private IStateRepository _stateRepository;
+        private ICryptographyService _cryptographyService;
         private int daysFree = 0;
         private string formContactReceiverName = string.Empty;
         private string formContactReceiverEmail = string.Empty;
@@ -47,7 +49,8 @@ namespace EasySoccer.BLL
             IConfiguration configuration,
             ICompanyFinancialRecordRepository companyFinancialRecordRepository,
             ICityRepository cityRepository,
-            IStateRepository stateRepository)
+            IStateRepository stateRepository,
+            ICryptographyService cryptographyService)
         {
             _companyRepository = companyRepository;
             _dbContext = dbContext;
@@ -60,6 +63,7 @@ namespace EasySoccer.BLL
             _companyFinancialRecordRepository = companyFinancialRecordRepository;
             _cityRepository = cityRepository;
             _stateRepository = stateRepository;
+            _cryptographyService = cryptographyService;
             var financialConfig = configuration.GetSection("FinancialConfiguration");
             if (financialConfig != null)
             {
@@ -160,7 +164,7 @@ namespace EasySoccer.BLL
                         Name = request.UserName,
                         CompanyId = company.Id,
                         Email = request.UserEmail,
-                        Password = PasswordHelper.Instance.GeneratePassword(6, 2)
+                        Password = _cryptographyService.Encrypt(request.Password)
                     };
                     await _companyUserRepository.Create(companyUser);
 

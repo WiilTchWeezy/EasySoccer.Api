@@ -28,5 +28,9 @@ namespace EasySoccer.BLL.Infra.DTO
         public FinancialPlanEnum? SelectedPlan { get; set; }
 
         public int? SelectedInstallments { get; set; }
+
+        public string Password { get; set; }
+
+        public string ConfirmPassword { get; set; }
     }
 }

@@ -27,6 +27,7 @@ namespace EasySoccer.BLL.Helper
             var validationResponse = new ValidationResponse();
             validationResponse.AddValidationMessage(this.ValidateEmail(entity.UserEmail));
             validationResponse.AddValidationMessage(this.ValidateCompanyDocument(entity.CompanyDocument));
+            validationResponse.AddValidationMessage(this.ValidatePassword(entity.Password, entity.ConfirmPassword));
             if (daysFree <= 0)
             {
                 validationResponse.AddValidationMessage(this.ValidateCardNumberAndSecurityCode(entity.CardNumber, entity.SecurityCode));
@@ -151,6 +152,15 @@ namespace EasySoccer.BLL.Helper
             if (currentCompany != null)
                 return $"Já existe uma empresa cadastrada com o CNPJ {companyDocument}";
             return String.Empty;
+        }
+
+        private string ValidatePassword(string password, string confirmPassword)
+        {
+            if(string.IsNullOrEmpty(password))
+                return $"A senha é obrigatória";
+            if(password.Equals(confirmPassword) == false)
+                return $"A senhas precisam ser iguais";
+            return string.Empty;
         }
 
 
