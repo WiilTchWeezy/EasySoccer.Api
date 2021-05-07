@@ -1,6 +1,7 @@
 ﻿using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.Helpers;
+using EasySoccer.BLL.Infra.Services.Cryptography;
 using EasySoccer.BLL.Infra.Services.PaymentGateway;
 using EasySoccer.BLL.Infra.Services.PaymentGateway.Request;
 using EasySoccer.DAL.Infra;
@@ -23,6 +24,7 @@ namespace EasySoccer.BLL
         private IPaymentGatewayService _paymentGateWayService;
         private IStateRepository _stateRepository;
         private ICityRepository _cityRepository;
+        private ICryptographyService _cryptographyService;
         public CompanyUserBLL
             (ICompanyUserRepository companyUserRepository,
             IEasySoccerDbContext dbContext,
@@ -31,7 +33,8 @@ namespace EasySoccer.BLL
             ICompanyUserNotificationRepository companyUserNotificationRepository,
             IPaymentGatewayService paymentGateWayService,
             IStateRepository stateRepository,
-            ICityRepository cityRepository)
+            ICityRepository cityRepository,
+            ICryptographyService cryptographyService)
         {
             _companyUserRepository = companyUserRepository;
             _companyFinancialRecordRepository = companyFinancialRecordRepository;
@@ -41,6 +44,7 @@ namespace EasySoccer.BLL
             _paymentGateWayService = paymentGateWayService;
             _stateRepository = stateRepository;
             _cityRepository = cityRepository;
+            _cryptographyService = cryptographyService;
         }
 
         public async Task<bool> ChangePasswordAsync(long userId, string oldPassword, string newPassword)
@@ -113,7 +117,8 @@ namespace EasySoccer.BLL
 
         public async Task<CompanyUser> LoginAsync(string email, string password)
         {
-            var companyUser = await _companyUserRepository.LoginAsync(email, password);
+            var encryptPassword = _cryptographyService.Encrypt(password);
+            var companyUser = await _companyUserRepository.LoginAsync(email, encryptPassword);
             if (companyUser != null)
             {
                 var companyFiscalRecord = await _companyFinancialRecordRepository.GetByCompanyAsync(companyUser.CompanyId);
