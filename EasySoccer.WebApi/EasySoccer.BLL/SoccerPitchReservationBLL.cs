@@ -162,7 +162,9 @@ namespace EasySoccer.BLL
         {
             List<AvaliableSchedulesDTO> avaliableSchedules = new List<AvaliableSchedulesDTO>();
 
-            if (selectedDate.Date < DateTime.Now.Date)
+            //TODO - adicionar Campo na empresa e informar o fuso horário 
+            var currentDateTime = DateTime.UtcNow.AddHours(-3);
+            if (selectedDate.Date < currentDateTime.Date)
                 throw new BussinessException("Não é possível verificar datas menores que a atual.");
 
             var companySchedule = await _companyScheduleRepository.GetAsync(companyId, (int)selectedDate.DayOfWeek);
@@ -288,7 +290,7 @@ namespace EasySoccer.BLL
         private async Task<CheckReservationIsAvaliableResponse> CheckReservationIsAvaliable(DateTime selectedDate, long soccerPitchId, TimeSpan selectedHourStart)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
-            if (soccerPitch == null)
+            if (soccerPitch == null || soccerPitch.Active == false)
                 throw new BussinessException("Quadra não encontrada.");
 
             var companySchedule = await _companyScheduleRepository.GetAsync(soccerPitch.CompanyId, (int)selectedDate.DayOfWeek);
@@ -313,7 +315,7 @@ namespace EasySoccer.BLL
         private async Task<CheckReservationIsAvaliableResponse> CheckReservationIsAvaliable(DateTime selectedDateStart, long soccerPitchId, DateTime selectedDateEnd)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
-            if (soccerPitch == null)
+            if (soccerPitch == null || soccerPitch.Active == false)
                 throw new BussinessException("Quadra não encontrada.");
 
             var companySchedule = await _companyScheduleRepository.GetAsync(soccerPitch.CompanyId, (int)selectedDateStart.DayOfWeek);
