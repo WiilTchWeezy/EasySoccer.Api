@@ -102,7 +102,7 @@ namespace EasySoccer.BLL
                 if (application == ApplicationEnum.MobileUser)
                 {
                     var user = await _userRepository.GetAsync(personId.Value);
-                    if(user == null)
+                    if (user == null)
                         throw new BussinessException("Erro ao realizar o agendamento. Usuário não encontrado");
                     var person = await _personRepository.GetByUserIdAsync(user.Id);
                     if (person == null)
@@ -290,8 +290,11 @@ namespace EasySoccer.BLL
         private async Task<CheckReservationIsAvaliableResponse> CheckReservationIsAvaliable(DateTime selectedDate, long soccerPitchId, TimeSpan selectedHourStart)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
-            if (soccerPitch == null || soccerPitch.Active == false)
+            if (soccerPitch == null)
                 throw new BussinessException("Quadra não encontrada.");
+
+            if (soccerPitch.Active == false)
+                throw new BussinessException("Quadra não esta ativa.");
 
             var companySchedule = await _companyScheduleRepository.GetAsync(soccerPitch.CompanyId, (int)selectedDate.DayOfWeek);
             if (companySchedule == null)
@@ -315,8 +318,11 @@ namespace EasySoccer.BLL
         private async Task<CheckReservationIsAvaliableResponse> CheckReservationIsAvaliable(DateTime selectedDateStart, long soccerPitchId, DateTime selectedDateEnd)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
-            if (soccerPitch == null || soccerPitch.Active == false)
+            if (soccerPitch == null)
                 throw new BussinessException("Quadra não encontrada.");
+
+            if (soccerPitch.Active == false)
+                throw new BussinessException("Quadra não esta ativa.");
 
             var companySchedule = await _companyScheduleRepository.GetAsync(soccerPitch.CompanyId, (int)selectedDateStart.DayOfWeek);
             if (companySchedule == null)
@@ -475,12 +481,12 @@ namespace EasySoccer.BLL
             var reservation = await _soccerPitchReservationRepository.GetAsync(reservationId);
             if (reservation == null)
                 throw new BussinessException("Agendamento não encontrado.");
-            if(reservation.Status == StatusEnum.Concluded)
+            if (reservation.Status == StatusEnum.Concluded)
                 throw new BussinessException("Não é possivel alterar o status de um agendamento finalizado.");
             if (status == StatusEnum.Confirmed)
             {
                 var avaliableResponse = await CheckReservationIsAvaliable(reservation.SelectedDateStart, reservation.SoccerPitchId, reservation.SelectedDateEnd);
-                if(avaliableResponse.IsAvaliable == false)
+                if (avaliableResponse.IsAvaliable == false)
                     throw new BussinessException("Existe outro agendamento confirmado nesta data e horário.");
             }
             reservation.Status = status;
