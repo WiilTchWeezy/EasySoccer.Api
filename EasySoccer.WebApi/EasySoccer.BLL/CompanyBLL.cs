@@ -30,6 +30,7 @@ namespace EasySoccer.BLL
         private IFormInputRepository _formInputRepository;
         private IEmailService _emailService;
         private ICompanyUserRepository _companyUserRepository;
+        private ICompanyUserNotificationRepository _companyUserNotificationRepository;
         private IConfiguration _configuration;
         private ICompanyFinancialRecordRepository _companyFinancialRecordRepository;
         private ICityRepository _cityRepository;
@@ -50,7 +51,8 @@ namespace EasySoccer.BLL
             ICompanyFinancialRecordRepository companyFinancialRecordRepository,
             ICityRepository cityRepository,
             IStateRepository stateRepository,
-            ICryptographyService cryptographyService)
+            ICryptographyService cryptographyService,
+            ICompanyUserNotificationRepository companyUserNotificationRepository)
         {
             _companyRepository = companyRepository;
             _dbContext = dbContext;
@@ -64,6 +66,7 @@ namespace EasySoccer.BLL
             _cityRepository = cityRepository;
             _stateRepository = stateRepository;
             _cryptographyService = cryptographyService;
+            _companyUserNotificationRepository = companyUserNotificationRepository;
             var financialConfig = configuration.GetSection("FinancialConfiguration");
             if (financialConfig != null)
             {
@@ -168,6 +171,19 @@ namespace EasySoccer.BLL
                     };
                     await _companyUserRepository.Create(companyUser);
 
+                    var companyUserNotification = new CompanyUserNotification
+                    {
+                        Active = true,
+                        CreatedDate = DateTime.UtcNow,
+                        Data = string.Empty,
+                        Id = Guid.NewGuid(),
+                        IdCompanyUser = companyUser.Id,
+                        Message = "Seja bem-vindo ao EasySoccer! Em caso de problemas ou sugestões entre em contato conosco atraves do menu ajuda.",
+                        NotificationType = NotificationTypeEnum.Standard,
+                        Title = "Seja bem-vindo ao EasySoccer!",
+                        Read = false
+                    };
+                    await _companyUserNotificationRepository.Create(companyUserNotification);
                     if (daysFree > 0)
                     {
                         var companyFinancialRecord = new CompanyFinancialRecord
@@ -370,7 +386,8 @@ namespace EasySoccer.BLL
             try
             {
                 formInput.Status = FormStatusEnum.Success;
-                formInput.Message = "Registro Processado"; 
+                formInput.Message = "Registro Processado";
+                await _emailService.SendTextEmailAsync(formContactReceiverEmail, formContactReceiverName, string.Format(" Nova Indicação de Empresa"), String.Format("Nome: {0} - Email: {1} Telefone: {2} Comentário: {3}", request.CompanyName, request.CompanyEmail, request.CompanyNumber, request.Comment));
                 await _formInputRepository.Create(formInput);
                 await _dbContext.SaveChangesAsync();
             }
