@@ -104,11 +104,11 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("post"), HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] SoccerPitchReservationRequest request)
+        public async Task<IActionResult> PostAsync([FromBody] SoccerPitchReservationRequestPost request)
         {
             try
             {
-                var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchPlanId, Entities.Enum.ApplicationEnum.WebApp);
+                var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchPlanId, request.Application);
                 return Ok(new { Id = reservation.Id });
             }
             catch (Exception e)
