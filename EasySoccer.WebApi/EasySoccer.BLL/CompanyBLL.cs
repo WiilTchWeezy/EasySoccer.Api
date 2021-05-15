@@ -142,6 +142,7 @@ namespace EasySoccer.BLL
                 formInput.Status = Entities.Enum.FormStatusEnum.Error;
                 await _dbContext.SaveChangesAsync();
                 await _emailService.SendValidationErrorsEmailAsync(request.UserEmail, request.UserName, validationResponse.ErrorHtmlFormatted);
+                throw new BussinessException($"Erro ao validar seu cadastro. {validationResponse.ErrorFormatted}");
             }
             else
             {
@@ -214,6 +215,10 @@ namespace EasySoccer.BLL
                     }
                     await _dbContext.SaveChangesAsync();
                     await _emailService.SendSuccessEmailAsync(request.UserEmail, request.UserName, daysFree, companyUser.Password);
+                }
+                catch (BussinessException bsex)
+                {
+                    throw bsex;
                 }
                 catch (Exception e)
                 {
