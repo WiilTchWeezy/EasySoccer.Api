@@ -29,20 +29,21 @@ namespace EasySoccer.WebApi.Controllers
                 .Select(x => new
                 {
                     x.Active,
-                    City = x.City?.Name,
+                    City = x.CityName,
                     x.CNPJ,
-                    x.CompanySchedules,
                     x.CompleteAddress,
                     x.CreatedDate,
                     x.Description,
                     x.Distance,
+                    DistanceMeters = $"{x.Distance:N0} m",
                     x.Id,
                     x.IdCity,
                     x.Latitude,
                     x.Logo,
                     x.Longitude,
                     x.Name,
-                    x.WorkOnHoliDays
+                    x.WorkOnHoliDays,
+                    x.CompanySchedules
                 })
                 .ToList());
         }

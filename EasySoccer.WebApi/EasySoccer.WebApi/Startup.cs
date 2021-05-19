@@ -57,7 +57,8 @@ namespace EasySoccer.WebApi
             ));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<IEasySoccerDbContext, EasySoccerDbContext>(
-                                    x => x.UseSqlServer(Configuration.GetConnectionString("EasySoccerDbContext")));
+                                    x => x.UseSqlServer(Configuration.GetConnectionString("EasySoccerDbContext"), y => y.UseNetTopologySuite()));
+
 
             #region UoW's
             services.AddScoped<CompanyUoW, CompanyUoW>();

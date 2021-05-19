@@ -9,8 +9,8 @@ namespace EasySoccer.WebApi.ApiRequests
         public string Name { get; set; }
         public string Description { get; set; }
         public string CNPJ { get; set; }
-        public decimal? Longitude { get; set; }
-        public decimal? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public double? Latitude { get; set; }
         public int? IdCity { get; set; }
         public bool WorkOnHolidays { get; set; }
         public string CompleteAddress { get; set; }

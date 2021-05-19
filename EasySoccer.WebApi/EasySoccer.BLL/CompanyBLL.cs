@@ -8,10 +8,13 @@ using EasySoccer.BLL.Infra.Services.Azure.Enums;
 using EasySoccer.BLL.Infra.Services.Cryptography;
 using EasySoccer.BLL.Infra.Services.SendGrid;
 using EasySoccer.DAL.Infra;
+using EasySoccer.DAL.Infra.Model;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
 using EasySoccer.Entities.Enum;
+using GeoAPI.Geometries;
 using Microsoft.Extensions.Configuration;
+using NetTopologySuite;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -80,15 +83,15 @@ namespace EasySoccer.BLL
             }
         }
 
-        public async Task<Company> CreateAsync(string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude)
+        public async Task<Company> CreateAsync(string name, string description, string cnpj, bool workOnHolidays, double? longitude, double? latitude)
         {
             var company = new Company
             {
                 CNPJ = cnpj,
                 CreatedDate = DateTime.UtcNow,
                 Description = description,
-                Latitude = latitude,
-                Longitude = longitude,
+                Latitude = (decimal)latitude,
+                Longitude = (decimal)longitude,
                 Name = name,
                 WorkOnHoliDays = workOnHolidays
             };
@@ -98,21 +101,9 @@ namespace EasySoccer.BLL
             return company;
         }
 
-        public async Task<List<Company>> GetAsync(double? longitude, double? latitude, int page, int pageSize, string name, string orderField, string orderDirection)
+        public async Task<List<CompanyModel>> GetAsync(double? longitude, double? latitude, int page, int pageSize, string name, string orderField, string orderDirection)
         {
-            var companies = await _companyRepository.GetAsync(page, pageSize, name, orderField, orderDirection);
-
-            if (orderField == "Location")
-            {
-                if (longitude.HasValue && latitude.HasValue)
-                {
-                    foreach (var item in companies)
-                    {
-                        item.Distance = LocationHelper.Haversine(longitude.Value, latitude.Value, (double)item.Longitude, (double)item.Latitude);
-                    }
-                    return companies.OrderBy(c => c.Distance).ToList();
-                }
-            }
+            var companies = await _companyRepository.GetAsync(page, pageSize, name, orderField, orderDirection, longitude, latitude);
             return companies;
         }
 
@@ -273,9 +264,10 @@ namespace EasySoccer.BLL
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, decimal? longitude, decimal? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules, int? idCity, bool insertReservationConfirmed)
+        public async Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, double? longitude, double? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules, int? idCity, bool insertReservationConfirmed)
         {
             var currentCompany = await _companyRepository.GetAsync(id);
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
             if (currentCompany == null)
                 throw new NotFoundException(currentCompany, id);
             currentCompany.Name = name;
@@ -283,9 +275,13 @@ namespace EasySoccer.BLL
             currentCompany.CompleteAddress = completeAddress;
             currentCompany.WorkOnHoliDays = workOnHolidays;
             if (longitude.HasValue)
-                currentCompany.Longitude = longitude;
+                currentCompany.Longitude = (decimal)longitude;
             if (latitude.HasValue)
-                currentCompany.Latitude = latitude;
+                currentCompany.Latitude = (decimal)latitude;
+            if(longitude.HasValue && latitude.HasValue)
+            {
+                currentCompany.Location = geometryFactory.CreatePoint(new Coordinate((double)longitude.Value, (double)latitude.Value));
+            }
             if (idCity.HasValue)
             {
                 var city = await _cityRepository.GetAsync(idCity.Value);
