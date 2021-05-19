@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EasySoccer.DAL.Infra\EasySoccer.DAL.Infra.csproj" />
     <ProjectReference Include="..\EasySoccer.Entities\EasySoccer.Entities.csproj" />
   </ItemGroup>
 

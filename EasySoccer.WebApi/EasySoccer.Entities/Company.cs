@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using GeoAPI.Geometries;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -47,6 +49,9 @@ namespace EasySoccer.Entities
 
         [NotMapped]
         public double Distance { get; set; }
+
+        [Column(TypeName = "geography")]
+        public IPoint Location { get; set; }
 
         public virtual ICollection<CompanySchedule> CompanySchedules { get; set; }
 
