@@ -346,6 +346,9 @@ namespace EasySoccer.BLL
             var currentCompany = await _companyRepository.GetAsync(companyId);
             if (currentCompany != null)
             {
+                if (active && currentCompany.Location == null)
+                    throw new BussinessException("É necessário preencher a localização do seu complexo esportivo.");
+
                 if (active != currentCompany.Active)
                 {
                     currentCompany.Active = active;
