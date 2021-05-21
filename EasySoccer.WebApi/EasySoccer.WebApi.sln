@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasySoccer.WebJob", "EasySo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTest", "UnitTest", "{E46450D4-F8A8-4C74-8CCD-8A6F18388B02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySoccer.NUnitTests", "EasySoccer.NUnitTests\EasySoccer.NUnitTests.csproj", "{3396E47A-3E37-44B8-9A48-F6883ED94CB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasySoccer.Test", "EasySoccer.NUnitTests\EasySoccer.Test.csproj", "{3396E47A-3E37-44B8-9A48-F6883ED94CB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
