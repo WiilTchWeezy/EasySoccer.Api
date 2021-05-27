@@ -1,16 +1,13 @@
 ﻿using EasySoccer.Entities.Enum;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EasySoccer.WebApi.ApiRequests
 {
-    public class SoccerPitchReservationRequestPost
+    public class SoccerPitchReservationPatchRequest
     {
+        public Guid Id { get; set; }
         public long SoccerPitchId { get; set; }
         public Guid? PersonId { get; set; }
-        public Guid? PersonCompanyId { get; set; }
         public DateTime SelectedDate { get; set; }
         public TimeSpan HourStart { get; set; }
         public TimeSpan HourEnd { get; set; }
@@ -18,5 +15,6 @@ namespace EasySoccer.WebApi.ApiRequests
         public string Note { get; set; }
         public int SoccerPitchPlanId { get; set; }
         public ApplicationEnum Application { get; set; }
+        public Guid PersonCompanyId { get; set; }
     }
 }

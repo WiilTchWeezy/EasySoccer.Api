@@ -35,11 +35,11 @@ namespace EasySoccer.Entities
         [Required]
         public DateTime SelectedDateEnd { get; set; }
 
-        public Guid? PersonId { get; set; }
-
         public DateTime? ModifiedDate { get; set; }
 
         public ApplicationEnum Application { get; set; }
+
+        public Guid? PersonCompanyId { get; set; }
 
         [ForeignKey("SoccerPitchId")]
         public virtual SoccerPitch SoccerPitch { get; set; }
@@ -50,8 +50,10 @@ namespace EasySoccer.Entities
         [ForeignKey("OringinReservationId")]
         public virtual SoccerPitchReservation OringinReservation { get; set; }
 
-        [ForeignKey("PersonId")]
-        public virtual Person Person { get; set; }
+
+
+        [ForeignKey("PersonCompanyId")]
+        public virtual PersonCompany PersonCompany { get; set; }
 
     }
 }

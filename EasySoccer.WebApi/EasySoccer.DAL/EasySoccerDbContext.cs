@@ -56,6 +56,9 @@ namespace EasySoccer.DAL
         public DbSet<CompanyUserNotification> CompanyUserNotification { get; set; }
         public IQueryable<CompanyUserNotification> CompanyUserNotificationQuery { get { return CompanyUserNotification; } }
 
+        public DbSet<PersonCompany> PersonCompany { get; set; }
+        public IQueryable<PersonCompany> PersonCompanyQuery { get { return PersonCompany; } }
+
 
 
         #region Infra

@@ -82,9 +82,9 @@ namespace EasySoccer.WebApi.Controllers
                         SelectedHourStart = new { Hour = x.SelectedDateStart.TimeOfDay.Hours.ToString("00"), Minute = x.SelectedDateStart.TimeOfDay.Minutes.ToString("00") },
                         SelectedHourEnd = new { Hour = x.SelectedDateEnd.TimeOfDay.Hours.ToString("00"), Minute = x.SelectedDateEnd.TimeOfDay.Minutes.ToString("00") },
                         SoccerPitchName = x.SoccerPitch.Name,
-                        UserName = x.Person != null ? x.Person?.Name : "Responsável não selecionado",
-                        UserPhone = x.Person?.Phone,
-                        UserId = x.Person?.UserId,
+                        UserName = x.PersonCompany != null ? x.PersonCompany?.Name : "Responsável não selecionado",
+                        UserPhone = x.PersonCompany?.Phone,
+                        PersonCompanyId = x.PersonCompany?.Id,
                         x.SoccerPitchId,
                         x.Status,
                         StatusDescription = EnumHelper.Instance.GetStatusEnumDescription(x.Status),
@@ -108,7 +108,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchPlanId, request.Application);
+                var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchPlanId, request.PersonCompanyId, request.Application);
                 return Ok(new { Id = reservation.Id });
             }
             catch (Exception e)
@@ -118,11 +118,11 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("patch"), HttpPatch]
-        public async Task<IActionResult> PatchAsync([FromBody] SoccerPitchReservationRequest request)
+        public async Task<IActionResult> PatchAsync([FromBody] SoccerPitchReservationPatchRequest request)
         {
             try
             {
-                var reservation = await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchPlanId);
+                var reservation = await _uow.SoccerPitchReservationBLL.UpdateAsync(request.Id, request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, request.SoccerPitchPlanId, request.PersonCompanyId);
                 return Ok(new { Id = reservation?.Id });
             }
             catch (Exception e)
@@ -150,8 +150,8 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, new MobileUser(HttpContext).UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, null, request.SoccerPitchSoccerPitchPlanId, Entities.Enum.ApplicationEnum.MobileUser);
-                return Ok(new 
+                var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, new MobileUser(HttpContext).UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, null, request.SoccerPitchSoccerPitchPlanId, null, Entities.Enum.ApplicationEnum.MobileUser);
+                return Ok(new
                 {
                     Id = reservation.Id,
                     SoccerPitchId = reservation.SoccerPitchId,
@@ -164,7 +164,7 @@ namespace EasySoccer.WebApi.Controllers
                     Note = reservation.Note,
                     SoccerPitchSoccerPitchPlanId = reservation.SoccerPitchSoccerPitchPlanId,
                     SoccerPitchName = reservation.SoccerPitch?.Name,
-                    UserName = reservation.Person?.Name
+                    UserName = reservation.PersonCompany?.Name
                 });
             }
             catch (Exception e)
@@ -185,9 +185,8 @@ namespace EasySoccer.WebApi.Controllers
                     SelectedHourStart = x.SelectedDateStart.TimeOfDay,
                     SelectedHourEnd = x.SelectedDateEnd.TimeOfDay,
                     SoccerPitchName = x.SoccerPitch.Name,
-                    UserName = x.Person != null ? x.Person?.Name : "Responsável não selecionado",
-                    UserPhone = x.Person?.Phone,
-                    UserId = x.Person?.UserId,
+                    UserName = x.PersonCompany != null ? x.PersonCompany?.Name : "Responsável não selecionado",
+                    UserPhone = x.PersonCompany?.Phone,
                     x.SoccerPitchId,
                     x.Status,
                     StatusDescription = EnumHelper.Instance.GetStatusEnumDescription(x.Status),
@@ -240,13 +239,15 @@ namespace EasySoccer.WebApi.Controllers
                     reservation.Id,
                     reservation.Interval,
                     reservation.Note,
-                    reservation.PersonId,
-                    PersonName = reservation.Person?.Name,
-                    PersonPhone = reservation.Person?.Phone,
+                    reservation.PersonCompanyId,
+                    PersonCompanyName = reservation.PersonCompany?.Name,
+                    PersonCompanyPhone = reservation.PersonCompany?.Phone,
                     reservation.SelectedDateStart,
                     reservation.SelectedDateEnd,
                     reservation.SoccerPitchId,
                     reservation.Status,
+                    reservation.Application,
+                    ApplicationDescription = EnumHelper.Instance.GetApplicationEnumDescription(reservation.Application),
                     StatusDescription = EnumHelper.Instance.GetStatusEnumDescription(reservation.Status),
                     SoccerPitchName = reservation.SoccerPitch.Name,
                     SoccerPitchPlanId = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId,

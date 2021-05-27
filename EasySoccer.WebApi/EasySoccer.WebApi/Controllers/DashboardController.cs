@@ -30,9 +30,10 @@ namespace EasySoccer.WebApi.Controllers
                 var currentUser = new CurrentUser(HttpContext);
                 return Ok((await _uow.SoccerPitchReservationBLL.GetResumeAsync()).Select(x => new
                 {
-                    x.PersonId,
-                    UserName = x.Person.Name,
-                    UserPhone = x.Person.Phone,
+                    x.PersonCompanyId,
+                    x.PersonCompany.PersonId,
+                    UserName = x.PersonCompany.Name,
+                    UserPhone = x.PersonCompany.Phone,
                     SoccerPitchName = x.SoccerPitch.Name,
                     SelectedHour = new DateTime(x.SelectedDateStart.TimeOfDay.Ticks).ToString("hh:mm") + "-" + new DateTime(x.SelectedDateEnd.TimeOfDay.Ticks).ToString("hh:mm")
                 }).ToList());
@@ -69,7 +70,7 @@ namespace EasySoccer.WebApi.Controllers
                         {
                             startDate = x.SelectedDateStart,
                             endDate = x.SelectedDateEnd,
-                            title = $"{x.SoccerPitch.Name} - {x.Person?.Name} - ( {x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00} - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ) - {EnumHelper.Instance.GetStatusEnumDescription(x.Status)}",
+                            title = $"{x.SoccerPitch.Name} - {x.PersonCompany?.Name} - ( {x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00} - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ) - {EnumHelper.Instance.GetStatusEnumDescription(x.Status)}",
                             color = string.IsNullOrEmpty(x.SoccerPitch.Color) ? "#ff591f" : x.SoccerPitch?.Color,
                             id = x.Id,
                             status = x.Status,

@@ -27,6 +27,7 @@ namespace EasySoccer.BLL
         private ICompanyUserRepository _companyUserRepository;
         private ICompanyUserNotificationBLL _companyUserNotificationBLL;
         private ICompanyRepository _companyRepository;
+        private IPersonCompanyRepository _personCompanyRepository;
         public SoccerPitchReservationBLL
             (ISoccerPitchReservationRepository soccerPitchReservationRepository,
             ISoccerPitchRepository soccerPitchRepository,
@@ -38,7 +39,8 @@ namespace EasySoccer.BLL
             IUserTokenRepository userTokenRepository,
             ICompanyUserRepository companyUserRepository,
             ICompanyUserNotificationBLL companyUserNotificationBLL,
-            ICompanyRepository companyRepository)
+            ICompanyRepository companyRepository,
+            IPersonCompanyRepository personCompanyRepository)
         {
             _soccerPitchReservationRepository = soccerPitchReservationRepository;
             _soccerPitchRepository = soccerPitchRepository;
@@ -51,10 +53,11 @@ namespace EasySoccer.BLL
             _companyUserRepository = companyUserRepository;
             _companyUserNotificationBLL = companyUserNotificationBLL;
             _companyRepository = companyRepository;
+            _personCompanyRepository = personCompanyRepository;
         }
 
 
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long? companyUserId, long soccerPitchPlanId, ApplicationEnum application)
+        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long? companyUserId, long soccerPitchPlanId, Guid? personCompanyId, ApplicationEnum application)
         {
             var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
@@ -101,26 +104,33 @@ namespace EasySoccer.BLL
             {
                 if (application == ApplicationEnum.MobileUser)
                 {
-                    var user = await _userRepository.GetAsync(personId.Value);
-                    if (user == null)
-                        throw new BussinessException("Erro ao realizar o agendamento. Usuário não encontrado");
-                    var person = await _personRepository.GetByUserIdAsync(user.Id);
+                    var person = await _personRepository.GetByPersonId(personId.Value);
                     if (person == null)
                         throw new BussinessException("Erro ao realizar o agendamento. Erro no cadastro do usuário.");
-                    soccerPitchReservation.PersonId = person.Id;
-                }
-                else
-                {
-                    var person = await _personRepository.GetByPersonId(personId.Value);
-                    if (person != null)
+
+                    var personCompany = await _personCompanyRepository.GetAsync(person.Email, person.Phone, company.Id);
+                    if (personCompany != null)
                     {
-                        if (application == ApplicationEnum.MobileUser)
-                        {
-                            if (string.IsNullOrEmpty(person.Phone))
-                                throw new BussinessException("É necessário preencher um telefone para realizar um agendamento.");
-                        }
-                        soccerPitchReservation.PersonId = personId;
+                        soccerPitchReservation.PersonCompanyId = personCompany.Id;
+                        if (person.Id != personCompany.PersonId)
+                            personCompany.PersonId = person.Id;
                     }
+                    else
+                    {
+                        var createdPersonCompany = new PersonCompany
+                        {
+                            Phone = person.Phone,
+                            CompanyId = company.Id,
+                            CreatedDate = DateTime.UtcNow,
+                            Id = Guid.NewGuid(),
+                            Email = person.Email,
+                            Name = person.Name,
+                            PersonId = person.Id
+                        };
+                        await _personCompanyRepository.Create(createdPersonCompany);
+                        soccerPitchReservation.PersonCompanyId = createdPersonCompany.Id;
+                    }
+
                 }
             }
             else
@@ -128,6 +138,15 @@ namespace EasySoccer.BLL
                 if (application == ApplicationEnum.MobileUser)
                     throw new BussinessException("É necessário estar autenticado para realizar um agendamento.");
             }
+            if (personCompanyId.HasValue)
+            {
+                var personCompany = await _personCompanyRepository.GetAsync(personCompanyId.Value);
+                if (personCompany == null)
+                    throw new BussinessException("Cliente não encontrado.");
+                soccerPitchReservation.PersonCompanyId = personCompany.Id;
+            }
+
+
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)
                 throw new BussinessException(validationResponse.ErrorFormatted);
@@ -285,8 +304,6 @@ namespace EasySoccer.BLL
             return avaliableSchedules;
         }
 
-
-
         private async Task<CheckReservationIsAvaliableResponse> CheckReservationIsAvaliable(DateTime selectedDate, long soccerPitchId, TimeSpan selectedHourStart)
         {
             var soccerPitch = await _soccerPitchRepository.GetAsync(soccerPitchId);
@@ -377,12 +394,21 @@ namespace EasySoccer.BLL
             return _soccerPitchReservationRepository.GetTotalAsync(companyId, initialDate, finalDate, soccerPitchId, soccerPitchPlanId, userName, status);
         }
 
-        public Task<List<SoccerPitchReservation>> GetUserSchedulesAsync(Guid userId, int page, int pageSize)
+        public async Task<List<SoccerPitchReservation>> GetUserSchedulesAsync(Guid userId, int page, int pageSize)
         {
-            return _soccerPitchReservationRepository.GetByUserAsync(userId, page, pageSize);
+            var person = await _personRepository.GetByUserIdAsync(userId);
+            if(person != null)
+            {
+                var personCompany = await _personCompanyRepository.GetByPersonIdAsync(person.Id);
+                if(personCompany != null && personCompany.PersonId.HasValue)
+                {
+                    return await _soccerPitchReservationRepository.GetByPersonCompanyAsync(personCompany.Id, page, pageSize);
+                }
+            }
+            return new List<SoccerPitchReservation>(); 
         }
 
-        public async Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId)
+        public async Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId, Guid? personCompanyId)
         {
             var soccerPitchReservation = await _soccerPitchReservationRepository.GetAsync(id);
             if (soccerPitchReservation == null)
@@ -407,11 +433,19 @@ namespace EasySoccer.BLL
             soccerPitchReservation.SelectedDateStart = selectedDateStart;
             soccerPitchReservation.SelectedDateEnd = selectedDateEnd;
             soccerPitchReservation.SoccerPitchId = soccerPitchId;
-            if (personId.HasValue)
+            if (personCompanyId.HasValue)
             {
-                var person = await _personRepository.GetByPersonId(personId.Value);
-                if (person != null)
-                    soccerPitchReservation.PersonId = personId;
+                var personCompany = await _personCompanyRepository.GetAsync(personCompanyId.Value);
+                if (personCompany != null)
+                {
+                    soccerPitchReservation.PersonCompanyId = personCompany.Id;
+                    var person = await _personRepository.GetAsync(personCompany.Email, personCompany.Phone);
+                    if(person != null)
+                    {
+                        personCompany.PersonId = person.Id;
+                        await _personCompanyRepository.Edit(personCompany);
+                    }
+                }
             }
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)
@@ -437,7 +471,7 @@ namespace EasySoccer.BLL
                         HourSpan = TimeSpan.FromHours(i),
                         Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents
                         {
-                            PersonName = x.Person != null ? x.Person.Name : "",
+                            PersonName = x.PersonCompany != null ? x.PersonCompany.Name : "",
                             ScheduleHour = $"{x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00}  - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ",
                             SoccerPitch = x.SoccerPitch.Name,
                             HasReservation = true,
