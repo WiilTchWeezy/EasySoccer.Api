@@ -22,5 +22,6 @@ namespace EasySoccer.BLL.Infra.DTO
         public string CompanyName { get; set; }
         public DateTime SelectedDateStart { get; set; }
         public DateTime SelectedDateEnd { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

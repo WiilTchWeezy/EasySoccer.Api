@@ -86,7 +86,8 @@ namespace EasySoccer.BLL
                     SoccerPitchId = x.SoccerPitchId,
                     SoccerPitchName = x.SoccerPitch.Name,
                     SelectedDateEnd = x.SelectedDateEnd,
-                    SelectedDateStart = x.SelectedDateStart
+                    SelectedDateStart = x.SelectedDateStart,
+                    CreatedDate = x.CreatedDate
                 }).ToList();
             }
             else
