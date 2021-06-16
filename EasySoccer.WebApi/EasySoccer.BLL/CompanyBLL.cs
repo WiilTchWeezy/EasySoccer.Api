@@ -278,7 +278,7 @@ namespace EasySoccer.BLL
                 currentCompany.Longitude = (decimal)longitude;
             if (latitude.HasValue)
                 currentCompany.Latitude = (decimal)latitude;
-            if(longitude.HasValue && latitude.HasValue)
+            if (longitude.HasValue && latitude.HasValue)
             {
                 currentCompany.Location = geometryFactory.CreatePoint(new Coordinate((double)longitude.Value, (double)latitude.Value));
             }
@@ -404,5 +404,9 @@ namespace EasySoccer.BLL
             }
         }
 
+        public Task<Company> GetAsync(string companyDocument)
+        {
+            return _companyRepository.GetAsync(companyDocument.Replace(".", "").Replace("-", "").Replace("/", ""));
+        }
     }
 }

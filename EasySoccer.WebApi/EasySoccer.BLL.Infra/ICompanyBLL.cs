@@ -9,6 +9,7 @@ namespace EasySoccer.BLL.Infra
     public interface ICompanyBLL
     {
         Task<List<CompanyModel>> GetAsync(double? longitude, double? latitude, int page, int pageSize, string name, string orderField, string orderDirection);
+        Task<Company> GetAsync(string companyDocument);
         Task<Company> CreateAsync(string name, string description, string cnpj, bool workOnHolidays, double? longitude, double? latitude);
         Task<Company> UpdateAsync(long id, string name, string description, string cnpj, bool workOnHolidays, double? longitude, double? latitude, string completeAddress, List<CompanySchedulesRequest> companySchedules, int? idCity, bool insertReservationConfirmed);
         Task<Company> GetAsync(long companyId);
