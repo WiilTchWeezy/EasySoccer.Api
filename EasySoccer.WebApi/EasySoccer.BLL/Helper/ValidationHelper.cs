@@ -25,6 +25,7 @@ namespace EasySoccer.BLL.Helper
         public async Task<ValidationResponse> Validate(FormInputCompanyEntryRequest entity, ICompanyUserRepository companyUserRepository, ICompanyRepository companyRepository, int daysFree)
         {
             var validationResponse = new ValidationResponse();
+            validationResponse.AddValidationMessage(this.ValidateCompanyName(entity.CompanyName));
             validationResponse.AddValidationMessage(this.ValidateEmail(entity.UserEmail));
             validationResponse.AddValidationMessage(this.ValidateCompanyDocument(entity.CompanyDocument));
             validationResponse.AddValidationMessage(this.ValidatePassword(entity.Password, entity.ConfirmPassword));
@@ -160,6 +161,13 @@ namespace EasySoccer.BLL.Helper
                 return $"A senha é obrigatória";
             if(password.Equals(confirmPassword) == false)
                 return $"A senhas precisam ser iguais";
+            return string.Empty;
+        }
+
+        private string ValidateCompanyName(string companyName)
+        {
+            if (string.IsNullOrEmpty(companyName))
+                return $"O nome da Empresa é obrigatória";
             return string.Empty;
         }
 

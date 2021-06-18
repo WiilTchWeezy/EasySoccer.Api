@@ -1,4 +1,5 @@
 ﻿using EasySoccer.BLL;
+using EasySoccer.BLL.Exceptions;
 using EasySoccer.BLL.Services.Azure;
 using EasySoccer.BLL.Services.Cryptography;
 using EasySoccer.DAL.Repositories;
@@ -52,6 +53,31 @@ namespace EasySoccer.Test.UnitTest.Company
             CompanyBLL.SaveFormInputCompanyAsync(request).GetAwaiter().GetResult();
             var company = CompanyBLL.GetAsync(request.CompanyDocument).GetAwaiter().GetResult();
             Assert.IsNotNull(company);
+        }
+
+        [Test]
+        public void InsertCompanyTest_EmptyRequest()
+        {
+            try
+            {
+                var request = new BLL.Infra.DTO.FormInputCompanyEntryRequest
+                {
+                    CompanyName = string.Empty,
+                    CompanyDocument = string.Empty,
+                    ConfirmPassword = string.Empty,
+                    Password = string.Empty,
+                    UserEmail = string.Empty,
+                    UserName = string.Empty
+                };
+                CompanyBLL.SaveFormInputCompanyAsync(request).GetAwaiter().GetResult();
+                var company = CompanyBLL.GetAsync(request.CompanyDocument).GetAwaiter().GetResult();
+                if (company != null)
+                    Assert.Fail();
+            }
+            catch (BussinessException bxe)
+            {
+                Assert.Pass();
+            }
         }
     }
 }
