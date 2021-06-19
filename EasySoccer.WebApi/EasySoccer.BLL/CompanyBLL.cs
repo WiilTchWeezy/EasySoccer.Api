@@ -278,7 +278,7 @@ namespace EasySoccer.BLL
                 currentCompany.Longitude = (decimal)longitude;
             if (latitude.HasValue)
                 currentCompany.Latitude = (decimal)latitude;
-            if(longitude.HasValue && latitude.HasValue)
+            if (longitude.HasValue && latitude.HasValue)
             {
                 currentCompany.Location = geometryFactory.CreatePoint(new Coordinate((double)longitude.Value, (double)latitude.Value));
             }
@@ -346,6 +346,9 @@ namespace EasySoccer.BLL
             var currentCompany = await _companyRepository.GetAsync(companyId);
             if (currentCompany != null)
             {
+                if (active && currentCompany.Location == null)
+                    throw new BussinessException("É necessário preencher a localização do seu complexo esportivo.");
+
                 if (active != currentCompany.Active)
                 {
                     currentCompany.Active = active;
@@ -401,5 +404,9 @@ namespace EasySoccer.BLL
             }
         }
 
+        public Task<Company> GetAsync(string companyDocument)
+        {
+            return _companyRepository.GetAsync(companyDocument.Replace(".", "").Replace("-", "").Replace("/", ""));
+        }
     }
 }

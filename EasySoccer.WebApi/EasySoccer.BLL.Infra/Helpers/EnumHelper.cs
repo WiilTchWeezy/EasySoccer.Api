@@ -40,5 +40,28 @@ namespace EasySoccer.BLL.Infra.Helpers
             }
             return statusText;
         }
+
+        public string GetApplicationEnumDescription(ApplicationEnum application)
+        {
+            string applicationText = string.Empty;
+            switch (application)
+            {
+                case ApplicationEnum.Unknow:
+                    applicationText = "Desconhecido";
+                    break;
+                case ApplicationEnum.WebApp:
+                    applicationText = "Plataforma Web";
+                    break;
+                case ApplicationEnum.MobileAdm:
+                    applicationText = "Aplicativo de Gerenciamento";
+                    break;
+                case ApplicationEnum.MobileUser:
+                    applicationText = "Aplicativo de Reservas Online";
+                    break;
+                default:
+                    break;
+            }
+            return applicationText;
+        }
     }
 }
