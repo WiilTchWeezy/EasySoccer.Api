@@ -71,6 +71,8 @@ namespace EasySoccer.WebApi
             services.AddScoped<CompanyUserUoW, CompanyUserUoW>();
             services.AddScoped<CompanyScheduleUoW, CompanyScheduleUoW>();
             services.AddScoped<PersonCompanyUoW, PersonCompanyUoW>();
+            services.AddScoped<WathsappUoW, WathsappUoW>();
+            
             #endregion
 
             #region BLL's

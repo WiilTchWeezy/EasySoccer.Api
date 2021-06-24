@@ -4,7 +4,8 @@
     {
         CompanyLandingPageEntry = 1,
         ContactLandingPageEntry = 2,
-        CompanyIndicateMobileEntry = 3
+        CompanyIndicateMobileEntry = 3,
+        WathsAppEntry = 4
 
     }
 }

@@ -408,5 +408,18 @@ namespace EasySoccer.BLL
         {
             return _companyRepository.GetAsync(companyDocument.Replace(".", "").Replace("-", "").Replace("/", ""));
         }
+
+        public async Task StartConversationAsync(string json)
+        {
+            await _formInputRepository.Create(new FormInput 
+            {
+                CreatedDate = DateTime.Now,
+                FormType = FormTypeEnum.WathsAppEntry,
+                InputData = json,
+                Message = string.Empty,
+                Status = FormStatusEnum.Success
+            });
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
