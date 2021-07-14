@@ -1,4 +1,5 @@
-﻿using EasySoccer.WebApi.ApiRequests;
+﻿using EasySoccer.BLL.Infra.Services.MessageBird;
+using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.UoWs;
 using Microsoft.AspNetCore.Authorization;
@@ -17,19 +18,20 @@ namespace EasySoccer.WebApi.Controllers
     public class WathsappController : ApiBaseController
     {
         private WathsappUoW _uow;
-        public WathsappController(WathsappUoW uoW) : base(uoW)
+        private IWathsappService _wathsappService;
+        public WathsappController(WathsappUoW uoW, IWathsappService wathsappService) : base(uoW)
         {
             _uow = uoW;
+            _wathsappService = wathsappService;
         }
 
         [AllowAnonymous]
         [Route("startconversation"), HttpPost]
-        public async Task<IActionResult> StartConversationAsync([FromBody] WathsappRequest request)
+        public async Task<IActionResult> StartConversationAsync()
         {
             try
             {
-                var json = JsonConvert.SerializeObject(request);
-                await _uow.CompanyBLL.StartConversationAsync(json);
+                await _wathsappService.SendTemplateMessageAsync("+5516991255409", "sample_shipping_confirmation");
                 return Ok();
             }
             catch (Exception e)

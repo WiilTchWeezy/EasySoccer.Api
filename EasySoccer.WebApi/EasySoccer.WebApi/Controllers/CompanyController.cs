@@ -219,5 +219,39 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(new { message = e.Message });
             }
         }
+
+        [Route("getcompanyinfocomplete"), HttpGet]
+        public async Task<IActionResult> GetCompanyInfo(long companyId)
+        {
+            try
+            {
+                var currentCompany = await _uow.CompanyBLL.GetAsync(companyId);
+                var soccerPitchs = await _uow.SoccerPitchBLL.GetAsync(1, 50, companyId);
+                return Ok(new
+                {
+                    currentCompany?.Name,
+                    currentCompany?.Description,
+                    currentCompany?.CompleteAddress,
+                    currentCompany?.Logo,
+                    currentCompany?.IdCity,
+                    IdState = currentCompany.City != null ? currentCompany.City.IdState : 0,
+                    State = currentCompany.City != null && currentCompany.City.State != null ? currentCompany.City.State.Name : string.Empty,
+                    City = currentCompany.IdCity.HasValue ? currentCompany?.City.Name : string.Empty,
+                    CompanySchedules = currentCompany?.CompanySchedules?.Select(x => new
+                    {
+                        x.CompanyId,
+                        x.Day,
+                        x.FinalHour,
+                        x.StartHour,
+                        x.WorkOnThisDay
+                    }).ToList(),
+                    soccerPitchs
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
     }
 }
