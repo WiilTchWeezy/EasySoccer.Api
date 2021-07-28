@@ -111,9 +111,12 @@ namespace EasySoccer.BLL
                     
                 }
             }
-            var bytes = Convert.FromBase64String(imageBase64);
-            var fileName = await _blobStorageService.Save(bytes, BlobContainerEnum.SoccerPitchContainer);
-            soccerPitch.ImageName = fileName;
+            if (string.IsNullOrEmpty(imageBase64) == false)
+            {
+                var bytes = Convert.FromBase64String(imageBase64);
+                var fileName = await _blobStorageService.Save(bytes, BlobContainerEnum.SoccerPitchContainer);
+                soccerPitch.ImageName = fileName;
+            }
             await _soccerPitchRepository.Edit(soccerPitch);
             await _dbContext.SaveChangesAsync();
         }
