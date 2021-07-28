@@ -40,7 +40,12 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var userCreated = await _uoW.UserBLL.CreatePersonAsync(userRequest.Name, userRequest.PhoneNumber, userRequest.Email, Entities.Enum.CreatedFromEnum.WebApp);
+                Entities.Enum.CreatedFromEnum enumValue;
+                if (userRequest.CreatedFrom.HasValue)
+                    enumValue = userRequest.CreatedFrom.Value;
+                else
+                    enumValue = Entities.Enum.CreatedFromEnum.WebApp;
+                var userCreated = await _uoW.UserBLL.CreatePersonAsync(userRequest.Name, userRequest.PhoneNumber, userRequest.Email, enumValue);
                 return Ok(new
                 {
                     userCreated.PersonId,

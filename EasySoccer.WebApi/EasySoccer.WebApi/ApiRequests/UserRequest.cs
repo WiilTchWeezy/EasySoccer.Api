@@ -1,4 +1,6 @@
-﻿namespace EasySoccer.WebApi.ApiRequests
+﻿using EasySoccer.Entities.Enum;
+
+namespace EasySoccer.WebApi.ApiRequests
 {
     public class UserRequest
     {
@@ -12,6 +14,6 @@
         
         public string Password { get; set; }
 
-        public bool CreatedFromWeb { get; set; } = false;
+        public CreatedFromEnum? CreatedFrom { get; set; }
     }
 }

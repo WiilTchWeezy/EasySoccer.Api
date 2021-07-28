@@ -7,6 +7,7 @@ namespace EasySoccer.Entities.Enum
     public enum CreatedFromEnum
     {
         WebApp,
-        Mobile
+        Mobile,
+        WebAppUser
     }
 }

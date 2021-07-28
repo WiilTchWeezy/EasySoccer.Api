@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EasySoccer.BLL.Infra.DTO
 {
@@ -8,6 +7,7 @@ namespace EasySoccer.BLL.Infra.DTO
     {
         public string Hour { get; set; }
         public List<GetSchedulesResponseEvents> Events { get; set; }
+        public bool AllSoccerPitchesOcupied { get; set; }
 
         public TimeSpan HourSpan { get; set; }
         public GetSchedulesResponse()

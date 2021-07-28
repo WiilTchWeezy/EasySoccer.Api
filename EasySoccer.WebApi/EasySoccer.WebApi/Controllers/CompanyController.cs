@@ -220,13 +220,16 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("getcompanyinfocomplete"), HttpGet]
-        public async Task<IActionResult> GetCompanyInfo(long companyId)
+        public async Task<IActionResult> GetCompanyInfo(long companyId, DateTime? selectedDate)
         {
             try
             {
                 var currentCompany = await _uow.CompanyBLL.GetAsync(companyId);
                 var soccerPitchs = await _uow.SoccerPitchBLL.GetAsync(1, 50, companyId);
+                var date = selectedDate.HasValue ? selectedDate.Value : DateTime.Now;
+                var schedules = await _uow.SoccerPitchReservationBLL.GetSchedulesResponses(companyId, date);
                 return Ok(new
                 {
                     currentCompany?.Name,
@@ -234,18 +237,19 @@ namespace EasySoccer.WebApi.Controllers
                     currentCompany?.CompleteAddress,
                     currentCompany?.Logo,
                     currentCompany?.IdCity,
-                    IdState = currentCompany.City != null ? currentCompany.City.IdState : 0,
-                    State = currentCompany.City != null && currentCompany.City.State != null ? currentCompany.City.State.Name : string.Empty,
-                    City = currentCompany.IdCity.HasValue ? currentCompany?.City.Name : string.Empty,
-                    CompanySchedules = currentCompany?.CompanySchedules?.Select(x => new
+                    IdState = currentCompany != null && currentCompany.City != null ? currentCompany.City.IdState : 0,
+                    State = currentCompany != null && currentCompany.City != null && currentCompany.City.State != null ? currentCompany.City.State.Name : string.Empty,
+                    City = currentCompany != null && currentCompany.IdCity.HasValue ? currentCompany?.City.Name : string.Empty,
+                    CompanySchedules = schedules,
+                    soccerPitchs = soccerPitchs.Select(x => new 
                     {
-                        x.CompanyId,
-                        x.Day,
-                        x.FinalHour,
-                        x.StartHour,
-                        x.WorkOnThisDay
-                    }).ToList(),
-                    soccerPitchs
+                        x.Name,
+                        x.Description,
+                        x.ImageName,
+                        x.NumberOfPlayers,
+                        SportTypeName = x.SportType.Name,
+                        x.Color
+                    }).ToArray()
                 });
             }
             catch (Exception e)

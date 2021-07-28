@@ -28,7 +28,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok((await _uow.SoccerPitchPlanBLL.GetAsync(new CurrentUser(HttpContext).CompanyId, request.Page, request.PageSize)).Select(x => new
+                return Ok((await _uow.SoccerPitchPlanBLL.GetAsync(new CurrentUser(HttpContext).CompanyId, request.Page, 50)).Select(x => new
                 {
                     x.Id,
                     x.Name,

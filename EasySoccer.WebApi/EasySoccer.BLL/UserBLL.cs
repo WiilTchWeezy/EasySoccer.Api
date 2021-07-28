@@ -175,25 +175,37 @@ namespace EasySoccer.BLL
             if (string.IsNullOrEmpty(name))
                 throw new BussinessException("É necessário preencher um nome.");
 
-            var person = new Person
+            var currentPerson = await _personRepository.GetByPhoneAsync(phone);
+            if (currentPerson != null)
+                return new PersonUserResponse
+                {
+                    Email = currentPerson.Email,
+                    Name = currentPerson.Name,
+                    PersonId = currentPerson.Id,
+                    Phone = currentPerson.Phone
+                };
+            else
             {
-                Id = Guid.NewGuid(),
-                CreatedDate = DateTime.Now,
-                CreatedFrom = createdFrom,
-                Email = email,
-                Name = name,
-                Phone = phone
-            };
-            await _personRepository.Create(person);
-            await _dbContext.SaveChangesAsync();
-            var personResponse = new PersonUserResponse
-            {
-                Email = person.Email,
-                Name = person.Name,
-                PersonId = person.Id,
-                Phone = person.Phone
-            };
-            return personResponse;
+                var person = new Person
+                {
+                    Id = Guid.NewGuid(),
+                    CreatedDate = DateTime.Now,
+                    CreatedFrom = createdFrom,
+                    Email = email,
+                    Name = name,
+                    Phone = phone.Replace("(", "").Replace(")", "").Replace("-","").Trim()
+                };
+                await _personRepository.Create(person);
+                await _dbContext.SaveChangesAsync();
+                var personResponse = new PersonUserResponse
+                {
+                    Email = person.Email,
+                    Name = person.Name,
+                    PersonId = person.Id,
+                    Phone = person.Phone
+                };
+                return personResponse;
+            }
         }
 
         public async Task<PersonUserResponse> CreateUserAsync(string name, string phoneNumber, string email, string password)
@@ -225,7 +237,7 @@ namespace EasySoccer.BLL
             else
             {
                 var personByPhone = await _personRepository.GetByPhoneAsync(phoneNumber);
-                if(personByPhone != null)
+                if (personByPhone != null)
                 {
                     if (personByPhone.UserId.HasValue)
                         throw new BussinessException("Existe um usuário cadastrado com este telefone!");

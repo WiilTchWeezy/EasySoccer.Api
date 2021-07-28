@@ -477,7 +477,8 @@ namespace EasySoccer.BLL
                             HasReservation = true,
                             SoccerPitchId = x.SoccerPitchId,
                             SoccerPitchReservationId = x.Id
-                        }).ToList()
+                        }).ToList(),
+                        AllSoccerPitchesOcupied = soccerPitchs.Select(x => x.Id).ToList().TrueForAll(y => reservations.Select(z => z.SoccerPitchId).Contains(y))
                     });
                 }
             }
