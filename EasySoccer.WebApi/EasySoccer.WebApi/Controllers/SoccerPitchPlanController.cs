@@ -28,17 +28,21 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok((await _uow.SoccerPitchPlanBLL.GetAsync(new CurrentUser(HttpContext).CompanyId, request.Page, 50)).Select(x => new
+                return Ok(new
                 {
-                    x.Id,
-                    x.Name,
-                    x.Value,
-                    x.Description
-                }).ToList());
+                    Data = (await _uow.SoccerPitchPlanBLL.GetAsync(new CurrentUser(HttpContext).CompanyId, request.Page, request.PageSize)).Select(x => new
+                    {
+                        x.Id,
+                        x.Name,
+                        x.Value,
+                        x.Description
+                    }).ToList(),
+                    Total = await _uow.SoccerPitchPlanBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId)
+                }) ;
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
         
@@ -59,7 +63,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
         
@@ -72,7 +76,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
         
@@ -85,7 +89,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
     }

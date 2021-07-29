@@ -46,6 +46,11 @@ namespace EasySoccer.BLL
             return _soccerPitchSoccerPitchPlanRepository.GetPlansAsync(soccerPitchId);
         }
 
+        public Task<int> GetTotalAsync(long companyId)
+        {
+            return _soccerPitchPlanRepository.GetTotalAsync(companyId);
+        }
+
         public async Task<SoccerPitchPlan> UpdateAsync(int id, string name, decimal value, string description)
         {
             var soccerPitchPlan = await _soccerPitchPlanRepository.GetAsync(id);

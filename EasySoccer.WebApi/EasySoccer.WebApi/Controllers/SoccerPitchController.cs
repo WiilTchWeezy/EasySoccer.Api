@@ -25,44 +25,48 @@ namespace EasySoccer.WebApi.Controllers
 
         //TODO - Create method to be consume by mobile application
         [Route("get"), HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]GetSoccerPitchRequest request)
+        public async Task<IActionResult> GetAsync([FromQuery] GetSoccerPitchRequest request)
         {
             try
             {
-                return Ok((await _uow.SoccerPitchBLL.GetAsync(request.Page, request.PageSize, new CurrentUser(HttpContext).CompanyId)).Select(x => new
+                return Ok(new
                 {
-                    x.Id,
-                    x.Active,
-                    x.Description,
-                    x.HasRoof,
-                    x.Name,
-                    x.NumberOfPlayers,
-                    Plans = x.SoccerPitchSoccerPitchPlans.Select(y => new 
-                    { 
-                        y.SoccerPitchPlan.Id, 
-                        y.SoccerPitchPlan.Name,
-                        y.SoccerPitchPlan.Type,
-                        y.SoccerPitchPlan.Value,
-                        y.IsDefault
+                    Data = (await _uow.SoccerPitchBLL.GetAsync(request.Page, request.PageSize, new CurrentUser(HttpContext).CompanyId)).Select(x => new
+                    {
+                        x.Id,
+                        x.Active,
+                        x.Description,
+                        x.HasRoof,
+                        x.Name,
+                        x.NumberOfPlayers,
+                        Plans = x.SoccerPitchSoccerPitchPlans.Select(y => new
+                        {
+                            y.SoccerPitchPlan.Id,
+                            y.SoccerPitchPlan.Name,
+                            y.SoccerPitchPlan.Type,
+                            y.SoccerPitchPlan.Value,
+                            y.IsDefault
+                        }).ToList(),
+                        x.SoccerPitchSoccerPitchPlans,
+                        x.SportTypeId,
+                        x.SportType,
+                        SportTypeName = x.SportType.Name,
+                        x.Interval,
+                        x.ImageName,
+                        x.Color
                     }).ToList(),
-                    x.SoccerPitchSoccerPitchPlans,
-                    x.SportTypeId,
-                    x.SportType,
-                    SportTypeName = x.SportType.Name,
-                    x.Interval,
-                    x.ImageName,
-                    x.Color
-                }).ToList());
+                    Total = await _uow.SoccerPitchBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId)
+                });
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
         [AllowAnonymous]
         [Route("getbycompanyid"), HttpGet]
-        public async Task<IActionResult> GetByCompanyIdAsync([FromQuery]GetSoccerPitchRequest request)
+        public async Task<IActionResult> GetByCompanyIdAsync([FromQuery] GetSoccerPitchRequest request)
         {
             try
             {
@@ -84,27 +88,27 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
         [Route("post"), HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]SoccerPitchRequest request)
+        public async Task<IActionResult> PostAsync([FromBody] SoccerPitchRequest request)
         {
             try
             {
 
-                var plansId = request.Plans?.Select(x =>new EasySoccer.BLL.Infra.DTO.SoccerPitchPlanRequest { Id = x.Id, IsDefault = x.IsDefault }).ToArray();
+                var plansId = request.Plans?.Select(x => new EasySoccer.BLL.Infra.DTO.SoccerPitchPlanRequest { Id = x.Id, IsDefault = x.IsDefault }).ToArray();
                 return Ok(await _uow.SoccerPitchBLL.CreateAsync(request.Name, request.Description, request.HasRoof, request.NumberOfPlayers, new CurrentUser(HttpContext).CompanyId, request.Active, plansId, request.SportTypeId, request.Interval, request.Color, request.ImageBase64));
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
         [Route("patch"), HttpPatch]
-        public async Task<IActionResult> PatchAsync([FromBody]SoccerPitchRequest request)
+        public async Task<IActionResult> PatchAsync([FromBody] SoccerPitchRequest request)
         {
             try
             {
@@ -131,7 +135,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
@@ -148,13 +152,13 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
 
         [Route("saveImage"), HttpPost]
-        public async Task<IActionResult> SaveImageAsync([FromBody]SoccerPitchImageRequest request)
+        public async Task<IActionResult> SaveImageAsync([FromBody] SoccerPitchImageRequest request)
         {
             try
             {
@@ -163,7 +167,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
@@ -173,10 +177,10 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var dynamicList = new List<dynamic>();
-                dynamicList.Add(new 
+                dynamicList.Add(new
                 {
-                    Name= "Azul",
-                    Value= "#1fc5ff"
+                    Name = "Azul",
+                    Value = "#1fc5ff"
                 });
 
                 dynamicList.Add(new
@@ -205,12 +209,12 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
 
         [Route("getbyid"), HttpGet]
-        public async Task<IActionResult> GetByIdAsync([FromQuery]long Id)
+        public async Task<IActionResult> GetByIdAsync([FromQuery] long Id)
         {
             try
             {
@@ -242,7 +246,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
     }

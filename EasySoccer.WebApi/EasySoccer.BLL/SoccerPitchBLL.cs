@@ -90,9 +90,9 @@ namespace EasySoccer.BLL
             return _sportTypeRepository.GetAsync(companyId);
         }
 
-        public Task<int> GetTotalAsync()
+        public Task<int> GetTotalAsync(long companyId)
         {
-            return _soccerPitchRepository.GetTotalAsync();
+            return _soccerPitchRepository.GetTotalAsync(companyId);
         }
 
         public async Task SaveImageAsync(long companyId, long soccerPitchId, string imageBase64)

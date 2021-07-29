@@ -39,9 +39,9 @@ namespace EasySoccer.DAL.Repositories
             return query.FirstOrDefaultAsync();
         }
 
-        public Task<int> GetTotalAsync()
+        public Task<int> GetTotalAsync(long companyId)
         {
-            return _dbContext.SoccerPitchQuery.CountAsync();
+            return _dbContext.SoccerPitchQuery.Where(x => x.CompanyId == companyId).CountAsync();
         }
 
         public Task<List<SoccerPitch>> GetAsync(long companyId, int sportType)

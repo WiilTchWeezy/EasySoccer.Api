@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EasySoccer.DAL.Repositories
 {
-    public class SoccerPitchPlanRepository : RepositoryBase , ISoccerPitchPlanRepository
+    public class SoccerPitchPlanRepository : RepositoryBase, ISoccerPitchPlanRepository
     {
         public SoccerPitchPlanRepository(IEasySoccerDbContext dbContext) : base(dbContext)
         {
@@ -20,13 +20,19 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.SoccerPitchPlanQuery
                 .Where(x => x.CompanyId == companyId)
-                .Skip((page -1) * pageSize)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize).ToListAsync();
         }
 
         public Task<SoccerPitchPlan> GetAsync(int id)
         {
             return _dbContext.SoccerPitchPlanQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
+
+        public Task<int> GetTotalAsync(long companyId)
+        {
+            return _dbContext.SoccerPitchPlanQuery
+            .Where(x => x.CompanyId == companyId).CountAsync();
         }
     }
 }
