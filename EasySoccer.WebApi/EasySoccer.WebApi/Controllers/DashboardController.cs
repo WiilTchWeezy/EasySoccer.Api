@@ -58,14 +58,29 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("reservationscalendar"), HttpGet]
-        public async Task<IActionResult> GetReservationsCalendar([FromQuery]int month, [FromQuery]int year, [FromQuery]int? day = null)
+        public async Task<IActionResult> GetReservationsCalendar([FromQuery]int month, [FromQuery]int year, [FromQuery]int? day = null, [FromQuery] string soccerPitchIds = null)
         {
             try
             {
-                var retorno = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day, new CurrentUser(this.HttpContext).CompanyId, year);
+                List<long> soccerPitches = null;
+                if(string.IsNullOrEmpty(soccerPitchIds) == false)
+                {
+                    var strIds = soccerPitchIds.Split(",");
+                    if(strIds != null && strIds.Length > 0)
+                    {
+                        soccerPitches = new List<long>();
+                        foreach (var item in strIds)
+                        {
+                            long id = 0;
+                            if (long.TryParse(item, out id))
+                                soccerPitches.Add(id);
+                        }
+                    }
+                }
+                var response = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day, new CurrentUser(this.HttpContext).CompanyId, year, soccerPitches);
                 return Ok
                     (
-                    retorno
+                    response
                         .Select(x => new
                         {
                             startDate = x.SelectedDateStart,

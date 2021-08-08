@@ -68,20 +68,27 @@ namespace EasySoccer.DAL.Repositories
                              .Where(x => x.SelectedDateStart == selectedDate && x.SoccerPitch.CompanyId == companyId && x.SoccerPitchId == soccerPitchId).FirstOrDefaultAsync();
         }
 
-        public Task<List<SoccerPitchReservation>> GetAsync(int month, int day, long companyId)
+        public Task<List<SoccerPitchReservation>> GetAsync(int month, int day, long companyId, List<long> soccerPitches)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.PersonCompany)
-                .Where(x => x.SelectedDateStart.Day == day && x.SelectedDateStart.Month == month && x.SelectedDateStart.Year == DateTime.Now.Year && x.SoccerPitch.CompanyId == companyId && x.Status != Entities.Enum.StatusEnum.Canceled).ToListAsync();
+                .Where(x => 
+                x.SelectedDateStart.Day == day && 
+                x.SelectedDateStart.Month == month && 
+                x.SelectedDateStart.Year == DateTime.Now.Year && 
+                x.SoccerPitch.CompanyId == companyId && 
+                x.Status != Entities.Enum.StatusEnum.Canceled && 
+                (soccerPitches == null || soccerPitches.Count == 0 || soccerPitches.Contains(x.SoccerPitchId))).ToListAsync();
         }
 
-        public Task<List<SoccerPitchReservation>> GetAsync(int month, long companyId, int year)
+        public Task<List<SoccerPitchReservation>> GetAsync(int month, long companyId, int year, List<long> soccerPitches)
         {
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.PersonCompany)
                 .Where(x =>
                 x.SelectedDateStart.Month == month
                 && x.SelectedDateStart.Year == year
                 && x.SoccerPitch.CompanyId == companyId
-                && x.Status != Entities.Enum.StatusEnum.Canceled).ToListAsync();
+                && x.Status != Entities.Enum.StatusEnum.Canceled &&
+                (soccerPitches == null || soccerPitches.Count == 0 || soccerPitches.Contains(x.SoccerPitchId))).ToListAsync();
         }
 
         public Task<SoccerPitchReservation> GetAsync(DateTime dateStart, DateTime dateEnd, long soccerPitch)
