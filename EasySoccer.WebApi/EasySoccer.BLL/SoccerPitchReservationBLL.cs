@@ -478,7 +478,14 @@ namespace EasySoccer.BLL
                             SoccerPitchId = x.SoccerPitchId,
                             SoccerPitchReservationId = x.Id
                         }).ToList(),
-                        AllSoccerPitchesOcupied = soccerPitchs.Select(x => x.Id).ToList().TrueForAll(y => reservations.Select(z => z.SoccerPitchId).Contains(y))
+                        AllSoccerPitchesOcupied = soccerPitchs.Select(x => x.Id).ToList().TrueForAll(y => reservations.Select(z => z.SoccerPitchId).Contains(y)),
+                        FreeSoccerPitches = soccerPitchs.Where(x => reservations.Select(z => z.SoccerPitchId).Contains(x.Id) == false)
+                                            .Select(y => new SoccerPitchResponse 
+                                            { 
+                                                Name = y.Name, 
+                                                Id = y.Id, 
+                                                Interval = y.Interval.HasValue ? y.Interval.Value : 60 
+                                            }).ToList()
                     });
                 }
             }
