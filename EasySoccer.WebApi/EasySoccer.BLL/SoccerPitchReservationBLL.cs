@@ -397,15 +397,15 @@ namespace EasySoccer.BLL
         public async Task<List<SoccerPitchReservation>> GetUserSchedulesAsync(Guid userId, int page, int pageSize)
         {
             var person = await _personRepository.GetByUserIdAsync(userId);
-            if(person != null)
+            if (person != null)
             {
                 var personCompany = await _personCompanyRepository.GetByPersonIdAsync(person.Id);
-                if(personCompany != null && personCompany.PersonId.HasValue)
+                if (personCompany != null && personCompany.PersonId.HasValue)
                 {
                     return await _soccerPitchReservationRepository.GetByPersonCompanyAsync(personCompany.Id, page, pageSize);
                 }
             }
-            return new List<SoccerPitchReservation>(); 
+            return new List<SoccerPitchReservation>();
         }
 
         public async Task<SoccerPitchReservation> UpdateAsync(Guid id, long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long soccerPitchSoccerPitchPlanId, Guid? personCompanyId)
@@ -440,7 +440,7 @@ namespace EasySoccer.BLL
                 {
                     soccerPitchReservation.PersonCompanyId = personCompany.Id;
                     var person = await _personRepository.GetAsync(personCompany.Email, personCompany.Phone);
-                    if(person != null)
+                    if (person != null)
                     {
                         personCompany.PersonId = person.Id;
                         await _personCompanyRepository.Edit(personCompany);
@@ -463,11 +463,13 @@ namespace EasySoccer.BLL
             var companySchedule = await _companyScheduleRepository.GetAsync(companyId, (int)selectDate.DayOfWeek);
             if (companySchedule != null)
             {
+                var avaliables = CheckAvaliableSoccerPitches(companySchedule, soccerPitchs, reservations, selectDate);
                 for (int i = (int)companySchedule?.StartHour; i <= (int)companySchedule?.FinalHour; i++)
                 {
                     response.Add(new GetSchedulesResponse
                     {
                         Hour = $"{i}:00",
+                        OptionsHours = new List<string>() { $"{i}:00", $"{i}:30" },
                         HourSpan = TimeSpan.FromHours(i),
                         Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents
                         {
@@ -480,11 +482,11 @@ namespace EasySoccer.BLL
                         }).ToList(),
                         AllSoccerPitchesOcupied = soccerPitchs.Select(x => x.Id).ToList().TrueForAll(y => reservations.Select(z => z.SoccerPitchId).Contains(y)),
                         FreeSoccerPitches = soccerPitchs.Where(x => reservations.Select(z => z.SoccerPitchId).Contains(x.Id) == false)
-                                            .Select(y => new SoccerPitchResponse 
-                                            { 
-                                                Name = y.Name, 
-                                                Id = y.Id, 
-                                                Interval = y.Interval.HasValue ? y.Interval.Value : 60 
+                                            .Select(y => new SoccerPitchResponse
+                                            {
+                                                Name = y.Name,
+                                                Id = y.Id,
+                                                Interval = y.Interval.HasValue && y.Interval.Value > 0 ? y.Interval.Value : 60
                                             }).ToList()
                     });
                 }
@@ -508,6 +510,40 @@ namespace EasySoccer.BLL
                         }
                     }
                 }
+            }
+            return response;
+        }
+
+        private List<SoccerPitchesAvailableResponse> CheckAvaliableSoccerPitches(CompanySchedule schedule, List<SoccerPitch> soccerPitches, List<SoccerPitchReservation> reservations, DateTime selectedDate)
+        {
+            var response = new List<SoccerPitchesAvailableResponse>();
+            foreach (var item in soccerPitches)
+            {
+                var itemResponse = new SoccerPitchesAvailableResponse();
+                itemResponse.SoccerPitch = item;
+                var intervalsToOffer = new List<int>() { 0, 30 }; // TODO: Create a field on this 
+                for (int i = (int)schedule?.StartHour; i <= (int)schedule?.FinalHour; i++)
+                {
+                    foreach (var intervalToOffer in intervalsToOffer)
+                    {
+                        var dateStart = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, i, intervalToOffer, 00);
+                        var dateEnd = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, i, intervalToOffer, 00).AddMinutes(item.Interval.HasValue && item.Interval.Value > 0 ? item.Interval.Value : 60);
+                        var hasReservation = reservations.Where(x =>
+                        x.SoccerPitchId == item.Id &&
+                        x.Status == StatusEnum.Confirmed &&
+                        (
+                        (x.SelectedDateStart >= dateStart && x.SelectedDateStart <= dateEnd)
+                        ||
+                        (x.SelectedDateEnd > dateStart && x.SelectedDateEnd <= dateEnd))
+                        ).Any();
+                        if (hasReservation == false)
+                        {
+                            itemResponse.AvaliableStartHours.Add(dateStart.TimeOfDay);
+                            itemResponse.AvaliableEndHours.Add(dateEnd.TimeOfDay);
+                        }
+                    }
+                }
+                response.Add(itemResponse);
             }
             return response;
         }
