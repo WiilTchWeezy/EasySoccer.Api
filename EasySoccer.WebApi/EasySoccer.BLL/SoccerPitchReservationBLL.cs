@@ -469,7 +469,6 @@ namespace EasySoccer.BLL
                     response.Add(new GetSchedulesResponse
                     {
                         Hour = $"{i}:00",
-                        OptionsHours = new List<string>() { $"{i}:00", $"{i}:30" },
                         HourSpan = TimeSpan.FromHours(i),
                         Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents
                         {
@@ -480,13 +479,14 @@ namespace EasySoccer.BLL
                             SoccerPitchId = x.SoccerPitchId,
                             SoccerPitchReservationId = x.Id
                         }).ToList(),
-                        AllSoccerPitchesOcupied = soccerPitchs.Select(x => x.Id).ToList().TrueForAll(y => reservations.Select(z => z.SoccerPitchId).Contains(y)),
-                        FreeSoccerPitches = soccerPitchs.Where(x => reservations.Select(z => z.SoccerPitchId).Contains(x.Id) == false)
+                        AllSoccerPitchesOcupied = avaliables.All(x => x.IsAvaliable == false),
+                        FreeSoccerPitches = avaliables.Where(x => x.IsAvaliable)
                                             .Select(y => new SoccerPitchResponse
                                             {
-                                                Name = y.Name,
-                                                Id = y.Id,
-                                                Interval = y.Interval.HasValue && y.Interval.Value > 0 ? y.Interval.Value : 60
+                                                Name = y.SoccerPitch.Name,
+                                                Id = y.SoccerPitch.Id,
+                                                Interval = y.SoccerPitch.Interval.HasValue && y.SoccerPitch.Interval.Value > 0 ? y.SoccerPitch.Interval.Value : 60,
+                                                AvaliableHours = y.AvaliableHours
                                             }).ToList()
                     });
                 }
@@ -538,8 +538,7 @@ namespace EasySoccer.BLL
                         ).Any();
                         if (hasReservation == false)
                         {
-                            itemResponse.AvaliableStartHours.Add(dateStart.TimeOfDay);
-                            itemResponse.AvaliableEndHours.Add(dateEnd.TimeOfDay);
+                            itemResponse.AvaliableHours.Add(new AvaliableHour { HourStart = dateStart.TimeOfDay, HourEnd = dateEnd.TimeOfDay });
                         }
                     }
                 }

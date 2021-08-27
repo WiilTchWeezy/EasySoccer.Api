@@ -10,9 +10,4 @@ namespace EasySoccer.BLL.Infra.DTO
         public int Interval { get; set; }
         public List<AvaliableHour> AvaliableHours { get; set; }
     }
-    public class AvaliableHour
-    {
-        public TimeSpan HourStart { get; set; }
-        public TimeSpan HourEnd { get; set; }
-    }
 }
