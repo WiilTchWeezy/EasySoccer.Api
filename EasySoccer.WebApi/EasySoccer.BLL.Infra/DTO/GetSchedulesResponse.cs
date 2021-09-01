@@ -5,8 +5,7 @@ namespace EasySoccer.BLL.Infra.DTO
 {
     public class GetSchedulesResponse
     {
-        public string Hour { get; set; }
-        public List<string> OptionsHours { get; set; }
+        public int Hour { get; set; }
         public List<GetSchedulesResponseEvents> Events { get; set; }
         public bool AllSoccerPitchesOcupied { get; set; }
         public List<SoccerPitchResponse> FreeSoccerPitches { get; set; }

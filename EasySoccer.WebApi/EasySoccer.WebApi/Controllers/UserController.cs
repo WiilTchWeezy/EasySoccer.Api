@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using EasySoccer.Entities;
+using EasySoccer.Entities.Enum;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
@@ -110,7 +111,10 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var userCreated = await _uoW.UserBLL.CreateUserAsync(userRequest.Name, userRequest.PhoneNumber, userRequest.Email, userRequest.Password);
+                var createdFrom = CreatedFromEnum.Mobile;
+                if (userRequest != null && userRequest.CreatedFrom.HasValue)
+                    createdFrom = userRequest.CreatedFrom.Value;
+                var userCreated = await _uoW.UserBLL.CreateUserAsync(userRequest.Name, userRequest.PhoneNumber, userRequest.Email, userRequest.Password, createdFrom);
                 return Ok(new
                 {
                     userCreated.PersonId,

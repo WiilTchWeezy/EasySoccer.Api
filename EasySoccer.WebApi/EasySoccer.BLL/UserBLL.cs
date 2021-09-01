@@ -208,7 +208,7 @@ namespace EasySoccer.BLL
             }
         }
 
-        public async Task<PersonUserResponse> CreateUserAsync(string name, string phoneNumber, string email, string password)
+        public async Task<PersonUserResponse> CreateUserAsync(string name, string phoneNumber, string email, string password, CreatedFromEnum createdFrom)
         {
             var personByEmail = await _personRepository.GetByEmailAsync(email);
             if (personByEmail != null)
@@ -221,7 +221,7 @@ namespace EasySoccer.BLL
                 var user = new User
                 {
                     CreatedDate = DateTime.Now,
-                    CreatedFrom = CreatedFromEnum.Mobile,
+                    CreatedFrom = createdFrom,
                     Id = Guid.NewGuid(),
                     Password = _cryptographyService.Encrypt(password)
                 };
@@ -247,7 +247,7 @@ namespace EasySoccer.BLL
                     var user = new User
                     {
                         CreatedDate = DateTime.Now,
-                        CreatedFrom = CreatedFromEnum.Mobile,
+                        CreatedFrom = createdFrom,
                         Id = Guid.NewGuid(),
                         Password = _cryptographyService.Encrypt(password)
                     };
@@ -265,14 +265,14 @@ namespace EasySoccer.BLL
                     var user = new User
                     {
                         CreatedDate = DateTime.Now,
-                        CreatedFrom = CreatedFromEnum.Mobile,
+                        CreatedFrom = createdFrom,
                         Id = Guid.NewGuid(),
                         Password = _cryptographyService.Encrypt(password)
                     };
                     var person = new Person
                     {
                         Id = Guid.NewGuid(),
-                        CreatedFrom = CreatedFromEnum.Mobile,
+                        CreatedFrom = createdFrom,
                         CreatedDate = DateTime.Now,
                         Email = email,
                         Name = name,

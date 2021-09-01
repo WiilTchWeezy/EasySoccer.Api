@@ -468,7 +468,7 @@ namespace EasySoccer.BLL
                 {
                     response.Add(new GetSchedulesResponse
                     {
-                        Hour = $"{i}:00",
+                        Hour = i,
                         HourSpan = TimeSpan.FromHours(i),
                         Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents
                         {
@@ -517,6 +517,8 @@ namespace EasySoccer.BLL
         private List<SoccerPitchesAvailableResponse> CheckAvaliableSoccerPitches(CompanySchedule schedule, List<SoccerPitch> soccerPitches, List<SoccerPitchReservation> reservations, DateTime selectedDate)
         {
             var response = new List<SoccerPitchesAvailableResponse>();
+            //TODO - adicionar Campo na empresa e informar o fuso horário 
+            var currentDateTime = DateTime.UtcNow.AddHours(-3);
             foreach (var item in soccerPitches)
             {
                 var itemResponse = new SoccerPitchesAvailableResponse();
@@ -536,9 +538,9 @@ namespace EasySoccer.BLL
                         ||
                         (x.SelectedDateEnd > dateStart && x.SelectedDateEnd <= dateEnd))
                         ).Any();
-                        if (hasReservation == false)
+                        if (hasReservation == false && dateStart > currentDateTime)
                         {
-                            itemResponse.AvaliableHours.Add(new AvaliableHour { HourStart = dateStart.TimeOfDay, HourEnd = dateEnd.TimeOfDay });
+                            itemResponse.AvaliableHours.Add(new AvaliableHour { Hour = i, HourStart = dateStart.TimeOfDay, HourEnd = dateEnd.TimeOfDay });
                         }
                     }
                 }
