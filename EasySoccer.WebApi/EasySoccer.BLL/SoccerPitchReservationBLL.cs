@@ -463,32 +463,37 @@ namespace EasySoccer.BLL
             var companySchedule = await _companyScheduleRepository.GetAsync(companyId, (int)selectDate.DayOfWeek);
             if (companySchedule != null)
             {
+                var companyCurrentDate = DateTime.UtcNow.AddHours(-3);
                 var avaliables = CheckAvaliableSoccerPitches(companySchedule, soccerPitchs, reservations, selectDate);
                 for (int i = (int)companySchedule?.StartHour; i <= (int)companySchedule?.FinalHour; i++)
                 {
-                    response.Add(new GetSchedulesResponse
+                    var selectedDateStartHour = new DateTime(selectDate.Year, selectDate.Month, selectDate.Day, i, 59, 00);
+                    if (companyCurrentDate <= selectedDateStartHour)
                     {
-                        Hour = i,
-                        HourSpan = TimeSpan.FromHours(i),
-                        Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents
+                        response.Add(new GetSchedulesResponse
                         {
-                            PersonName = x.PersonCompany != null ? x.PersonCompany.Name : "",
-                            ScheduleHour = $"{x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00}  - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ",
-                            SoccerPitch = x.SoccerPitch.Name,
-                            HasReservation = true,
-                            SoccerPitchId = x.SoccerPitchId,
-                            SoccerPitchReservationId = x.Id
-                        }).ToList(),
-                        AllSoccerPitchesOcupied = avaliables.All(x => x.IsAvaliable == false),
-                        FreeSoccerPitches = avaliables.Where(x => x.IsAvaliable)
-                                            .Select(y => new SoccerPitchResponse
-                                            {
-                                                Name = y.SoccerPitch.Name,
-                                                Id = y.SoccerPitch.Id,
-                                                Interval = y.SoccerPitch.Interval.HasValue && y.SoccerPitch.Interval.Value > 0 ? y.SoccerPitch.Interval.Value : 60,
-                                                AvaliableHours = y.AvaliableHours
-                                            }).ToList()
-                    });
+                            Hour = i,
+                            HourSpan = TimeSpan.FromHours(i),
+                            Events = reservations.Where(x => x.SelectedDateStart.TimeOfDay.Hours == i).Select(x => new GetSchedulesResponseEvents
+                            {
+                                PersonName = x.PersonCompany != null ? x.PersonCompany.Name : "",
+                                ScheduleHour = $"{x.SelectedDateStart.TimeOfDay.Hours:00}:{x.SelectedDateStart.TimeOfDay.Minutes:00}  - {x.SelectedDateEnd.TimeOfDay.Hours:00}:{x.SelectedDateEnd.TimeOfDay.Minutes:00} ",
+                                SoccerPitch = x.SoccerPitch.Name,
+                                HasReservation = true,
+                                SoccerPitchId = x.SoccerPitchId,
+                                SoccerPitchReservationId = x.Id
+                            }).ToList(),
+                            AllSoccerPitchesOcupied = avaliables.All(x => x.IsAvaliable == false),
+                            FreeSoccerPitches = avaliables.Where(x => x.IsAvaliable)
+                                                .Select(y => new SoccerPitchResponse
+                                                {
+                                                    Name = y.SoccerPitch.Name,
+                                                    Id = y.SoccerPitch.Id,
+                                                    Interval = y.SoccerPitch.Interval.HasValue && y.SoccerPitch.Interval.Value > 0 ? y.SoccerPitch.Interval.Value : 60,
+                                                    AvaliableHours = y.AvaliableHours
+                                                }).ToList()
+                        });
+                    }
                 }
             }
             foreach (var item in response)
