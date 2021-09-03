@@ -102,7 +102,7 @@ namespace EasySoccer.BLL
 
             if (personId.HasValue)
             {
-                if (application == ApplicationEnum.MobileUser)
+                if (application == ApplicationEnum.MobileUser || application == ApplicationEnum.WebAppUser)
                 {
                     var person = await _personRepository.GetByPersonId(personId.Value);
                     if (person == null)
@@ -152,7 +152,7 @@ namespace EasySoccer.BLL
                 throw new BussinessException(validationResponse.ErrorFormatted);
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
-            if (application == ApplicationEnum.MobileUser)
+            if (application == ApplicationEnum.MobileUser || application == ApplicationEnum.WebAppUser)
             {
                 var users = await _companyUserRepository.GetByCompanyIdAsync(selectedSoccerPitch.CompanyId);
                 foreach (var item in users)

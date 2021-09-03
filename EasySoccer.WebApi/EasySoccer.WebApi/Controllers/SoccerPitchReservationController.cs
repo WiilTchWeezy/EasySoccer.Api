@@ -150,7 +150,10 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, new MobileUser(HttpContext).UserId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, null, request.SoccerPitchSoccerPitchPlanId, null, Entities.Enum.ApplicationEnum.MobileUser);
+                var application = ApplicationEnum.MobileUser;
+                if (request.Application.HasValue)
+                    application = request.Application.Value;
+                var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, new MobileUser(HttpContext).PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, null, request.SoccerPitchPlanId, null, application);
                 return Ok(new
                 {
                     Id = reservation.Id,

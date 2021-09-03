@@ -44,7 +44,8 @@ namespace EasySoccer.WebApi.Controllers
                         new Claim(JwtRegisteredClaimNames.Jti, personUserResponse.UserId.ToString()),
                         new Claim(JwtRegisteredClaimNames.UniqueName, personUserResponse.UserId.ToString()),
                         new Claim (JwtRegisteredClaimNames.Gender, ProfilesEnum.User.ToString()),
-                        new Claim("UserId", personUserResponse.UserId.ToString())
+                        new Claim("UserId", personUserResponse.UserId.ToString()),
+                        new Claim("PersonId", personUserResponse.PersonId.ToString())
                     });
                 return Ok(token);
             }
