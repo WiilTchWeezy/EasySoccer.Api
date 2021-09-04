@@ -28,7 +28,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<SoccerPitch>> GetByCompanyAsync(int company)
         {
-            return _dbContext.SoccerPitchQuery.Where(x => x.CompanyId == company).OrderBy(x => x.Name).ToListAsync();
+            return _dbContext.SoccerPitchQuery.Where(x => x.CompanyId == company && x.Active).OrderBy(x => x.Name).ToListAsync();
         }
 
         public Task<SoccerPitch> GetAsync(long id, bool includeInfo = false)
