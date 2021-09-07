@@ -21,5 +21,8 @@ namespace EasySoccer.Entities
 
         [Required]
         public CreatedFromEnum CreatedFrom { get; set; }
+
+        public string PasswordResetToken { get; set; }
+        public DateTime? PasswordResetTokenExpiresDate { get; set; }
     }
 }

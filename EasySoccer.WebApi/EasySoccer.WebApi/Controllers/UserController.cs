@@ -157,5 +157,35 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [AllowAnonymous]
+        [Route("requestresetpassword"), HttpPost]
+        public async Task<IActionResult> RequestResetPasswordAsync([FromBody] RequestPasswordResetRequest request)
+        {
+            try
+            {
+                await _uoW.UserBLL.UserRequestResetPasswordAsync(request.Email);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [Route("resetpassword"), HttpPost]
+        public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
+        {
+            try
+            {
+                await _uoW.UserBLL.ResetUserPasswordAsync(request.Token, request.Password);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

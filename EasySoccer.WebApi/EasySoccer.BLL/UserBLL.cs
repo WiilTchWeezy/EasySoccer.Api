@@ -2,10 +2,12 @@
 using EasySoccer.BLL.Infra;
 using EasySoccer.BLL.Infra.DTO;
 using EasySoccer.BLL.Infra.Services.Cryptography;
+using EasySoccer.BLL.Infra.Services.SendGrid;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
 using EasySoccer.Entities.Enum;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +23,21 @@ namespace EasySoccer.BLL
         private IPersonRepository _personRepository;
         private ICryptographyService _cryptographyService;
         private IUserTokenRepository _userTokenRepository;
-        public UserBLL(IUserRepository userRepository, IPersonRepository personRepository, IEasySoccerDbContext dbContext, ICryptographyService cryptographyService, IUserTokenRepository userTokenRepository)
+        private IEmailService _emailService;
+        private string _userWebAppUrl = "";
+        public UserBLL(IUserRepository userRepository, IPersonRepository personRepository, IEasySoccerDbContext dbContext, ICryptographyService cryptographyService, IUserTokenRepository userTokenRepository, IEmailService emailService, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _dbContext = dbContext;
             _personRepository = personRepository;
             _cryptographyService = cryptographyService;
             _userTokenRepository = userTokenRepository;
+            _emailService = emailService;
+            var config = configuration.GetSection("GeneralConfig");
+            if (config != null)
+            {
+                _userWebAppUrl = config.GetValue<string>("UserWebAppUrl");
+            }
         }
 
         public async Task<bool> ChangeUserPassword(string oldPassword, Guid userId, string newPassword)
@@ -328,6 +338,39 @@ namespace EasySoccer.BLL
             await _userTokenRepository.Edit(userToken);
             await _dbContext.SaveChangesAsync();
             return userToken;
+        }
+
+        public async Task<bool> UserRequestResetPasswordAsync(string email)
+        {
+            var currentDateTime = DateTime.UtcNow.AddHours(-3);
+            var person = await _personRepository.GetByEmailAsync(email);
+            if (person == null || person.UserId.HasValue == false)
+                throw new BussinessException("Usuário não encontrado");
+            var user = await _userRepository.GetAsync(person.UserId.Value);
+            if(user == null)
+                throw new BussinessException("Usuário não encontrado");
+            var userPasswordToken = Guid.NewGuid().ToString();
+            user.PasswordResetToken = userPasswordToken;
+            user.PasswordResetTokenExpiresDate = currentDateTime.AddHours(12);
+            await _emailService.SendTextEmailAsync(person.Email, person.Name, "Easysoccer - Recuperação de senha solicitada.", $"Você solicitou a recuperação da sua senha. Acesse o link para recuperar: {_userWebAppUrl}resetpassword/{userPasswordToken}");
+            await _userRepository.Edit(user);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task ResetUserPasswordAsync(string token, string newPassword)
+        {
+            var user = await _userRepository.GetUserByTokenAsync(token);
+            if (user == null)
+                throw new BussinessException("Usuário não encontrado.");
+            var currentDateTime = DateTime.UtcNow.AddHours(-3);
+            if(user.PasswordResetTokenExpiresDate.HasValue == false || user.PasswordResetTokenExpiresDate.Value < currentDateTime)
+                throw new BussinessException("Seu token de resetar senha expirou.");
+
+            var encryptedPassword = _cryptographyService.Encrypt(newPassword);
+            user.Password = encryptedPassword;
+            await _userRepository.Edit(user);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

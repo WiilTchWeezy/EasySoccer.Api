@@ -19,5 +19,7 @@ namespace EasySoccer.BLL.Infra
         Task<PersonUserResponse> CreateUserAsync(string name, string phoneNumber, string email, string password, CreatedFromEnum createdFrom);
         Task<UserToken> InsertUserToken(Guid userId, string token);
         Task<UserToken> LogOffUserToken(Guid userId, string token);
+        Task<bool> UserRequestResetPasswordAsync(string email);
+        Task ResetUserPasswordAsync(string token, string newPassword);
     }
 }

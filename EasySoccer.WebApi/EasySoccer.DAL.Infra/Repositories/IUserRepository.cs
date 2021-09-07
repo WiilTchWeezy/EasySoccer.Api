@@ -9,5 +9,6 @@ namespace EasySoccer.DAL.Infra.Repositories
     {
         Task<User> LoginBySocialMediaAsync(string socialMediaId);
         Task<User> GetAsync(Guid userId);
+        Task<User> GetUserByTokenAsync(string token);
     }
 }

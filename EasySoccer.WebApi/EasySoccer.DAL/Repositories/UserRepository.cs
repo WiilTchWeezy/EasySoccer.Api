@@ -26,6 +26,9 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.UserQuery.Where(x => x.Id == userId).FirstOrDefaultAsync();
         }
 
-
+        public Task<User> GetUserByTokenAsync(string token)
+        {
+            return _dbContext.UserQuery.Where(x => x.PasswordResetToken == token).FirstOrDefaultAsync();
+        }
     }
 }
