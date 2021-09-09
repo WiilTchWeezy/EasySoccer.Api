@@ -16,11 +16,18 @@ namespace EasySoccer.DAL.Repositories
         {
         }
 
-        public async Task<List<CompanyModel>> GetAsync(int page, int pageSize, string name, string orderField, string orderDirection, double? longitude, double? latitude)
+        public async Task<List<CompanyModel>> GetAsync(int page, int pageSize, string name, string orderField, string orderDirection, double? longitude, double? latitude, int idCity, int idState)
         {
             var query = _dbContext.CompanyQuery.Include(x => x.City).Where(x => x.Active == true && x.Location != null).Skip((page - 1) * pageSize).Take(pageSize);
             if (string.IsNullOrEmpty(name) == false)
                 query = query.Where(x => x.Name.Contains(name));
+            if (idCity > 0)
+                query = query.Where(x => x.IdCity == idCity);
+
+            if (idState > 0)
+                query = query.Where(x => x.City != null && x.City.IdState == idState);
+
+
             if (orderField == "Name" && orderDirection == "ASC")
                 query = query.OrderBy(x => x.Name);
             if (orderField == "Name" && orderDirection == "DESC")
@@ -38,22 +45,22 @@ namespace EasySoccer.DAL.Repositories
                     else
                         query = query.OrderBy(x => x.Location.Distance(currentLocation));
                     companies = await query.Select(x => new CompanyModel
-                        {
-                            Active = x.Active,
-                            CityName = x.City.Name,
-                            Name = x.Name,
-                            CNPJ = x.CNPJ,
-                            CompanySchedules = x.CompanySchedules.ToList(),
-                            CompleteAddress = x.CompleteAddress,
-                            CreatedDate = x.CreatedDate,
-                            Description = x.Description,
-                            Distance = x.Location.Distance(currentLocation),
-                            IdCity = x.IdCity,
-                            Latitude = (double)x.Latitude,
-                            Logo = x.Logo,
-                            Longitude = (double)x.Longitude,
-                            WorkOnHoliDays = x.WorkOnHoliDays
-                        }).ToListAsync();
+                    {
+                        Active = x.Active,
+                        CityName = x.City.Name,
+                        Name = x.Name,
+                        CNPJ = x.CNPJ,
+                        CompanySchedules = x.CompanySchedules.ToList(),
+                        CompleteAddress = x.CompleteAddress,
+                        CreatedDate = x.CreatedDate,
+                        Description = x.Description,
+                        Distance = x.Location.Distance(currentLocation),
+                        IdCity = x.IdCity,
+                        Latitude = (double)x.Latitude,
+                        Logo = x.Logo,
+                        Longitude = (double)x.Longitude,
+                        WorkOnHoliDays = x.WorkOnHoliDays
+                    }).ToListAsync();
                 }
                 else
                 {

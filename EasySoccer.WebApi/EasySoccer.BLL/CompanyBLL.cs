@@ -101,9 +101,9 @@ namespace EasySoccer.BLL
             return company;
         }
 
-        public async Task<List<CompanyModel>> GetAsync(double? longitude, double? latitude, int page, int pageSize, string name, string orderField, string orderDirection)
+        public async Task<List<CompanyModel>> GetAsync(double? longitude, double? latitude, int page, int pageSize, string name, string orderField, string orderDirection, int idCity, int idState)
         {
-            var companies = await _companyRepository.GetAsync(page, pageSize, name, orderField, orderDirection, longitude, latitude);
+            var companies = await _companyRepository.GetAsync(page, pageSize, name, orderField, orderDirection, longitude, latitude, idCity, idState);
             return companies;
         }
 

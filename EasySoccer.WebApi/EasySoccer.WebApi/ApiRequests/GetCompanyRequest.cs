@@ -13,5 +13,7 @@ namespace EasySoccer.WebApi.ApiRequests
         public string OrderField { get; set; }
 
         public string OrderDirection { get; set; }
+        public int IdCity { get; set; }
+        public int IdState { get; set; }
     }
 }

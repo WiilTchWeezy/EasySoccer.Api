@@ -25,7 +25,7 @@ namespace EasySoccer.WebApi.Controllers
         [Route("get"), HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery] GetCompanyRequest request)
         {
-            return Ok((await _uow.CompanyBLL.GetAsync(request.Longitude, request.Latitude, request.Page, request.PageSize, request.Name, request.OrderField, request.OrderDirection))
+            return Ok((await _uow.CompanyBLL.GetAsync(request.Longitude, request.Latitude, request.Page, request.PageSize, request.Name, request.OrderField, request.OrderDirection, request.IdCity, request.IdState))
                 .Select(x => new
                 {
                     x.Active,

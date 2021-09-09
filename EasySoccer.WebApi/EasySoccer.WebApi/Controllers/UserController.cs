@@ -169,7 +169,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new { message = e.Message });
             }
         }
 
@@ -184,7 +184,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new { message = e.Message });
             }
         }
     }

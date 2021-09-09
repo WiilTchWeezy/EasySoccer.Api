@@ -369,6 +369,8 @@ namespace EasySoccer.BLL
 
             var encryptedPassword = _cryptographyService.Encrypt(newPassword);
             user.Password = encryptedPassword;
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpiresDate = null;
             await _userRepository.Edit(user);
             await _dbContext.SaveChangesAsync();
         }
