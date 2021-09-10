@@ -59,7 +59,8 @@ namespace EasySoccer.DAL.Repositories
                         Latitude = (double)x.Latitude,
                         Logo = x.Logo,
                         Longitude = (double)x.Longitude,
-                        WorkOnHoliDays = x.WorkOnHoliDays
+                        WorkOnHoliDays = x.WorkOnHoliDays,
+                        Id = x.Id
                     }).ToListAsync();
                 }
                 else
