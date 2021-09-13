@@ -59,6 +59,9 @@ namespace EasySoccer.DAL
         public DbSet<PersonCompany> PersonCompany { get; set; }
         public IQueryable<PersonCompany> PersonCompanyQuery { get { return PersonCompany; } }
 
+        public DbSet<PlanGenerationConfig> PlanGenerationConfig { get; set; }
+        public IQueryable<PlanGenerationConfig> PlanGenerationConfigQuery { get { return PlanGenerationConfig; } }
+
 
 
         #region Infra

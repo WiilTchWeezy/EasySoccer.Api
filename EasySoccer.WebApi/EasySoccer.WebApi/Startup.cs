@@ -87,6 +87,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<ICompanyScheduleBLL, CompanyScheduleBLL>();
             services.AddScoped<ICompanyUserNotificationBLL, CompanyUserNotificationBLL>();
             services.AddScoped<IPersonCompanyBLL, PersonCompanyBLL>();
+            services.AddScoped<IPlanGenerationConfigBLL, PlanGenerationConfigBLL>();
             #endregion
 
             #region Repositories
@@ -107,6 +108,7 @@ namespace EasySoccer.WebApi
             services.AddScoped<IUserTokenRepository, UserTokenRepository>();
             services.AddScoped<ICompanyUserNotificationRepository, CompanyUserNotificationRepository>();
             services.AddScoped<IPersonCompanyRepository, PersonCompanyRepository>();
+            services.AddScoped<IPlanGenerationConfigRepository, PlanGenerationConfigRepository>();
             #endregion
 
             #region Services

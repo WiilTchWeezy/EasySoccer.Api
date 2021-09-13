@@ -24,5 +24,13 @@ namespace EasySoccer.Entities
 
         [StringLength(400)]
         public string Description { get; set; }
+
+        public int? IdPlanGenerationConfig { get; set; }
+
+        [Required]
+        public bool ShowToUser { get; set; }
+
+        [ForeignKey("IdPlanGenerationConfig")]
+        public virtual PlanGenerationConfig PlanGenerationConfig { get; set; }
     }
 }

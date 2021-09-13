@@ -47,7 +47,9 @@ namespace EasySoccer.Test.UnitTest.SoccerPitchReservation
                 new CompanyUserRepository(dbContext),
                 CompanyUserNotificationBLL,
                 new CompanyRepository(dbContext),
-                new PersonCompanyRepository(dbContext)
+                new PersonCompanyRepository(dbContext),
+                new SoccerPitchPlanRepository(dbContext),
+                new PlanGenerationConfigRepository(dbContext)
                 );
 
             SoccerPitchPlanBLL = new SoccerPitchPlanBLL(dbContext, new SoccerPitchPlanRepository(dbContext), new SoccerPitchSoccerPitchPlanRepository(dbContext));

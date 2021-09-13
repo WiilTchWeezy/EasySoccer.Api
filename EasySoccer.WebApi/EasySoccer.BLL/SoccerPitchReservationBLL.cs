@@ -28,6 +28,9 @@ namespace EasySoccer.BLL
         private ICompanyUserNotificationBLL _companyUserNotificationBLL;
         private ICompanyRepository _companyRepository;
         private IPersonCompanyRepository _personCompanyRepository;
+        private ISoccerPitchPlanRepository _soccerPitchPlanRepository;
+        private IPlanGenerationConfigRepository _planGenerationConfigRepository;
+
         public SoccerPitchReservationBLL
             (ISoccerPitchReservationRepository soccerPitchReservationRepository,
             ISoccerPitchRepository soccerPitchRepository,
@@ -40,7 +43,9 @@ namespace EasySoccer.BLL
             ICompanyUserRepository companyUserRepository,
             ICompanyUserNotificationBLL companyUserNotificationBLL,
             ICompanyRepository companyRepository,
-            IPersonCompanyRepository personCompanyRepository)
+            IPersonCompanyRepository personCompanyRepository,
+            ISoccerPitchPlanRepository soccerPitchPlanRepository,
+            IPlanGenerationConfigRepository planGenerationConfigRepository)
         {
             _soccerPitchReservationRepository = soccerPitchReservationRepository;
             _soccerPitchRepository = soccerPitchRepository;
@@ -54,15 +59,17 @@ namespace EasySoccer.BLL
             _companyUserNotificationBLL = companyUserNotificationBLL;
             _companyRepository = companyRepository;
             _personCompanyRepository = personCompanyRepository;
+            _soccerPitchPlanRepository = soccerPitchPlanRepository;
+            _planGenerationConfigRepository = planGenerationConfigRepository;
         }
 
 
-        public async Task<SoccerPitchReservation> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long? companyUserId, long soccerPitchPlanId, Guid? personCompanyId, ApplicationEnum application)
+        public async Task<SoccerPitchReservationResponse> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long? companyUserId, long soccerPitchPlanId, Guid? personCompanyId, ApplicationEnum application)
         {
             var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
                 throw new BussinessException("Não foi encontrado o plano ou a quadra.");
-
+            SoccerPitchReservationResponse response = new SoccerPitchReservationResponse();
             //TODO - adicionar Campo na empresa e informar o fuso horário 
             var currentDateTime = DateTime.UtcNow.AddHours(-3);
 
@@ -80,6 +87,10 @@ namespace EasySoccer.BLL
             if (reservationAvaliable.IsAvaliable == false)
                 throw new BussinessException("Horário selecionado não esta disponivel");
 
+            var soccerPitchPlan = await _soccerPitchPlanRepository.GetAsync((int)soccerPitchPlanId);
+            if (soccerPitchPlan == null)
+                throw new BussinessException("Não foi encontrado o plano.");
+
             var soccerPitchReservation = new SoccerPitchReservation
             {
                 Id = Guid.NewGuid(),
@@ -94,6 +105,16 @@ namespace EasySoccer.BLL
                 Application = application,
                 Interval = selectedSoccerPitch.Interval
             };
+            if (soccerPitchPlan.IdPlanGenerationConfig.HasValue)
+            {
+                var planGeneration = await _planGenerationConfigRepository.GetAsync(soccerPitchPlan.IdPlanGenerationConfig.Value);
+                if (planGeneration != null)
+                {
+                    var generatedReservations = this.GenerateReservations(soccerPitchPlan, soccerPitchReservation, selectedSoccerPitch, planGeneration);
+                    response.ChildReservations = generatedReservations.Reservations;
+                }
+            }
+
             var company = await _companyRepository.GetAsync(selectedSoccerPitch.CompanyId);
             if (company == null)
                 throw new BussinessException("Empresa não encontrada.");
@@ -162,7 +183,8 @@ namespace EasySoccer.BLL
                     await _companyUserNotificationBLL.CreateCompanyUserNotificationAsync(item.Id, "Novo horário agendado.", message, Entities.Enum.NotificationTypeEnum.NewReservation, data);
                 }
             }
-            return soccerPitchReservation;
+            response.Id = soccerPitchReservation.Id;
+            return response;
         }
 
         public async Task<List<SoccerPitchReservation>> GetAsync(DateTime date, long companyId, int page, int pageSize)
@@ -579,6 +601,61 @@ namespace EasySoccer.BLL
             await _soccerPitchReservationRepository.Edit(reservation);
             await _dbContext.SaveChangesAsync();
             //TODO notificar person se status é confirmado ou cancelado
+            return response;
+        }
+
+        private ReservationsGeneratedDTO GenerateReservations(SoccerPitchPlan soccerPitchPlan, SoccerPitchReservation originReservation, SoccerPitch soccerPitch, PlanGenerationConfig planGenerationConfig)
+        {
+            ReservationsGeneratedDTO response = new ReservationsGeneratedDTO();
+            response.OriginReservation = new ReservationsGenerated();
+            response.OriginReservation.SelectedDateStart = originReservation.SelectedDateStart;
+            response.OriginReservation.SelectedDateEnd = originReservation.SelectedDateEnd;
+            response.OriginReservation.SoccerPitchId = (int)originReservation.SoccerPitchId;
+            response.OriginReservation.SoccerPitchName = soccerPitch.Name;
+            response.OriginReservation.SoccerPitchPlanId = soccerPitchPlan.Id;
+            response.OriginReservation.SoccerPitchPlanName = soccerPitchPlan.Name;
+            if (planGenerationConfig.IntervalBetweenReservations > 0)
+            {
+                response.Reservations = new List<ReservationsGenerated>();
+                response.ReservationsEntity = new List<SoccerPitchReservation>();
+
+                bool continueGenerating = true;
+                while (continueGenerating)
+                {
+                    var dateStart = originReservation.SelectedDateStart.AddDays(planGenerationConfig.IntervalBetweenReservations);
+                    var dateEnd = dateStart.AddHours(soccerPitch.Interval.HasValue ? soccerPitch.Interval.Value : 60);
+                    var reservation = new SoccerPitchReservation
+                    {
+                        SoccerPitchId = soccerPitch.Id,
+                        CreatedDate = DateTime.UtcNow,
+                        Id = Guid.NewGuid(),
+                        SelectedDateStart = dateStart,
+                        SelectedDateEnd = dateEnd,
+                        Status = originReservation.Status,
+                        PersonCompanyId = originReservation.PersonCompanyId,
+                        SoccerPitchSoccerPitchPlanId = originReservation.SoccerPitchSoccerPitchPlanId,
+                        Application = originReservation.Application,
+                        Interval = originReservation.Interval,
+                        OringinReservationId = originReservation.Id
+                    };
+                    response.ReservationsEntity.Add(reservation);
+                    response.Reservations.Add(new ReservationsGenerated
+                    {
+                        SelectedDateEnd = reservation.SelectedDateEnd,
+                        SelectedDateStart = reservation.SelectedDateStart,
+                        SoccerPitchId = (int)reservation.SoccerPitchId,
+                        SoccerPitchName = soccerPitch.Name,
+                        SoccerPitchPlanId = soccerPitchPlan.Id,
+                        SoccerPitchPlanName = soccerPitchPlan.Name
+                    });
+                    if (planGenerationConfig.LimitType == LimitTypeEnum.DaysAfterFirstReservation)
+                        continueGenerating = (reservation.SelectedDateStart - originReservation.SelectedDateStart).TotalDays <= planGenerationConfig.LimitQuantity;
+                    else if (planGenerationConfig.LimitType == LimitTypeEnum.TotalReservations)
+                        continueGenerating = response.ReservationsEntity.Count <= planGenerationConfig.LimitQuantity;
+
+                }
+
+            }
             return response;
         }
     }

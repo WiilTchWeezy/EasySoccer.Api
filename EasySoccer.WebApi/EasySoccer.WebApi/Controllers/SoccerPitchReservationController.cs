@@ -156,18 +156,7 @@ namespace EasySoccer.WebApi.Controllers
                 var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, new MobileUser(HttpContext).PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, null, request.SoccerPitchPlanId, null, application);
                 return Ok(new
                 {
-                    Id = reservation.Id,
-                    SoccerPitchId = reservation.SoccerPitchId,
-                    CreatedDate = reservation.CreatedDate,
-                    SelectedDate = reservation.SelectedDateStart,
-                    SelectedHourStart = reservation.SelectedDateStart.TimeOfDay,
-                    SelectedHourEnd = reservation.SelectedDateEnd.TimeOfDay,
-                    Status = (int)reservation.Status,
-                    StatusChangedUserId = reservation.StatusChangedUserId,
-                    Note = reservation.Note,
-                    SoccerPitchSoccerPitchPlanId = reservation.SoccerPitchSoccerPitchPlanId,
-                    SoccerPitchName = reservation.SoccerPitch?.Name,
-                    UserName = reservation.PersonCompany?.Name
+                    Id = reservation.Id
                 });
             }
             catch (Exception e)
