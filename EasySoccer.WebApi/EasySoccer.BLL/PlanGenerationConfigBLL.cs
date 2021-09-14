@@ -20,7 +20,7 @@ namespace EasySoccer.BLL
             _planGenerationConfigRepository = planGenerationConfigRepository;
         }
 
-        public async Task<PlanGenerationConfig> CreateAsync(string name, int intervalBetweenReservations, int limitType, int limitQuantity)
+        public async Task<PlanGenerationConfig> CreateAsync(string name, int intervalBetweenReservations, int limitType, int limitQuantity, long companyId)
         {
             var planGenerationConfig = new PlanGenerationConfig
             {
@@ -28,16 +28,22 @@ namespace EasySoccer.BLL
                 IntervalBetweenReservations = intervalBetweenReservations,
                 LimitQuantity = limitQuantity,
                 Name = name,
-                LimitType = (Entities.Enum.LimitTypeEnum)limitType
+                LimitType = (Entities.Enum.LimitTypeEnum)limitType,
+                CompanyId = companyId
             };
             await _planGenerationConfigRepository.Create(planGenerationConfig);
             await _dbContext.SaveChangesAsync();
             return planGenerationConfig;
         }
 
-        public Task<List<PlanGenerationConfig>> GetAsync(int page, int pageSize)
+        public Task<List<PlanGenerationConfig>> GetAsync(long companyId, int page, int pageSize)
         {
-            return _planGenerationConfigRepository.GetAsync(page, pageSize);
+            return _planGenerationConfigRepository.GetAsync(companyId, page, pageSize);
+        }
+
+        public Task<int> GetTotalAsync(long companyId)
+        {
+            return _planGenerationConfigRepository.GetTotalAsync(companyId);
         }
 
         public async Task<PlanGenerationConfig> UpdateAsync(long planGenerationConfig, string name, int intervalBetweenReservations, int limitType, int limitQuantity)

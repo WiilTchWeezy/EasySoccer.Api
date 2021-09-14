@@ -21,10 +21,15 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.PlanGenerationConfigQuery.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
-        public Task<List<PlanGenerationConfig>> GetAsync(int page, int pageSize)
+        public Task<List<PlanGenerationConfig>> GetAsync(long companyId, int page, int pageSize)
         {
-            return _dbContext.PlanGenerationConfigQuery.Skip((page - 1) * pageSize)
+            return _dbContext.PlanGenerationConfigQuery.Where(x => x.CompanyId == companyId).Skip((page - 1) * pageSize)
                 .Take(pageSize).ToListAsync();
+        }
+
+        public Task<int> GetTotalAsync(long companyId)
+        {
+            return _dbContext.PlanGenerationConfigQuery.Where(x => x.CompanyId == companyId).CountAsync();
         }
     }
 }

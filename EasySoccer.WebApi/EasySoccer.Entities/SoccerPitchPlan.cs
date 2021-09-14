@@ -25,7 +25,7 @@ namespace EasySoccer.Entities
         [StringLength(400)]
         public string Description { get; set; }
 
-        public int? IdPlanGenerationConfig { get; set; }
+        public long? IdPlanGenerationConfig { get; set; }
 
         [Required]
         public bool ShowToUser { get; set; }

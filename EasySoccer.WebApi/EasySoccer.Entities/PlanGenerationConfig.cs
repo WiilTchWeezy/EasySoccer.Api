@@ -22,5 +22,7 @@ namespace EasySoccer.Entities
         public int LimitQuantity { get; set; }
         [Required]
         public DateTime CreatedDate { get; set; }
+        [Required]
+        public long CompanyId { get; set; }
     }
 }
