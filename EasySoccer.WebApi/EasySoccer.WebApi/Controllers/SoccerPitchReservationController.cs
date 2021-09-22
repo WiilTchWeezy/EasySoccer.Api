@@ -109,7 +109,7 @@ namespace EasySoccer.WebApi.Controllers
             try
             {
                 var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, request.PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, new CurrentUser(HttpContext).UserId, request.SoccerPitchPlanId, request.PersonCompanyId, request.Application);
-                return Ok(new { Id = reservation.Id });
+                return Ok(new { Id = reservation.Id, reservation.ChildReservations });
             }
             catch (Exception e)
             {
@@ -156,7 +156,8 @@ namespace EasySoccer.WebApi.Controllers
                 var reservation = await _uow.SoccerPitchReservationBLL.CreateAsync(request.SoccerPitchId, new MobileUser(HttpContext).PersonId, request.SelectedDate, request.HourStart, request.HourEnd, request.Note, null, request.SoccerPitchPlanId, null, application);
                 return Ok(new
                 {
-                    Id = reservation.Id
+                    Id = reservation.Id,
+                    reservation.ChildReservations
                 });
             }
             catch (Exception e)

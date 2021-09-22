@@ -22,7 +22,7 @@ namespace EasySoccer.BLL
             _dbContext = dbContext;
         }
 
-        public async Task<SoccerPitchPlan> CreateAsync(string name, decimal value, long companyId, string description, long? idPlanGenerationConfig)
+        public async Task<SoccerPitchPlan> CreateAsync(string name, decimal value, long companyId, string description, long? idPlanGenerationConfig, bool showToUser)
         {
             var soccerPitchPlan = new SoccerPitchPlan
             {
@@ -30,7 +30,8 @@ namespace EasySoccer.BLL
                 Value = value,
                 CompanyId = companyId,
                 Description = description,
-                IdPlanGenerationConfig = idPlanGenerationConfig
+                IdPlanGenerationConfig = idPlanGenerationConfig,
+                ShowToUser = showToUser
             };
             await _soccerPitchPlanRepository.Create(soccerPitchPlan);
             await _dbContext.SaveChangesAsync();
@@ -52,7 +53,7 @@ namespace EasySoccer.BLL
             return _soccerPitchPlanRepository.GetTotalAsync(companyId);
         }
 
-        public async Task<SoccerPitchPlan> UpdateAsync(int id, string name, decimal value, string description, long? idPlanGenerationConfig)
+        public async Task<SoccerPitchPlan> UpdateAsync(int id, string name, decimal value, string description, long? idPlanGenerationConfig, bool showToUser)
         {
             var soccerPitchPlan = await _soccerPitchPlanRepository.GetAsync(id);
             if (soccerPitchPlan == null)
@@ -60,6 +61,7 @@ namespace EasySoccer.BLL
             soccerPitchPlan.Name = name;
             soccerPitchPlan.Value = value;
             soccerPitchPlan.IdPlanGenerationConfig = idPlanGenerationConfig;
+            soccerPitchPlan.ShowToUser = showToUser;
             if (!string.IsNullOrEmpty(description))
                 soccerPitchPlan.Description = description;
             await _soccerPitchPlanRepository.Edit(soccerPitchPlan);

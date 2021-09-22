@@ -22,8 +22,8 @@ namespace EasySoccer.WebApi.Controllers
             _uow = uow;
         }
 
-        [Route("get"), HttpPost]
-        public async Task<IActionResult> GetAsync([FromBody] GetBaseRequest request)
+        [Route("get"), HttpGet]
+        public async Task<IActionResult> GetAsync([FromQuery] GetBaseRequest request)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace EasySoccer.WebApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.ToString());
+                return BadRequest(new { message = e.Message });
             }
         }
     }

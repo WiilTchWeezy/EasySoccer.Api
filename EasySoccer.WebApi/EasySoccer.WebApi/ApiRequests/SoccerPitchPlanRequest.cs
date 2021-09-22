@@ -14,5 +14,6 @@ namespace EasySoccer.WebApi.ApiRequests
         public decimal Value { get; set; }
         public string Description { get; set; }
         public long? IdPlanGenerationConfig { get; set; }
+        public bool ShowToUser { get; set; }
     }
 }

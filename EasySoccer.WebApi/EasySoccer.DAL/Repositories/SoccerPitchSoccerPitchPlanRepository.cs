@@ -26,7 +26,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<SoccerPitchSoccerPitchPlan>> GetPlansAsync(long soccerPitch)
         {
-            return _dbContext.SoccerPitchSoccerPitchPlanQuery.Include(x => x.SoccerPitchPlan).Where(x => x.SoccerPitchId == soccerPitch).ToListAsync();
+            return _dbContext.SoccerPitchSoccerPitchPlanQuery.Include(x => x.SoccerPitchPlan).Where(x => x.SoccerPitchId == soccerPitch && x.SoccerPitchPlan.ShowToUser).ToListAsync();
         }
     }
 }
