@@ -1,4 +1,6 @@
-﻿using EasySoccer.WebApi.ApiRequests;
+﻿using EasySoccer.BLL.Helper;
+using EasySoccer.Entities.Enum;
+using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.ApiRequests.Base;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
@@ -38,10 +40,25 @@ namespace EasySoccer.WebApi.Controllers
                         x.IntervalBetweenReservations,
                         x.LimitQuantity,
                         x.LimitType,
+                        LimitTypeDescription = EnumHelper.Instance.GetEnumDescription(x.LimitType),
                         x.Name
                     }).ToArray(),
                     Total = total
                 });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+        }
+
+        [Route("getLimitOptions"), HttpGet]
+        public async Task<IActionResult> GetLimitOptionsAsync([FromQuery] GetBaseRequest request)
+        {
+            try
+            {
+                var values = EnumHelper.Instance.GetEnumDictionary<LimitTypeEnum>();
+                return Ok(values.ToArray());
             }
             catch (Exception e)
             {

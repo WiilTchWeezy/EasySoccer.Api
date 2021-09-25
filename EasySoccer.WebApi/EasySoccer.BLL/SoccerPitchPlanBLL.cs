@@ -15,7 +15,7 @@ namespace EasySoccer.BLL
         private ISoccerPitchPlanRepository _soccerPitchPlanRepository;
         private ISoccerPitchSoccerPitchPlanRepository _soccerPitchSoccerPitchPlanRepository;
         private IEasySoccerDbContext _dbContext;
-        public SoccerPitchPlanBLL(IEasySoccerDbContext dbContext,ISoccerPitchPlanRepository soccerPitchPlanRepository, ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository)
+        public SoccerPitchPlanBLL(IEasySoccerDbContext dbContext, ISoccerPitchPlanRepository soccerPitchPlanRepository, ISoccerPitchSoccerPitchPlanRepository soccerPitchSoccerPitchPlanRepository)
         {
             _soccerPitchPlanRepository = soccerPitchPlanRepository;
             _soccerPitchSoccerPitchPlanRepository = soccerPitchSoccerPitchPlanRepository;
@@ -30,7 +30,7 @@ namespace EasySoccer.BLL
                 Value = value,
                 CompanyId = companyId,
                 Description = description,
-                IdPlanGenerationConfig = idPlanGenerationConfig,
+                IdPlanGenerationConfig = idPlanGenerationConfig.HasValue && idPlanGenerationConfig.Value > 0 ? (long?)idPlanGenerationConfig.Value : null,
                 ShowToUser = showToUser
             };
             await _soccerPitchPlanRepository.Create(soccerPitchPlan);
@@ -60,7 +60,8 @@ namespace EasySoccer.BLL
                 throw new NotFoundException(soccerPitchPlan, id);
             soccerPitchPlan.Name = name;
             soccerPitchPlan.Value = value;
-            soccerPitchPlan.IdPlanGenerationConfig = idPlanGenerationConfig;
+            if (idPlanGenerationConfig != null && idPlanGenerationConfig > 0)
+                soccerPitchPlan.IdPlanGenerationConfig = idPlanGenerationConfig;
             soccerPitchPlan.ShowToUser = showToUser;
             if (!string.IsNullOrEmpty(description))
                 soccerPitchPlan.Description = description;

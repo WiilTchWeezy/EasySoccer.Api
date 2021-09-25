@@ -22,9 +22,9 @@ namespace EasySoccer.WebApi.Controllers
         {
             _uow = uow;
         }
-        
+
         [Route("get"), HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]GetBaseRequest request)
+        public async Task<IActionResult> GetAsync([FromQuery] GetBaseRequest request)
         {
             try
             {
@@ -35,20 +35,22 @@ namespace EasySoccer.WebApi.Controllers
                         x.Id,
                         x.Name,
                         x.Value,
-                        x.Description
+                        x.Description,
+                        x.IdPlanGenerationConfig,
+                        x.ShowToUser
                     }).ToList(),
                     Total = await _uow.SoccerPitchPlanBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId)
-                }) ;
+                });
             }
             catch (Exception e)
             {
                 return BadRequest(new { message = e.Message });
             }
         }
-        
+
         [AllowAnonymous]
         [Route("getbysoccerpitch"), HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]long soccerPitchId)
+        public async Task<IActionResult> GetAsync([FromQuery] long soccerPitchId)
         {
             try
             {
@@ -58,7 +60,9 @@ namespace EasySoccer.WebApi.Controllers
                     x.SoccerPitchPlan.Name,
                     x.SoccerPitchPlan.Value,
                     x.SoccerPitchPlan.Description,
-                    x.IsDefault
+                    x.IsDefault,
+                    x.SoccerPitchPlan.IdPlanGenerationConfig,
+                    x.SoccerPitchPlan.ShowToUser
                 }).ToList());
             }
             catch (Exception e)
@@ -66,12 +70,12 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(new { message = e.Message });
             }
         }
-        
+
         [Route("post"), HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]SoccerPitchPlanRequest request)
+        public async Task<IActionResult> PostAsync([FromBody] SoccerPitchPlanRequest request)
         {
             try
-            {                
+            {
                 return Ok(await _uow.SoccerPitchPlanBLL.CreateAsync(request.Name, request.Value, new CurrentUser(HttpContext).CompanyId, request.Description, request.IdPlanGenerationConfig, request.ShowToUser));
             }
             catch (Exception e)
@@ -79,12 +83,12 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(new { message = e.Message });
             }
         }
-        
+
         [Route("patch"), HttpPatch]
-        public async Task<IActionResult> PatchAsync([FromBody]SoccerPitchPlanRequest request)
+        public async Task<IActionResult> PatchAsync([FromBody] SoccerPitchPlanRequest request)
         {
             try
-            {                
+            {
                 return Ok(await _uow.SoccerPitchPlanBLL.UpdateAsync(request.id, request.Name, request.Value, request.Description, request.IdPlanGenerationConfig, request.ShowToUser));
             }
             catch (Exception e)

@@ -3,6 +3,7 @@
     public enum LimitTypeEnum
     {
         DaysAfterFirstReservation = 1,
-        TotalReservations = 2
+        TotalReservations = 2,
+        FillCurrentMonth = 3,
     }
 }

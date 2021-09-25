@@ -24,5 +24,6 @@ namespace EasySoccer.BLL.Infra.DTO
         public string SoccerPitchName { get; set; }
         public int SoccerPitchPlanId { get; set; }
         public string SoccerPitchPlanName { get; set; }
+        public bool InsertedSucess { get; set; }
     }
 }

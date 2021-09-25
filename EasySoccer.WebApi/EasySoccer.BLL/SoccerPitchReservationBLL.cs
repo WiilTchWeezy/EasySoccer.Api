@@ -66,6 +66,7 @@ namespace EasySoccer.BLL
 
         public async Task<SoccerPitchReservationResponse> CreateAsync(long soccerPitchId, Guid? personId, DateTime selectedDate, TimeSpan hourStart, TimeSpan hourFinish, string note, long? companyUserId, long soccerPitchPlanId, Guid? personCompanyId, ApplicationEnum application)
         {
+            ReservationsGeneratedDTO generatedReservations = null;
             var soccerPicthPlanRelation = await _soccerPitchSoccerPitchPlanRepository.GetAsync(soccerPitchId, soccerPitchPlanId);
             if (soccerPicthPlanRelation == null)
                 throw new BussinessException("Não foi encontrado o plano ou a quadra.");
@@ -105,15 +106,6 @@ namespace EasySoccer.BLL
                 Application = application,
                 Interval = selectedSoccerPitch.Interval
             };
-            if (soccerPitchPlan.IdPlanGenerationConfig.HasValue)
-            {
-                var planGeneration = await _planGenerationConfigRepository.GetAsync(soccerPitchPlan.IdPlanGenerationConfig.Value);
-                if (planGeneration != null)
-                {
-                    var generatedReservations = this.GenerateReservations(soccerPitchPlan, soccerPitchReservation, selectedSoccerPitch, planGeneration);
-                    response.ChildReservations = generatedReservations.Reservations;
-                }
-            }
 
             var company = await _companyRepository.GetAsync(selectedSoccerPitch.CompanyId);
             if (company == null)
@@ -171,6 +163,24 @@ namespace EasySoccer.BLL
             var validationResponse = ValidationHelper.Instance.Validate(soccerPitchReservation);
             if (validationResponse.IsValid == false)
                 throw new BussinessException(validationResponse.ErrorFormatted);
+            if (soccerPitchPlan.IdPlanGenerationConfig.HasValue)
+            {
+                var planGeneration = await _planGenerationConfigRepository.GetAsync(soccerPitchPlan.IdPlanGenerationConfig.Value);
+                if (planGeneration != null)
+                {
+                    generatedReservations = await this.GenerateReservations(soccerPitchPlan, soccerPitchReservation, selectedSoccerPitch, planGeneration);
+                    response.ChildReservations = generatedReservations;
+                }
+            }
+            if (generatedReservations != null && generatedReservations.ReservationsEntity != null && generatedReservations.ReservationsEntity.Count > 0)
+            {
+                foreach (var item in generatedReservations.ReservationsEntity)
+                {
+                    item.Status = soccerPitchReservation.Status;
+                    await _soccerPitchReservationRepository.Create(item);
+                }
+                response.ChildReservations.ReservationsEntity = null;
+            }
             await _soccerPitchReservationRepository.Create(soccerPitchReservation);
             await _dbContext.SaveChangesAsync();
             if (application == ApplicationEnum.MobileUser || application == ApplicationEnum.WebAppUser)
@@ -604,7 +614,7 @@ namespace EasySoccer.BLL
             return response;
         }
 
-        private ReservationsGeneratedDTO GenerateReservations(SoccerPitchPlan soccerPitchPlan, SoccerPitchReservation originReservation, SoccerPitch soccerPitch, PlanGenerationConfig planGenerationConfig)
+        private async Task<ReservationsGeneratedDTO> GenerateReservations(SoccerPitchPlan soccerPitchPlan, SoccerPitchReservation originReservation, SoccerPitch soccerPitch, PlanGenerationConfig planGenerationConfig)
         {
             ReservationsGeneratedDTO response = new ReservationsGeneratedDTO();
             response.OriginReservation = new ReservationsGenerated();
@@ -620,10 +630,13 @@ namespace EasySoccer.BLL
                 response.ReservationsEntity = new List<SoccerPitchReservation>();
 
                 bool continueGenerating = true;
+                DateTime lastReservationDateStart = originReservation.SelectedDateStart;
+                var originReservationInterval = (originReservation.SelectedDateEnd - originReservation.SelectedDateStart).TotalMinutes;
                 while (continueGenerating)
                 {
-                    var dateStart = originReservation.SelectedDateStart.AddDays(planGenerationConfig.IntervalBetweenReservations);
-                    var dateEnd = dateStart.AddHours(soccerPitch.Interval.HasValue ? soccerPitch.Interval.Value : 60);
+                    lastReservationDateStart = lastReservationDateStart.AddDays(planGenerationConfig.IntervalBetweenReservations);
+                    var dateStart = lastReservationDateStart;
+                    var dateEnd = dateStart.AddMinutes(originReservationInterval);
                     var reservation = new SoccerPitchReservation
                     {
                         SoccerPitchId = soccerPitch.Id,
@@ -638,20 +651,29 @@ namespace EasySoccer.BLL
                         Interval = originReservation.Interval,
                         OringinReservationId = originReservation.Id
                     };
-                    response.ReservationsEntity.Add(reservation);
-                    response.Reservations.Add(new ReservationsGenerated
+                    var avaliableResponse = await CheckReservationIsAvaliable(reservation.SelectedDateStart, reservation.SoccerPitchId, reservation.SelectedDateEnd);
+                    if(avaliableResponse.IsAvaliable)
+                        response.ReservationsEntity.Add(reservation);
+                    var reservationDTO = new ReservationsGenerated
                     {
                         SelectedDateEnd = reservation.SelectedDateEnd,
                         SelectedDateStart = reservation.SelectedDateStart,
                         SoccerPitchId = (int)reservation.SoccerPitchId,
                         SoccerPitchName = soccerPitch.Name,
                         SoccerPitchPlanId = soccerPitchPlan.Id,
-                        SoccerPitchPlanName = soccerPitchPlan.Name
-                    });
+                        SoccerPitchPlanName = soccerPitchPlan.Name,
+                        InsertedSucess = avaliableResponse.IsAvaliable
+                    };
+                    response.Reservations.Add(reservationDTO);
                     if (planGenerationConfig.LimitType == LimitTypeEnum.DaysAfterFirstReservation)
-                        continueGenerating = (reservation.SelectedDateStart - originReservation.SelectedDateStart).TotalDays <= planGenerationConfig.LimitQuantity;
+                        continueGenerating = (reservation.SelectedDateStart - originReservation.SelectedDateStart).TotalDays < planGenerationConfig.LimitQuantity;
                     else if (planGenerationConfig.LimitType == LimitTypeEnum.TotalReservations)
-                        continueGenerating = response.ReservationsEntity.Count <= planGenerationConfig.LimitQuantity;
+                        continueGenerating = response.Reservations.Count < planGenerationConfig.LimitQuantity;
+                    else if (planGenerationConfig.LimitType == LimitTypeEnum.FillCurrentMonth)
+                    {
+                        var nextDate = reservationDTO.SelectedDateStart.AddDays(planGenerationConfig.IntervalBetweenReservations);
+                        continueGenerating = nextDate.Month + nextDate.Year == originReservation.SelectedDateStart.Month + originReservation.SelectedDateStart.Year;
+                    }
 
                 }
 

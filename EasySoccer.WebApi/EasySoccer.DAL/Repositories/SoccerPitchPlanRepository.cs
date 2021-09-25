@@ -19,7 +19,7 @@ namespace EasySoccer.DAL.Repositories
         public Task<List<SoccerPitchPlan>> GetAsync(long companyId, int page, int pageSize)
         {
             return _dbContext.SoccerPitchPlanQuery
-                .Where(x => x.CompanyId == companyId)
+                .Where(x => x.CompanyId == companyId).OrderBy(x => x.Name)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize).ToListAsync();
         }

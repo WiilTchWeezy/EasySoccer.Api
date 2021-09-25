@@ -7,6 +7,6 @@ namespace EasySoccer.BLL.Infra.DTO
     {
         public Guid Id { get; set; }
 
-        public List<ReservationsGenerated> ChildReservations { get; set; }
+        public ReservationsGeneratedDTO ChildReservations { get; set; }
     }
 }
