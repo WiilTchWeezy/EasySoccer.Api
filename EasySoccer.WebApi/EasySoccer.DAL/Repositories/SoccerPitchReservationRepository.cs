@@ -143,5 +143,12 @@ namespace EasySoccer.DAL.Repositories
             return _dbContext.SoccerPitchReservationQuery.Include(x => x.SoccerPitch).Include(x => x.PersonCompany)
                 .Where(x => x.SoccerPitch.CompanyId == companyId && x.SelectedDateStart.Date == selectedDate.Date).OrderBy(x => x.SoccerPitch.Name).ToListAsync();
         }
+
+        public Task<List<SoccerPitchReservation>> GetByOriginReservationAsync(Guid value)
+        {
+            return _dbContext.SoccerPitchReservationQuery
+                .Include(x => x.PersonCompany).Include(x => x.SoccerPitch).Include(x => x.SoccerPitch.Company)
+                .Where(x => x.OringinReservationId == value).ToListAsync();
+        }
     }
 }

@@ -286,5 +286,11 @@ namespace EasySoccer.WebApi.Controllers
             statusList.Add(new { Key = StatusEnum.Concluded, Text = EnumHelper.Instance.GetStatusEnumDescription(StatusEnum.Concluded) });
             return Ok(statusList);
         }
+
+        [Route("getreservationgenerated"), HttpGet]
+        public async Task<IActionResult> GetReservationGeneratedAsync(Guid reservationId)
+        {
+            return Ok(await _uow.SoccerPitchReservationBLL.GetReservationsGeneratedAsync(reservationId));
+        }
     }
 }

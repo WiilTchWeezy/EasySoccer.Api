@@ -20,7 +20,7 @@ namespace EasySoccer.BLL.Infra.DTO
         }
         public DateTime SelectedDateStart { get; set; }
         public DateTime SelectedDateEnd { get; set; }
-        public int SoccerPitchId { get; set; }
+        public long SoccerPitchId { get; set; }
         public string SoccerPitchName { get; set; }
         public int SoccerPitchPlanId { get; set; }
         public string SoccerPitchPlanName { get; set; }

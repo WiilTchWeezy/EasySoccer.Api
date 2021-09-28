@@ -620,7 +620,7 @@ namespace EasySoccer.BLL
             response.OriginReservation = new ReservationsGenerated();
             response.OriginReservation.SelectedDateStart = originReservation.SelectedDateStart;
             response.OriginReservation.SelectedDateEnd = originReservation.SelectedDateEnd;
-            response.OriginReservation.SoccerPitchId = (int)originReservation.SoccerPitchId;
+            response.OriginReservation.SoccerPitchId = originReservation.SoccerPitchId;
             response.OriginReservation.SoccerPitchName = soccerPitch.Name;
             response.OriginReservation.SoccerPitchPlanId = soccerPitchPlan.Id;
             response.OriginReservation.SoccerPitchPlanName = soccerPitchPlan.Name;
@@ -652,13 +652,13 @@ namespace EasySoccer.BLL
                         OringinReservationId = originReservation.Id
                     };
                     var avaliableResponse = await CheckReservationIsAvaliable(reservation.SelectedDateStart, reservation.SoccerPitchId, reservation.SelectedDateEnd);
-                    if(avaliableResponse.IsAvaliable)
+                    if (avaliableResponse.IsAvaliable)
                         response.ReservationsEntity.Add(reservation);
                     var reservationDTO = new ReservationsGenerated
                     {
                         SelectedDateEnd = reservation.SelectedDateEnd,
                         SelectedDateStart = reservation.SelectedDateStart,
-                        SoccerPitchId = (int)reservation.SoccerPitchId,
+                        SoccerPitchId = reservation.SoccerPitchId,
                         SoccerPitchName = soccerPitch.Name,
                         SoccerPitchPlanId = soccerPitchPlan.Id,
                         SoccerPitchPlanName = soccerPitchPlan.Name,
@@ -677,6 +677,57 @@ namespace EasySoccer.BLL
 
                 }
 
+            }
+            return response;
+        }
+
+        public async Task<ReservationsGeneratedDTO> GetReservationsGeneratedAsync(Guid id)
+        {
+            var response = new ReservationsGeneratedDTO();
+            var reservation = await _soccerPitchReservationRepository.GetAsync(id, false, true);
+            if (reservation == null)
+                throw new BussinessException("Reserva não encontrada");
+            var reservations = new List<SoccerPitchReservation>();
+            if (reservation.OringinReservationId.HasValue)
+            {
+                var originReservation = await _soccerPitchReservationRepository.GetAsync(reservation.OringinReservationId.Value);
+                if (originReservation == null)
+                    throw new BussinessException("Reserva não encontrada");
+                response.OriginReservation = new ReservationsGenerated
+                {
+                    SelectedDateEnd = originReservation.SelectedDateEnd,
+                    SelectedDateStart = originReservation.SelectedDateStart,
+                    SoccerPitchId = originReservation.SoccerPitchId,
+                    SoccerPitchName = originReservation.SoccerPitch.Name,
+                    SoccerPitchPlanId = originReservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId,
+                    SoccerPitchPlanName = originReservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlan.Name
+                };
+                reservations = await _soccerPitchReservationRepository.GetByOriginReservationAsync(reservation.OringinReservationId.Value);
+            }
+            else
+            {
+                response.OriginReservation = new ReservationsGenerated
+                {
+                    SelectedDateEnd = reservation.SelectedDateEnd,
+                    SelectedDateStart = reservation.SelectedDateStart,
+                    SoccerPitchId = reservation.SoccerPitchId,
+                    SoccerPitchName = reservation.SoccerPitch.Name,
+                    SoccerPitchPlanId = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId,
+                    SoccerPitchPlanName = reservation.SoccerPitchSoccerPitchPlan.SoccerPitchPlan.Name
+                };
+                reservations = await _soccerPitchReservationRepository.GetByOriginReservationAsync(reservation.Id);
+            }
+            if (reservations != null && reservations.Count > 0)
+            {
+                response.Reservations = reservations.Select(x => new ReservationsGenerated
+                {
+                    SelectedDateEnd = x.SelectedDateEnd,
+                    SelectedDateStart = x.SelectedDateStart,
+                    SoccerPitchId = x.SoccerPitchId,
+                    SoccerPitchName = x.SoccerPitch.Name,
+                    SoccerPitchPlanId = x.SoccerPitchSoccerPitchPlan.SoccerPitchPlanId,
+                    SoccerPitchPlanName = x.SoccerPitchSoccerPitchPlan.SoccerPitchPlan.Name
+                }).ToList();
             }
             return response;
         }
