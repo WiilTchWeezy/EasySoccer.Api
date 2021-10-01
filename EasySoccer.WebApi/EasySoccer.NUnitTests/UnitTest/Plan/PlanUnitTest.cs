@@ -36,7 +36,7 @@ namespace EasySoccer.Test.UnitTest.Plan
         public void CreatePlan_Test()
         {
             var planBLL = new SoccerPitchPlanBLL(_dbContextMock.Object, new SoccerPitchPlanRepository(_dbContextMock.Object), new SoccerPitchSoccerPitchPlanRepository(_dbContextMock.Object));
-            var plan = planBLL.CreateAsync("Mensal", 120, 1, "Ganhe uma Skoll", null).GetAwaiter().GetResult();
+            var plan = planBLL.CreateAsync("Mensal", 120, 1, "Ganhe uma Skoll", null, false).GetAwaiter().GetResult();
             Assert.IsNotNull(plan);
         }
     }

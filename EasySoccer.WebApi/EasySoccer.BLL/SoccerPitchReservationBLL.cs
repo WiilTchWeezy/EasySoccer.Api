@@ -404,15 +404,15 @@ namespace EasySoccer.BLL
             return reservationChart;
         }
 
-        public Task<List<SoccerPitchReservation>> GetReservationsByMonthOrDay(int month, int? day, long companyId, int year, List<long> socerPitches)
+        public Task<List<SoccerPitchReservation>> GetReservationsByMonthOrDay(int month, int? day, long companyId, int year, List<long> socerPitches, List<int> status)
         {
             if (day.HasValue && day.Value > 0)
             {
-                return _soccerPitchReservationRepository.GetAsync(month, day.Value, companyId, socerPitches);
+                return _soccerPitchReservationRepository.GetAsync(month, day.Value, companyId, socerPitches, status);
             }
             else
             {
-                return _soccerPitchReservationRepository.GetAsync(month, companyId, year, socerPitches);
+                return _soccerPitchReservationRepository.GetAsync(month, companyId, year, socerPitches, status);
             }
         }
 

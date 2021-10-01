@@ -21,7 +21,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             _uow = uow;
         }
-        
+
         [Route("reservations"), HttpGet]
         public async Task<IActionResult> GetReservations()
         {
@@ -43,7 +43,7 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(e.ToString());
             }
         }
-        
+
         [Route("reservationschart"), HttpGet]
         public async Task<IActionResult> GetReservationsChart()
         {
@@ -58,15 +58,15 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("reservationscalendar"), HttpGet]
-        public async Task<IActionResult> GetReservationsCalendar([FromQuery]int month, [FromQuery]int year, [FromQuery]int? day = null, [FromQuery] string soccerPitchIds = null)
+        public async Task<IActionResult> GetReservationsCalendar([FromQuery] int month, [FromQuery] int year, [FromQuery] int? day = null, [FromQuery] string soccerPitchIds = null, [FromQuery] string status = null)
         {
             try
             {
                 List<long> soccerPitches = null;
-                if(string.IsNullOrEmpty(soccerPitchIds) == false)
+                if (string.IsNullOrEmpty(soccerPitchIds) == false)
                 {
                     var strIds = soccerPitchIds.Split(",");
-                    if(strIds != null && strIds.Length > 0)
+                    if (strIds != null && strIds.Length > 0)
                     {
                         soccerPitches = new List<long>();
                         foreach (var item in strIds)
@@ -77,7 +77,22 @@ namespace EasySoccer.WebApi.Controllers
                         }
                     }
                 }
-                var response = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day, new CurrentUser(this.HttpContext).CompanyId, year, soccerPitches);
+                List<int> selectedStatus = null;
+                if(string.IsNullOrEmpty(status) == false)
+                {
+                    var statusIds = status.Split(",");
+                    if(statusIds != null && statusIds.Length > 0)
+                    {
+                        selectedStatus = new List<int>();
+                        foreach (var item in statusIds)
+                        {
+                            int id = 0;
+                            if (int.TryParse(item, out id))
+                                selectedStatus.Add(id);
+                        }
+                    }
+                }
+                var response = await _uow.SoccerPitchReservationBLL.GetReservationsByMonthOrDay(month, day, new CurrentUser(this.HttpContext).CompanyId, year, soccerPitches, selectedStatus);
                 return Ok
                     (
                     response

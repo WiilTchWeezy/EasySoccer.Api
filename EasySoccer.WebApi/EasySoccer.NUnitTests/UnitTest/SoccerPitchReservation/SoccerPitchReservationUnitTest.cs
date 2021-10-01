@@ -88,7 +88,7 @@ namespace EasySoccer.Test.UnitTest.SoccerPitchReservation
             };
             CompanyBLL.SaveFormInputCompanyAsync(request).GetAwaiter().GetResult();
             var company = CompanyBLL.GetAsync(request.CompanyDocument).GetAwaiter().GetResult();
-            var soccerPitchPlan = SoccerPitchPlanBLL.CreateAsync("Plano Teste", 100, company.Id, "Descrição Teste", null).GetAwaiter().GetResult();
+            var soccerPitchPlan = SoccerPitchPlanBLL.CreateAsync("Plano Teste", 100, company.Id, "Descrição Teste", null, false).GetAwaiter().GetResult();
             if (soccerPitchPlan != null)
             {
                 var soccerPitch = SoccerPitchBLL.CreateAsync("Quadra Teste", "Descrição Teste", false, 14, company.Id, true, new BLL.Infra.DTO.SoccerPitchPlanRequest[] { new BLL.Infra.DTO.SoccerPitchPlanRequest { Id = soccerPitchPlan.Id, IsDefault = true } }, 1, 60, "", "").GetAwaiter().GetResult();
