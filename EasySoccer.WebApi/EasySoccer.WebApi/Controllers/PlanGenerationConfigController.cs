@@ -1,4 +1,5 @@
 ﻿using EasySoccer.BLL.Helper;
+using EasySoccer.BLL.Infra.Helpers;
 using EasySoccer.Entities.Enum;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.ApiRequests.Base;
