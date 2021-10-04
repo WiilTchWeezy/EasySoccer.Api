@@ -141,7 +141,7 @@ namespace EasySoccer.BLL
             return userToken;
         }
 
-        public async Task<CompanyFinancialRecord> PayAsync(PaymentRequest request, long companyUserId, long companyId)
+        public async Task<CompanyFinancialRecord> PayAsync(GatewayPaymentRequest request, long companyUserId, long companyId)
         {
             var companyUser = await _companyUserRepository.GetAsync(companyUserId);
             if (companyUser == null)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EasySoccer.BLL.Infra.Services.PaymentGateway.Request;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
@@ -134,7 +133,7 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("payment"), HttpPost]
-        public async Task<IActionResult> PaymentAsync([FromBody] PaymentRequest request)
+        public async Task<IActionResult> PaymentAsync([FromBody] BLL.Infra.Services.PaymentGateway.Request.GatewayPaymentRequest request)
         {
             try
             {                

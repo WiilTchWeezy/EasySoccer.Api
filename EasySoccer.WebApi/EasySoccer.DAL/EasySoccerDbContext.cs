@@ -62,6 +62,12 @@ namespace EasySoccer.DAL
         public DbSet<PlanGenerationConfig> PlanGenerationConfig { get; set; }
         public IQueryable<PlanGenerationConfig> PlanGenerationConfigQuery { get { return PlanGenerationConfig; } }
 
+        public DbSet<Payment> Payment { get; set; }
+        public IQueryable<Payment> PaymentQuery { get { return Payment; } }
+
+        public DbSet<FormOfPayment> FormOfPayment { get; set; }
+        public IQueryable<FormOfPayment> FormOfPaymentQuery { get { return FormOfPayment; } }
+
 
 
         #region Infra

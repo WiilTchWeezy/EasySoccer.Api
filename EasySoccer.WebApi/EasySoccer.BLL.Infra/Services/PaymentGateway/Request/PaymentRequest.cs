@@ -2,7 +2,7 @@
 
 namespace EasySoccer.BLL.Infra.Services.PaymentGateway.Request
 {
-    public class PaymentRequest
+    public class GatewayPaymentRequest
     {
         public string FinancialName { get; set; }
 

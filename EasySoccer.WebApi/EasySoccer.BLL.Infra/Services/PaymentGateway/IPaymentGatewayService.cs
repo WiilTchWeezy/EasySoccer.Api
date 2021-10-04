@@ -10,6 +10,6 @@ namespace EasySoccer.BLL.Infra.Services.PaymentGateway
 {
     public interface IPaymentGatewayService
     {
-        Task<TransactionResponse> PayAsync(PaymentRequest request, CompanyUser companyUser, decimal planValue, int installments, string stateCode, string cityName);
+        Task<TransactionResponse> PayAsync(GatewayPaymentRequest request, CompanyUser companyUser, decimal planValue, int installments, string stateCode, string cityName);
     }
 }

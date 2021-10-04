@@ -81,7 +81,7 @@ namespace EasySoccer.BLL.Services.PaymentGateway
             return cardResponseList;
         }
 
-        private async Task<Transaction> CreateTransactionAsync(decimal value, string cardHash, CompanyUser companyUser, PaymentRequest request, string stateCode, string cityName)
+        private async Task<Transaction> CreateTransactionAsync(decimal value, string cardHash, CompanyUser companyUser, GatewayPaymentRequest request, string stateCode, string cityName)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace EasySoccer.BLL.Services.PaymentGateway
         }
 
 
-        public async Task<TransactionResponse> PayAsync(PaymentRequest request, CompanyUser companyUser, decimal planValue, int installments, string cityName, string stateCode)
+        public async Task<TransactionResponse> PayAsync(GatewayPaymentRequest request, CompanyUser companyUser, decimal planValue, int installments, string cityName, string stateCode)
         {
             TransactionResponse transactionResponse = null;
             CardResponse card = null;
