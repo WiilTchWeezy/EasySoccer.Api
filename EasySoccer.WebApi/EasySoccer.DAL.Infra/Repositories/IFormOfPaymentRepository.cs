@@ -11,5 +11,6 @@ namespace EasySoccer.DAL.Infra.Repositories
         Task<List<FormOfPayment>> GetAsync(long companyId);
         Task<List<FormOfPayment>> GetAsync(long companyId, int page, int pageSize);
         Task<FormOfPayment> GetAsync(int idFormOfPayment);
+        Task<int> GetTotalAsync(long companyId);
     }
 }

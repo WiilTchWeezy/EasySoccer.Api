@@ -30,5 +30,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.FormOfPaymentQuery.Where(x => x.Id == idFormOfPayment).FirstOrDefaultAsync();
         }
+
+        public Task<int> GetTotalAsync(long companyId)
+        {
+            return _dbContext.FormOfPaymentQuery.OrderBy(x => x.Name).Where(x => x.CompanyId == companyId).CountAsync();
+        }
     }
 }

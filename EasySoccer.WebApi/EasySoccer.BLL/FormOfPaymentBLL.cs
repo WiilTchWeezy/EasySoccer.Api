@@ -48,11 +48,19 @@ namespace EasySoccer.BLL
             return _formOfPaymentRepository.GetAsync(companyId, pageSize, pageSize);
         }
 
-        public async Task<FormOfPayment> UpdateAsync(int formOfPaymentId, string name, bool active)
+        public Task<int> GetTotalAsync(long companyId)
+        {
+            return _formOfPaymentRepository.GetTotalAsync(companyId);
+        }
+
+        public async Task<FormOfPayment> UpdateAsync(int formOfPaymentId, string name, bool active, long companyId)
         {
             var formOfPayment = await _formOfPaymentRepository.GetAsync(formOfPaymentId);
             if (formOfPayment == null)
                 throw new BussinessException("Forma de pagamento não encontrada");
+            if(formOfPayment.CompanyId != companyId)
+                throw new BussinessException("Empresa não é válida");
+
             formOfPayment.Name = name;
             formOfPayment.Active = active;
             await _formOfPaymentRepository.Edit(formOfPayment);

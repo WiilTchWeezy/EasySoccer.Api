@@ -19,7 +19,7 @@ namespace EasySoccer.WebApi.Controllers
         private PaymentUoW _uow;
         public PaymentController(PaymentUoW uoW) : base(uoW)
         {
-            PaymentUoW _uow = uoW;
+            _uow = uoW;
         }
 
         [Route("post"), HttpPost]

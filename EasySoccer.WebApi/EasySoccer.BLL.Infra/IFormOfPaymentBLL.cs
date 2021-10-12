@@ -9,8 +9,9 @@ namespace EasySoccer.BLL.Infra
     public interface IFormOfPaymentBLL
     {
         Task<FormOfPayment> CreateAsync(string name, bool active, long companyId);
-        Task<FormOfPayment> UpdateAsync(int formOfPaymentId, string name, bool active);
+        Task<FormOfPayment> UpdateAsync(int formOfPaymentId, string name, bool active, long companyId);
         Task<List<FormOfPayment>> GetAsync(long companyId);
         Task<List<FormOfPayment>> GetAsync(int page, int pageSize, long companyId);
+        Task<int> GetTotalAsync(long companyId);
     }
 }
