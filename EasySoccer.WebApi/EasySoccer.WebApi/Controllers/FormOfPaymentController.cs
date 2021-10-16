@@ -54,7 +54,6 @@ namespace EasySoccer.WebApi.Controllers
             {
                 var data = await _uow.FormOfPaymentBLL.GetAsync(request.Page, request.PageSize, new CurrentUser(HttpContext).CompanyId);
                 var total = await _uow.FormOfPaymentBLL.GetTotalAsync(new CurrentUser(HttpContext).CompanyId);
-                //TODO - return pages total
                 return Ok(new
                 {
                     Data = data.Select(x => new
@@ -78,7 +77,7 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok((await _uow.FormOfPaymentBLL.GetAsync(new CurrentUser(HttpContext).CompanyId)).Select(x => new
+                return Ok((await _uow.FormOfPaymentBLL.GetAsync(new CurrentUser(HttpContext).CompanyId)).Where(x => x.Active).Select(x => new
                 {
                     x.Id,
                     x.Name,

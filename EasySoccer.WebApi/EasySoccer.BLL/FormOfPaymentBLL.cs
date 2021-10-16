@@ -45,7 +45,7 @@ namespace EasySoccer.BLL
 
         public Task<List<FormOfPayment>> GetAsync(int page, int pageSize, long companyId)
         {
-            return _formOfPaymentRepository.GetAsync(companyId, pageSize, pageSize);
+            return _formOfPaymentRepository.GetAsync(companyId, page, pageSize);
         }
 
         public Task<int> GetTotalAsync(long companyId)

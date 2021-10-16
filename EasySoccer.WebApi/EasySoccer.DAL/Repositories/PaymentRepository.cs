@@ -19,7 +19,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<Payment>> GetAsync(Guid soccerPitchReservationId)
         {
-            return _dbContext.PaymentQuery.Include(x => x.PersonCompany).Where(x => x.SoccerPitchReservationId == soccerPitchReservationId).OrderBy(x => x.CreatedDate).ToListAsync();
+            return _dbContext.PaymentQuery.Include(x => x.PersonCompany).Include(x => x.FormOfPayment).Where(x => x.SoccerPitchReservationId == soccerPitchReservationId).OrderBy(x => x.CreatedDate).ToListAsync();
         }
 
         public Task<Payment> GetAsync(long idPayment)

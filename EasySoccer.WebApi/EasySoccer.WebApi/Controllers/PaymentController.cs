@@ -53,16 +53,22 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok((await _uow.PaymentBLL.GetAsync(soccerPitchReservationId)).Select(x => new
+                var data = await _uow.PaymentBLL.GetAsync(soccerPitchReservationId);
+                return Ok(new
                 {
-                    x.Note,
-                    x.Id,
-                    x.PersonCompanyId,
-                    x.SoccerPitchReservationId,
-                    x.Value,
-                    x.PersonCompany.Name,
-                    x.CreatedDate
-                }).ToList());
+                    Total = data.Sum(x => x.Value),
+                    Data = data.Select(x => new
+                    {
+                        x.Note,
+                        x.Id,
+                        x.PersonCompanyId,
+                        x.SoccerPitchReservationId,
+                        x.Value,
+                        PersonCompanyName = x.PersonCompany != null ? x.PersonCompany.Name : "Sem Resp.",
+                        CreatedDate = x.CreatedDate.AddHours(-3),//TODO - Field on Company
+                        FormOfPaymentName = x.FormOfPayment?.Name
+                    }).ToList()
+                });
             }
             catch (Exception e)
             {
