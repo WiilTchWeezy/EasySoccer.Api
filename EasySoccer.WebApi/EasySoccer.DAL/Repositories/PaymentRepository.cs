@@ -26,5 +26,32 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.PaymentQuery.Where(x => x.Id == idPayment).FirstOrDefaultAsync();
         }
+
+        public Task<List<Payment>> GetAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment, int page, int pageSize)
+        {
+            var query = _dbContext.PaymentQuery;
+            if (startDate.HasValue)
+                query = query.Where(x => startDate.Value >= x.CreatedDate);
+            if(endDate.HasValue)
+                query = query.Where(x => endDate.Value <= x.CreatedDate);
+            if(formOfPayment.HasValue)
+                query = query.Where(x => x.FormOfPaymentId == formOfPayment);
+
+            return query.Include(x => x.FormOfPayment).Include(x => x.PersonCompany).Include(x => x.SoccerPitchReservation)
+                .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        }
+
+        public Task<int> GetTotalAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment)
+        {
+            var query = _dbContext.PaymentQuery;
+            if (startDate.HasValue)
+                query = query.Where(x => startDate.Value >= x.CreatedDate);
+            if (endDate.HasValue)
+                query = query.Where(x => endDate.Value <= x.CreatedDate);
+            if (formOfPayment.HasValue)
+                query = query.Where(x => x.FormOfPaymentId == formOfPayment);
+
+            return query.CountAsync();
+        }
     }
 }

@@ -10,5 +10,7 @@ namespace EasySoccer.DAL.Infra.Repositories
     {
         Task<List<Payment>> GetAsync(Guid soccerPitchReservationId);
         Task<Payment> GetAsync(long idPayment);
+        Task<List<Payment>> GetAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment, int page, int pageSize);
+        Task<int> GetTotalAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment);
     }
 }

@@ -75,5 +75,35 @@ namespace EasySoccer.WebApi.Controllers
                 return BadRequest(new { message = e.Message });
             }
         }
+
+        [Route("getByFilter"), HttpGet]
+        public async Task<IActionResult> GetByFilter([FromQuery] GetPaymentByFilterRequest request)
+        {
+            try
+            {
+                var data = await _uow.PaymentBLL.GetAsync(request.StartDate, request.EndDate, request.FormOfPayment, request.Page, request.PageSize);
+                var total = await _uow.PaymentBLL.GetTotalAsync(request.StartDate, request.EndDate, request.FormOfPayment);
+                return Ok(new
+                {
+                    Data = data.Select(x => new
+                    {
+                        CreatedDate = x.CreatedDate.AddHours(-3),
+                        x.Id,
+                        x.Note,
+                        x.SoccerPitchReservationId,
+                        x.Value,
+                        x.PersonCompanyId,
+                        PersonCompanyName = x.PersonCompany != null ? x.PersonCompany.Name : "Sem Resp.",
+                        FormOfPaymentName = x.FormOfPayment?.Name,
+
+                    }).ToList(),
+                    Total = total
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+        }
     }
 }
