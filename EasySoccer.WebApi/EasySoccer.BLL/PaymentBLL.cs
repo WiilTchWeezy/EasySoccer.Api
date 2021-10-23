@@ -25,6 +25,20 @@ namespace EasySoccer.BLL
             _formOfPaymentRepository = formOfPaymentRepository;
             _dbContext = dbContext;
         }
+
+        public async Task<Payment> CancelAsync(long idPayment, long idCompany)
+        {
+            var payment = await _paymentRepository.GetAsync(idPayment);
+            if (payment == null)
+                throw new BussinessException("Pagamento não encontrado.");
+            if(payment.CompanyId != idCompany)
+                throw new BussinessException("Pagamento não pertence a sua empresa.");
+            payment.Status = Entities.Enum.PaymentStatusEnum.Canceled;
+            await _paymentRepository.Edit(payment);
+            await _dbContext.SaveChangesAsync();
+            return payment;
+        }
+
         public async Task<Payment> CreateAsync(decimal value, Guid soccerPitchReservationId, Guid? personCompanyId, string note, int idFormOfPayment, long userId, long companyId)
         {
             if (personCompanyId.HasValue)
@@ -51,7 +65,8 @@ namespace EasySoccer.BLL
                 Value = value,
                 CreatedDate = DateTime.UtcNow,
                 CompanyId = companyId,
-                FormOfPaymentId = formOfPayment.Id
+                FormOfPaymentId = formOfPayment.Id,
+                Status = Entities.Enum.PaymentStatusEnum.Created
             };
             await _paymentRepository.Create(payment);
             await _dbContext.SaveChangesAsync();

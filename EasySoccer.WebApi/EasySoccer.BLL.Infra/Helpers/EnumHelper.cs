@@ -84,6 +84,23 @@ namespace EasySoccer.BLL.Infra.Helpers
             return enumDescription;
         }
 
+        public string GetEnumDescription(PaymentStatusEnum paymentStatus)
+        {
+            string enumDescription = string.Empty;
+            switch (paymentStatus)
+            {
+                case PaymentStatusEnum.Created:
+                    enumDescription = "Confirmado";
+                    break;
+                case PaymentStatusEnum.Canceled:
+                    enumDescription = "Cancelado";
+                    break;
+                default:
+                    break;
+            }
+            return enumDescription;
+        }
+
         public Dictionary<int, string> GetEnumDictionary<T>() where T : System.Enum
         {
             var response = new Dictionary<int, string>();

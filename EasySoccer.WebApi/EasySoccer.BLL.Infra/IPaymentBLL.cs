@@ -13,5 +13,6 @@ namespace EasySoccer.BLL.Infra
         Task<List<Payment>> GetAsync(Guid soccerPitchReservationId);
         Task<List<Payment>> GetAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment, int page, int pageSize);
         Task<int> GetTotalAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment);
+        Task<Payment> CancelAsync(long idPayment, long idCompany);
     }
 }

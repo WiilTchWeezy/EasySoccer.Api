@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasySoccer.Entities.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -26,6 +27,8 @@ namespace EasySoccer.Entities
         public int FormOfPaymentId { get; set; }
         [Required]
         public long CompanyId { get; set; }
+        [Required]
+        public PaymentStatusEnum Status { get; set; }
 
         [ForeignKey("SoccerPitchReservationId")]
         public virtual SoccerPitchReservation SoccerPitchReservation { get; set; }

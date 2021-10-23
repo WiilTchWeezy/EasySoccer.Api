@@ -1,4 +1,5 @@
 ﻿
+using EasySoccer.BLL.Infra.Helpers;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
@@ -35,12 +36,12 @@ namespace EasySoccer.WebApi.Controllers
             }
         }
 
-        [Route("patch"), HttpPatch]
-        public async Task<IActionResult> PatchAsync([FromBody] PaymentRequest request)
+        [Route("cancel"), HttpPost]
+        public async Task<IActionResult> PostAsync([FromQuery] long idPayment)
         {
             try
             {
-                return Ok(await _uow.PaymentBLL.UpdateAsync(request.PaymentId, request.Value, request.PersonCompanyId, request.Note, request.FormOfPaymentId));
+                return Ok(await _uow.PaymentBLL.CancelAsync(idPayment, new CurrentUser(HttpContext).CompanyId));
             }
             catch (Exception e)
             {
@@ -66,7 +67,9 @@ namespace EasySoccer.WebApi.Controllers
                         x.Value,
                         PersonCompanyName = x.PersonCompany != null ? x.PersonCompany.Name : "Sem Resp.",
                         CreatedDate = x.CreatedDate.AddHours(-3),//TODO - Field on Company
-                        FormOfPaymentName = x.FormOfPayment?.Name
+                        FormOfPaymentName = x.FormOfPayment?.Name,
+                        StatusDescription = EnumHelper.Instance.GetEnumDescription(x.Status),
+                        x.Status
                     }).ToList()
                 });
             }
@@ -95,7 +98,8 @@ namespace EasySoccer.WebApi.Controllers
                         x.PersonCompanyId,
                         PersonCompanyName = x.PersonCompany != null ? x.PersonCompany.Name : "Sem Resp.",
                         FormOfPaymentName = x.FormOfPayment?.Name,
-
+                        StatusDescription = EnumHelper.Instance.GetEnumDescription(x.Status),
+                        x.Status
                     }).ToList(),
                     Total = total
                 });
