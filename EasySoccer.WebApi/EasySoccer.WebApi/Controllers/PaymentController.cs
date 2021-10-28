@@ -1,5 +1,6 @@
 ﻿
 using EasySoccer.BLL.Infra.Helpers;
+using EasySoccer.Entities.Enum;
 using EasySoccer.WebApi.ApiRequests;
 using EasySoccer.WebApi.Controllers.Base;
 using EasySoccer.WebApi.Security.AuthIdentity;
@@ -50,14 +51,20 @@ namespace EasySoccer.WebApi.Controllers
         }
 
         [Route("get"), HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery] Guid soccerPitchReservationId)
+        public async Task<IActionResult> GetAsync([FromQuery] Guid soccerPitchReservationId, [FromQuery] int? status = null)
         {
             try
             {
-                var data = await _uow.PaymentBLL.GetAsync(soccerPitchReservationId);
+                PaymentStatusEnum? paymentStatus = null;
+                if (status.HasValue && Enum.IsDefined(typeof(PaymentStatusEnum), status.Value))
+                    paymentStatus = (PaymentStatusEnum)status;
+                var data = await _uow.PaymentBLL.GetAsync(soccerPitchReservationId, paymentStatus);
+                var totalApproved = await _uow.PaymentBLL.GetTotalValueAsync(soccerPitchReservationId, PaymentStatusEnum.Created);
+                var totalReservation = await _uow.SoccerPitchReservationBLL.GetReservationValueAsync(soccerPitchReservationId);
                 return Ok(new
                 {
-                    Total = data.Sum(x => x.Value),
+                    Total = totalApproved,
+                    TotalReservation = totalReservation,
                     Data = data.Select(x => new
                     {
                         x.Note,

@@ -3,6 +3,7 @@ using EasySoccer.BLL.Infra;
 using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
+using EasySoccer.Entities.Enum;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -83,9 +84,20 @@ namespace EasySoccer.BLL
             return _paymentRepository.GetAsync(startDate, endDate, formOfPayment, page, pageSize);
         }
 
+        public Task<List<Payment>> GetAsync(Guid soccerPitchReservationId, PaymentStatusEnum? paymentStatus)
+        {
+            return _paymentRepository.GetAsync(soccerPitchReservationId, paymentStatus);
+        }
+
         public Task<int> GetTotalAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment)
         {
             return _paymentRepository.GetTotalAsync(startDate, endDate, formOfPayment);
+        }
+
+        public Task<decimal> GetTotalValueAsync(Guid soccerPitchReservationId, PaymentStatusEnum? paymentStatus)
+        {
+            return _paymentRepository.GetTotalValueAsync(soccerPitchReservationId, paymentStatus);
+
         }
 
         public async Task<Payment> UpdateAsync(long idPayment, decimal value, Guid? personCompanyId, string note, int formOfPaymentId)

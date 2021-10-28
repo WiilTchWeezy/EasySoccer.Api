@@ -28,5 +28,10 @@ namespace EasySoccer.DAL.Repositories
         {
             return _dbContext.SoccerPitchSoccerPitchPlanQuery.Include(x => x.SoccerPitchPlan).Where(x => x.SoccerPitchId == soccerPitch && x.SoccerPitchPlan.ShowToUser).ToListAsync();
         }
+
+        public Task<SoccerPitchSoccerPitchPlan> GetByIdAsync(long soccerPitchSoccerPitchPlanId)
+        {
+            return _dbContext.SoccerPitchSoccerPitchPlanQuery.Where(x => x.Id == soccerPitchSoccerPitchPlanId).FirstOrDefaultAsync();
+        }
     }
 }

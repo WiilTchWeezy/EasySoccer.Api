@@ -731,5 +731,19 @@ namespace EasySoccer.BLL
             }
             return response;
         }
+
+        public async Task<decimal> GetReservationValueAsync(Guid soccerPitchReservationId)
+        {
+            var reservation = await _soccerPitchReservationRepository.GetAsync(soccerPitchReservationId);
+            if (reservation == null)
+                throw new BussinessException("Reserva não encontrada.");
+            var planRelation = await _soccerPitchSoccerPitchPlanRepository.GetByIdAsync(reservation.SoccerPitchSoccerPitchPlanId);
+            if(planRelation == null)
+                throw new BussinessException("Plano da reserva não encontrado.");
+            var soccerPitchPlan = await _soccerPitchPlanRepository.GetAsync(planRelation.SoccerPitchPlanId);
+            if (soccerPitchPlan == null)
+                throw new BussinessException("Plano da reserva não encontrado.");
+            return soccerPitchPlan.Value;
+        }
     }
 }

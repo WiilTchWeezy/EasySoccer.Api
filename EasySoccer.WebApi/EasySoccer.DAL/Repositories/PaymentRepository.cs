@@ -1,6 +1,7 @@
 ﻿using EasySoccer.DAL.Infra;
 using EasySoccer.DAL.Infra.Repositories;
 using EasySoccer.Entities;
+using EasySoccer.Entities.Enum;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace EasySoccer.DAL.Repositories
 
         public Task<List<Payment>> GetAsync(Guid soccerPitchReservationId)
         {
-            return _dbContext.PaymentQuery.Include(x => x.PersonCompany).Include(x => x.FormOfPayment).Where(x => x.SoccerPitchReservationId == soccerPitchReservationId).OrderBy(x => x.CreatedDate).ToListAsync();
+            return _dbContext.PaymentQuery.Include(x => x.PersonCompany).Include(x => x.FormOfPayment).Where(x => x.SoccerPitchReservationId == soccerPitchReservationId).OrderByDescending(x => x.CreatedDate).ToListAsync();
         }
 
         public Task<Payment> GetAsync(long idPayment)
@@ -41,6 +42,14 @@ namespace EasySoccer.DAL.Repositories
                 .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
+        public Task<List<Payment>> GetAsync(Guid soccerPitchReservationId, PaymentStatusEnum? paymentStatus)
+        {
+            var query = _dbContext.PaymentQuery.Include(x => x.PersonCompany).Include(x => x.FormOfPayment).Where(x => x.SoccerPitchReservationId == soccerPitchReservationId);
+            if (paymentStatus.HasValue)
+                query = query.Where(x => x.Status == paymentStatus.Value);
+            return query.OrderByDescending(x => x.CreatedDate).ToListAsync();
+        }
+
         public Task<int> GetTotalAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment)
         {
             var query = _dbContext.PaymentQuery;
@@ -52,6 +61,14 @@ namespace EasySoccer.DAL.Repositories
                 query = query.Where(x => x.FormOfPaymentId == formOfPayment);
 
             return query.CountAsync();
+        }
+
+        public Task<decimal> GetTotalValueAsync(Guid soccerPitchReservationId, PaymentStatusEnum? paymentStatus)
+        {
+            var query = _dbContext.PaymentQuery.Where(x => x.SoccerPitchReservationId == soccerPitchReservationId);
+            if (paymentStatus.HasValue)
+                query = query.Where(x => x.Status == paymentStatus.Value);
+            return query.SumAsync(x => x.Value);
         }
     }
 }
