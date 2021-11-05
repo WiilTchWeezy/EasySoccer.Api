@@ -79,9 +79,9 @@ namespace EasySoccer.BLL
             return _paymentRepository.GetAsync(soccerPitchReservationId);
         }
 
-        public Task<List<Payment>> GetAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment, int page, int pageSize)
+        public Task<List<Payment>> GetAsync(DateTime? startDate, DateTime? endDate, int? formOfPayment, PaymentStatusEnum? status, string personCompanyName, int page, int pageSize)
         {
-            return _paymentRepository.GetAsync(startDate, endDate, formOfPayment, page, pageSize);
+            return _paymentRepository.GetAsync(startDate, endDate, formOfPayment, status, personCompanyName, page, pageSize);
         }
 
         public Task<List<Payment>> GetAsync(Guid soccerPitchReservationId, PaymentStatusEnum? paymentStatus)

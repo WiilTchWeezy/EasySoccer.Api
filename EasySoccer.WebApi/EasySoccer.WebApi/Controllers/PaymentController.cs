@@ -91,7 +91,15 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                var data = await _uow.PaymentBLL.GetAsync(request.StartDate, request.EndDate, request.FormOfPayment, request.Page, request.PageSize);
+                PaymentStatusEnum? statusValue = null;
+                if (request.Status.HasValue)
+                {
+                    if(Enum.IsDefined(typeof(PaymentStatusEnum), request.Status.Value))
+                    {
+                        statusValue = (PaymentStatusEnum)request.Status.Value;
+                    }
+                }
+                var data = await _uow.PaymentBLL.GetAsync(request.StartDate, request.EndDate, request.FormOfPayment, statusValue, request.PersonCompanyName, request.Page, request.PageSize);
                 var total = await _uow.PaymentBLL.GetTotalAsync(request.StartDate, request.EndDate, request.FormOfPayment);
                 return Ok(new
                 {
