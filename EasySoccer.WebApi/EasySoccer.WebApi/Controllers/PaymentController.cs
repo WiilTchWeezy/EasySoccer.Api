@@ -29,7 +29,8 @@ namespace EasySoccer.WebApi.Controllers
         {
             try
             {
-                return Ok(await _uow.PaymentBLL.CreateAsync(request.Value, request.SoccerPitchReservationId, request.PersonCompanyId, request.Note, request.FormOfPaymentId, new CurrentUser(HttpContext).UserId, new CurrentUser(HttpContext).CompanyId));
+                var payment = await _uow.PaymentBLL.CreateAsync(request.Value, request.SoccerPitchReservationId, request.PersonCompanyId, request.Note, request.FormOfPaymentId, new CurrentUser(HttpContext).UserId, new CurrentUser(HttpContext).CompanyId);
+                return Ok(new { Id = payment.Id });
             }
             catch (Exception e)
             {
@@ -77,7 +78,7 @@ namespace EasySoccer.WebApi.Controllers
                         FormOfPaymentName = x.FormOfPayment?.Name,
                         StatusDescription = EnumHelper.Instance.GetEnumDescription(x.Status),
                         x.Status
-                    }).ToList()
+                    }).OrderByDescending(x => x.CreatedDate).ToList()
                 });
             }
             catch (Exception e)

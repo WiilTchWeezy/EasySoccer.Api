@@ -745,5 +745,37 @@ namespace EasySoccer.BLL
                 throw new BussinessException("Plano da reserva não encontrado.");
             return soccerPitchPlan.Value;
         }
+
+        public async Task<bool> ChangeStatusAllReservationsAsync(Guid reservationId)
+        {
+            SoccerPitchReservation actualReservation;
+            var reservation = await _soccerPitchReservationRepository.GetAsync(reservationId);
+            if(reservation == null)
+                throw new BussinessException("Reserva não encontrada.");
+            actualReservation = reservation;
+            if (reservation.OringinReservationId.HasValue)
+            {
+                var originReservation = await _soccerPitchReservationRepository.GetAsync(reservation.OringinReservationId.Value);
+                if (originReservation == null)
+                    throw new BussinessException("Reserva não encontrada");
+                actualReservation = originReservation;
+            }
+            if(actualReservation != null)
+            {
+                var childReservations = await _soccerPitchReservationRepository.GetByOriginReservationAsync(actualReservation.Id);
+                if(childReservations != null)
+                {
+                    foreach (var item in childReservations)
+                    {
+                        item.Status = StatusEnum.Concluded;
+                        await _soccerPitchReservationRepository.Edit(item);
+                    }
+                }
+                actualReservation.Status = StatusEnum.Concluded;
+                await _soccerPitchReservationRepository.Edit(actualReservation);
+            }
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

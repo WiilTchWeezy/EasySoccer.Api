@@ -43,7 +43,7 @@ namespace EasySoccer.DAL.Repositories
             && (status == null || x.Status == status.Value)
             && (personCompanyName == null || (x.PersonCompany.Name.Contains(personCompanyName) || x.PersonCompany.Phone.Contains(personCompanyName))));
 
-            return query.Include(x => x.FormOfPayment).Include(x => x.PersonCompany).Include(x => x.SoccerPitchReservation)
+            return query.Include(x => x.FormOfPayment).Include(x => x.PersonCompany).Include(x => x.SoccerPitchReservation).OrderByDescending(x => x.CreatedDate)
                 .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 

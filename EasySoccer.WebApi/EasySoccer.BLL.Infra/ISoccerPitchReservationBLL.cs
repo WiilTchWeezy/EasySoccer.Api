@@ -25,5 +25,6 @@ namespace EasySoccer.BLL.Infra
 
         Task<ReservationsGeneratedDTO> GetReservationsGeneratedAsync(Guid id);
         Task<decimal> GetReservationValueAsync(Guid soccerPitchReservationId);
+        Task<bool> ChangeStatusAllReservationsAsync(Guid reservationId);
     }
 }
